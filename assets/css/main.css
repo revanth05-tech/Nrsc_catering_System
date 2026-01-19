@@ -49,7 +49,7 @@
     /* Typography */
     --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', 'Consolas', monospace;
-    
+
     /* Font Sizes */
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
@@ -100,7 +100,9 @@
 /* ============================================
    BASE STYLES / RESET
    ============================================ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -125,21 +127,45 @@ body {
 /* ============================================
    TYPOGRAPHY
    ============================================ */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 600;
     line-height: 1.3;
     color: var(--gray-900);
     margin-bottom: var(--spacing-4);
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
-h5 { font-size: var(--text-lg); }
-h6 { font-size: var(--text-base); }
+h1 {
+    font-size: var(--text-4xl);
+}
 
-p { margin-bottom: var(--spacing-4); }
+h2 {
+    font-size: var(--text-3xl);
+}
+
+h3 {
+    font-size: var(--text-2xl);
+}
+
+h4 {
+    font-size: var(--text-xl);
+}
+
+h5 {
+    font-size: var(--text-lg);
+}
+
+h6 {
+    font-size: var(--text-base);
+}
+
+p {
+    margin-bottom: var(--spacing-4);
+}
 
 a {
     color: var(--primary-600);
@@ -238,8 +264,8 @@ select {
     font-family: var(--font-family);
     font-size: var(--text-sm);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: 0.2px;
     border: none;
     border-radius: var(--radius-lg);
     cursor: pointer;
@@ -321,6 +347,7 @@ select {
     box-shadow: var(--shadow-md);
     overflow: hidden;
     transition: all var(--transition-base);
+    border-left: 4px solid var(--primary-600);
 }
 
 .card:hover {
@@ -459,6 +486,7 @@ tbody tr:last-child td {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -498,7 +526,7 @@ tbody tr:last-child td {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-4);
-    background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-700) 50%, var(--primary-600) 100%);
+    background: linear-gradient(180deg, var(--primary-800), var(--primary-700));
     position: relative;
     overflow: hidden;
 }
@@ -510,8 +538,8 @@ tbody tr:last-child td {
     right: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-    animation: float 6s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    animation: float 12s ease-in-out infinite;
 }
 
 .login-wrapper::after {
@@ -521,13 +549,20 @@ tbody tr:last-child td {
     left: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 60%);
-    animation: float 8s ease-in-out infinite reverse;
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.15) 0%, transparent 60%);
+    animation: float 12s ease-in-out infinite reverse;
 }
 
 @keyframes float {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(30px, 30px); }
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(15px, 15px);
+    }
 }
 
 .login-container {
@@ -548,6 +583,7 @@ tbody tr:last-child td {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -609,36 +645,101 @@ tbody tr:last-child td {
 /* ============================================
    UTILITY CLASSES
    ============================================ */
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-left { text-align: left; }
+.text-center {
+    text-align: center;
+}
 
-.text-primary { color: var(--primary-600); }
-.text-success { color: var(--success-500); }
-.text-danger { color: var(--error-500); }
-.text-warning { color: var(--warning-500); }
-.text-muted { color: var(--gray-500); }
+.text-right {
+    text-align: right;
+}
 
-.font-bold { font-weight: 700; }
-.font-semibold { font-weight: 600; }
-.font-medium { font-weight: 500; }
+.text-left {
+    text-align: left;
+}
 
-.mb-0 { margin-bottom: 0; }
-.mb-2 { margin-bottom: var(--spacing-2); }
-.mb-4 { margin-bottom: var(--spacing-4); }
-.mb-6 { margin-bottom: var(--spacing-6); }
+.text-primary {
+    color: var(--primary-600);
+}
 
-.mt-0 { margin-top: 0; }
-.mt-2 { margin-top: var(--spacing-2); }
-.mt-4 { margin-top: var(--spacing-4); }
-.mt-6 { margin-top: var(--spacing-6); }
+.text-success {
+    color: var(--success-500);
+}
 
-.p-4 { padding: var(--spacing-4); }
-.p-6 { padding: var(--spacing-6); }
+.text-danger {
+    color: var(--error-500);
+}
 
-.d-flex { display: flex; }
-.d-block { display: block; }
-.d-none { display: none; }
+.text-warning {
+    color: var(--warning-500);
+}
+
+.text-muted {
+    color: var(--gray-500);
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.mb-2 {
+    margin-bottom: var(--spacing-2);
+}
+
+.mb-4 {
+    margin-bottom: var(--spacing-4);
+}
+
+.mb-6 {
+    margin-bottom: var(--spacing-6);
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+
+.mt-2 {
+    margin-top: var(--spacing-2);
+}
+
+.mt-4 {
+    margin-top: var(--spacing-4);
+}
+
+.mt-6 {
+    margin-top: var(--spacing-6);
+}
+
+.p-4 {
+    padding: var(--spacing-4);
+}
+
+.p-6 {
+    padding: var(--spacing-6);
+}
+
+.d-flex {
+    display: flex;
+}
+
+.d-block {
+    display: block;
+}
+
+.d-none {
+    display: none;
+}
 
 .flex-between {
     display: flex;
@@ -652,8 +753,13 @@ tbody tr:last-child td {
     align-items: center;
 }
 
-.gap-2 { gap: var(--spacing-2); }
-.gap-4 { gap: var(--spacing-4); }
+.gap-2 {
+    gap: var(--spacing-2);
+}
+
+.gap-4 {
+    gap: var(--spacing-4);
+}
 
 /* ============================================
    RESPONSIVE DESIGN
@@ -664,12 +770,12 @@ tbody tr:last-child td {
         --text-3xl: 1.5rem;
         --text-2xl: 1.25rem;
     }
-    
+
     .form-row.two-cols,
     .form-row.three-cols {
         grid-template-columns: 1fr;
     }
-    
+
     .login-container {
         padding: var(--spacing-6);
     }
@@ -679,7 +785,7 @@ tbody tr:last-child td {
     html {
         font-size: 14px;
     }
-    
+
     .btn {
         width: 100%;
     }
@@ -689,13 +795,25 @@ tbody tr:last-child td {
    ANIMATIONS
    ============================================ */
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading {
@@ -715,11 +833,11 @@ tbody tr:last-child td {
     .no-print {
         display: none !important;
     }
-    
+
     body {
         background: white;
     }
-    
+
     .card {
         box-shadow: none;
         border: 1px solid var(--gray-300);
