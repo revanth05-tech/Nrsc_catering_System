@@ -5,26 +5,25 @@
    CSS VARIABLES / DESIGN TOKENS
    ============================================ */
 :root {
-    /* Primary Colors - Electric Violet & Blue */
-    --primary-900: #1e1b4b;
-    --primary-800: #312e81;
-    --primary-700: #4338ca;
-    --primary-600: #4f46e5;
-    --primary-500: #6366f1;
-    --primary-400: #818cf8;
-    --primary-300: #a5b4fc;
-    --primary-200: #c7d2fe;
-    --primary-100: #e0e7ff;
-    --primary-50: #eef2ff;
+    /* Primary Colors - Emerald Green */
+    --primary-900: #064e3b;
+    --primary-800: #065f46;
+    --primary-700: #047857;
+    --primary-600: #059669;
+    --primary-500: #10b981;
+    --primary-400: #34d399;
+    --primary-300: #6ee7b7;
+    --primary-200: #a7f3d0;
+    --primary-100: #d1fae5;
+    --primary-50: #ecfdf5;
 
-    /* Bright/Neon Accents */
-    --accent-500: #06b6d4;
-    /* Cyan */
-    --accent-400: #22d3ee;
-    --accent-300: #67e8f9;
-    --accent-200: #a5f3fc;
-    --accent-100: #cffafe;
-    --accent-glow: #06b6d4;
+    /* Bright/Neon Accents - Yellow/Gold */
+    --accent-500: #eab308;
+    --accent-400: #facc15;
+    --accent-300: #fde047;
+    --accent-200: #fef08a;
+    --accent-100: #fef9c3;
+    --accent-glow: #eab308;
 
     /* Neutral Colors - Deep Slate (Dark Mode Base) */
     --gray-900: #020617;
@@ -227,7 +226,7 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--primary-400);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
     background: var(--gray-700);
     transform: translateY(-1px);
 }
@@ -298,13 +297,13 @@ select {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-500) 100%);
     color: white;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
     background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 100%);
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
 }
 
 .btn-secondary {
@@ -553,7 +552,7 @@ tbody tr:last-child td {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-4);
-    background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #020617 100%);
+    background: radial-gradient(circle at 50% 10%, var(--primary-900) 0%, #020617 100%);
     position: relative;
     overflow: hidden;
 }
