@@ -403,8 +403,9 @@ select {
 .table-container {
     overflow-x: auto;
     border-radius: var(--radius-xl);
-    background: white;
+    background: var(--gray-800);
     box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-700);
 }
 
 table {
@@ -413,8 +414,8 @@ table {
 }
 
 thead {
-    background: var(--gray-800);
-    border-bottom: 2px solid var(--gray-700);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--gray-700);
 }
 
 th {
@@ -424,14 +425,14 @@ th {
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--gray-400);
+    color: var(--gray-300);
 }
 
 td {
     padding: var(--spacing-4) var(--spacing-5);
     border-bottom: 1px solid var(--gray-700);
     font-size: var(--text-sm);
-    color: var(--gray-200);
+    color: var(--gray-100);
 }
 
 tbody tr {
@@ -463,32 +464,38 @@ tbody tr:last-child td {
 
 .badge-pending {
     background: var(--warning-100);
-    color: #92400e;
+    color: var(--warning-500);
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .badge-approved {
     background: var(--success-100);
-    color: #065f46;
+    color: var(--success-500);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-rejected {
     background: var(--error-100);
-    color: #991b1b;
+    color: var(--error-500);
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .badge-progress {
     background: var(--info-100);
-    color: #1e40af;
+    color: var(--info-500);
+    border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .badge-completed {
-    background: #d1fae5;
-    color: #047857;
+    background: var(--success-100);
+    color: var(--success-500);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-cancelled {
-    background: var(--gray-200);
-    color: var(--gray-600);
+    background: var(--gray-700);
+    color: var(--gray-300);
+    border: 1px solid var(--gray-600);
 }
 
 /* ============================================

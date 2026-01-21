@@ -275,6 +275,8 @@
     transition: all var(--transition-fast);
 }
 
+
+
 .header-action:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
@@ -425,6 +427,8 @@
     background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
     color: white;
 }
+
+
 
 .stat-content {
     flex: 1;
@@ -791,6 +795,8 @@
     color: white;
 }
 
+
+
 .selected-item-price {
     min-width: 100px;
     text-align: right;
@@ -819,6 +825,8 @@
     border-top: 2px solid var(--gray-300);
     font-size: var(--text-lg);
 }
+
+
 
 .order-total-label {
     font-weight: 600;
