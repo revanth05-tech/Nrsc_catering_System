@@ -180,13 +180,13 @@ p {
 }
 
 a {
-    color: var(--primary-600);
+    color: var(--accent-400);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
 a:hover {
-    color: var(--primary-700);
+    color: var(--accent-300);
 }
 
 /* ============================================
@@ -196,7 +196,7 @@ label {
     display: block;
     font-weight: 500;
     font-size: var(--text-sm);
-    color: var(--gray-700);
+    color: var(--gray-300);
     margin-bottom: var(--spacing-2);
 }
 
@@ -233,7 +233,7 @@ textarea:focus {
 
 input::placeholder,
 textarea::placeholder {
-    color: var(--gray-500);
+    color: var(--gray-400);
 }
 
 select {
@@ -692,7 +692,7 @@ tbody tr:last-child td {
 }
 
 .text-primary {
-    color: var(--primary-600);
+    color: var(--primary-400);
 }
 
 .text-success {
