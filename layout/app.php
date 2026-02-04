@@ -60,8 +60,8 @@ switch($role) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="/catering_system/assets/css/main.css?v=1">
-    <link rel="stylesheet" href="/catering_system/assets/css/convo.css?v=1">
+    <link rel="stylesheet" href="/catering_system/assets/css/main.css?v=2">
+    <link rel="stylesheet" href="/catering_system/assets/css/convo.css?v=2">
 </head>
 <body class="convo-layout">
     
