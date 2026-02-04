@@ -319,9 +319,10 @@ select {
 }
 
 .btn-secondary:hover {
-    background: var(--gray-200);
-    border-color: var(--gray-300);
-    color: var(--gray-50);
+    background: white;
+    border-color: var(--primary-300);
+    color: var(--primary-600);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-success {

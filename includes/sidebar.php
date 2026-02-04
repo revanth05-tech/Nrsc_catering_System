@@ -14,6 +14,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </div>
         <h3 class="user-name"><?php echo htmlspecialchars($_SESSION['userid'] ?? 'User'); ?></h3>
         <p class="user-role"><?php echo ROLE_LABELS[$role] ?? 'User'; ?></p>
+        
+        <a href="/catering_system/<?php echo $role; ?>/profile.php" class="btn btn-sm btn-secondary mt-4 w-full" style="justify-content: center;">
+            My Profile
+        </a>
     </div>
 
     <div class="sidebar-actions">
@@ -27,8 +31,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
                 My Request History
             </a>
-            <a href="/catering_system/employee/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
-                My Profile
+            <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
+                My Request History
             </a>
         
         <?php elseif ($role === 'officer'): ?>
@@ -41,8 +45,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/officer/completed_orders.php" class="btn btn-ghost <?php echo $currentPage === 'completed_orders.php' ? 'active' : ''; ?>">
                 Completed Orders
             </a>
-            <a href="/catering_system/officer/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
-                My Profile
+            <a href="/catering_system/officer/completed_orders.php" class="btn btn-ghost <?php echo $currentPage === 'completed_orders.php' ? 'active' : ''; ?>">
+                Completed Orders
             </a>
             
         <?php elseif ($role === 'canteen'): ?>
@@ -52,8 +56,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/canteen/pending_orders.php" class="btn btn-ghost <?php echo $currentPage === 'pending_orders.php' ? 'active' : ''; ?>">
                 Pending Orders
             </a>
-            <a href="/catering_system/canteen/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
-                My Profile
+            <a href="/catering_system/canteen/pending_orders.php" class="btn btn-ghost <?php echo $currentPage === 'pending_orders.php' ? 'active' : ''; ?>">
+                Pending Orders
             </a>
             
         <?php elseif ($role === 'admin'): ?>
@@ -69,8 +73,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/admin/reports.php" class="btn btn-ghost <?php echo $currentPage === 'reports.php' ? 'active' : ''; ?>">
                 Reports
             </a>
-            <a href="/catering_system/admin/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
-                My Profile
+            <a href="/catering_system/admin/reports.php" class="btn btn-ghost <?php echo $currentPage === 'reports.php' ? 'active' : ''; ?>">
+                Reports
             </a>
         <?php endif; ?>
         
