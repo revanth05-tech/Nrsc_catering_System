@@ -31,9 +31,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
                 My Request History
             </a>
-            <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
-                My Request History
-            </a>
+
         
         <?php elseif ($role === 'officer'): ?>
             <a href="/catering_system/officer/dashboard.php" class="btn btn-ghost <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
@@ -45,9 +43,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/officer/completed_orders.php" class="btn btn-ghost <?php echo $currentPage === 'completed_orders.php' ? 'active' : ''; ?>">
                 Completed Orders
             </a>
-            <a href="/catering_system/officer/completed_orders.php" class="btn btn-ghost <?php echo $currentPage === 'completed_orders.php' ? 'active' : ''; ?>">
-                Completed Orders
-            </a>
+
             
         <?php elseif ($role === 'canteen'): ?>
             <a href="/catering_system/canteen/dashboard.php" class="btn btn-ghost <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
@@ -56,9 +52,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/canteen/pending_orders.php" class="btn btn-ghost <?php echo $currentPage === 'pending_orders.php' ? 'active' : ''; ?>">
                 Pending Orders
             </a>
-            <a href="/catering_system/canteen/pending_orders.php" class="btn btn-ghost <?php echo $currentPage === 'pending_orders.php' ? 'active' : ''; ?>">
-                Pending Orders
-            </a>
+
             
         <?php elseif ($role === 'admin'): ?>
             <a href="/catering_system/admin/dashboard.php" class="btn btn-ghost <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
@@ -73,9 +67,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/admin/reports.php" class="btn btn-ghost <?php echo $currentPage === 'reports.php' ? 'active' : ''; ?>">
                 Reports
             </a>
-            <a href="/catering_system/admin/reports.php" class="btn btn-ghost <?php echo $currentPage === 'reports.php' ? 'active' : ''; ?>">
-                Reports
-            </a>
+
         <?php endif; ?>
         
         <div style="margin: 10px 0; border-top: 1px solid var(--gray-700);"></div>
