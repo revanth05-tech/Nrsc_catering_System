@@ -30,8 +30,9 @@ $userRole = ROLE_LABELS[$_SESSION['role'] ?? 'employee'] ?? 'User';
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="/catering_system/assets/css/main.css">
-    <link rel="stylesheet" href="/catering_system/assets/css/dashboard.css">
+    <!-- Stylesheets with Cache Busting -->
+    <link rel="stylesheet" href="/catering_system/assets/css/main.css?v=1">
+    <link rel="stylesheet" href="/catering_system/assets/css/dashboard.css?v=1">
     
     <style>
         .field-error { color: var(--error-500); font-size: 0.75rem; display: block; margin-top: 4px; }

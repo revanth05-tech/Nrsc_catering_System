@@ -59,8 +59,8 @@ switch($role) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="/catering_system/assets/css/main.css">
-    <link rel="stylesheet" href="/catering_system/assets/css/convo.css">
+    <link rel="stylesheet" href="/catering_system/assets/css/main.css?v=1">
+    <link rel="stylesheet" href="/catering_system/assets/css/convo.css?v=1">
 </head>
 <body class="convo-layout">
     
@@ -97,7 +97,7 @@ switch($role) {
         
         <!-- TOP NAV: PILLS -->
         <header class="convo-header">
-            <h1 style="font-size: 1.5rem; margin: 0; color: white;"><?php echo $pageTitle; ?></h1>
+            <h1 style="font-size: 1.5rem; margin: 0; color: var(--gray-50);"><?php echo $pageTitle; ?></h1>
             
             <nav class="nav-pills-container">
                 <?php foreach($navItems as $key => $label): ?>
