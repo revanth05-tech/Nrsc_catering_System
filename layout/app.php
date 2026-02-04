@@ -41,7 +41,8 @@ switch($role) {
             'home' => 'Dashboard',
             'users' => 'Users',
             'menu' => 'Menu Items',
-            'reports' => 'Reports'
+            'reports' => 'Reports',
+            'profile' => 'Profile'
         ];
         break;
 }
