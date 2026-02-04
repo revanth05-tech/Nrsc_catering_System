@@ -66,7 +66,8 @@ switch($role) {
     
     <!-- LEFT SIDEBAR: PROFILE & IDENTITY -->
     <aside class="convo-sidebar">
-        <div class="brand">
+        <div class="brand" style="text-align: center;">
+            <img src="/catering_system/assets/images/isroLogo.png" alt="NRSC" style="width: 70px; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
             <div class="logo-box">NRSC CATERING</div>
         </div>
         

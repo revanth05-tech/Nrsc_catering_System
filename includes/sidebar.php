@@ -5,10 +5,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 <aside class="sidebar">
     <div class="sidebar-header">
         <a href="/catering_system/" class="sidebar-brand">
-            <div class="sidebar-brand-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
-                </svg>
+            <div class="sidebar-brand-icon" style="background: transparent; box-shadow: none; overflow: visible;">
+                <img src="/catering_system/assets/images/isroLogo.png" alt="NRSC" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <div class="sidebar-brand-text">
                 NRSC Catering

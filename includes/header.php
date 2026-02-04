@@ -31,8 +31,10 @@ $userRole = ROLE_LABELS[$_SESSION['role'] ?? 'employee'] ?? 'User';
     
     <!-- Stylesheets -->
     <!-- Stylesheets with Cache Busting -->
+    <!-- Stylesheets with Cache Busting -->
     <link rel="stylesheet" href="/catering_system/assets/css/main.css?v=1">
     <link rel="stylesheet" href="/catering_system/assets/css/dashboard.css?v=1">
+    <link rel="stylesheet" href="/catering_system/assets/css/convo.css?v=1">
     
     <style>
         .field-error { color: var(--error-500); font-size: 0.75rem; display: block; margin-top: 4px; }
@@ -40,29 +42,39 @@ $userRole = ROLE_LABELS[$_SESSION['role'] ?? 'employee'] ?? 'User';
     </style>
 </head>
 <body>
-    <div class="dashboard-wrapper">
+    <div class="convo-layout">
         <?php include __DIR__ . '/sidebar.php'; ?>
         
         <div class="sidebar-overlay"></div>
         
-        <main class="main-content">
-            <header class="top-header">
-                <div class="header-left">
-                    <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <main class="convo-main">
+            <!-- Modern Glass Header -->
+            <header class="convo-header">
+                <div class="header-left d-flex align-items-center gap-4">
+                    <button class="mobile-menu-btn" aria-label="Toggle menu" style="color: var(--gray-400);">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="3" y1="12" x2="21" y2="12"></line>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <line x1="3" y1="18" x2="21" y2="18"></line>
                         </svg>
                     </button>
-                    <h1 class="page-title"><?php echo $pageTitle; ?></h1>
+                    <div>
+                        <h1 class="page-title" style="color: var(--gray-50); font-size: 1.25rem; margin: 0;"><?php echo $pageTitle; ?></h1>
+                        <p class="text-xs text-muted mb-0" style="margin-top: 2px;">NRSC Catering Management</p>
+                    </div>
                 </div>
+                
                 <div class="header-right">
                     <div class="user-dropdown">
-                        <div class="user-dropdown-avatar"><?php echo $userInitials; ?></div>
+                        <span class="text-sm font-medium mr-3 text-muted hidden-xs">
+                            <?php echo htmlspecialchars($currentUser['name'] ?? 'User'); ?>
+                        </span>
+                        <div class="user-dropdown-avatar">
+                            <?php echo $userInitials; ?>
+                        </div>
                     </div>
                 </div>
             </header>
             
-            <div class="content-container">
+            <div class="convo-content">
                 <?php echo displayFlashMessage(); ?>
