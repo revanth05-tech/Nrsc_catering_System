@@ -27,6 +27,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
                 My Request History
             </a>
+            <a href="/catering_system/employee/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
+                My Profile
+            </a>
         
         <?php elseif ($role === 'officer'): ?>
             <a href="/catering_system/officer/dashboard.php" class="btn btn-ghost <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
@@ -38,6 +41,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/officer/completed_orders.php" class="btn btn-ghost <?php echo $currentPage === 'completed_orders.php' ? 'active' : ''; ?>">
                 Completed Orders
             </a>
+            <a href="/catering_system/officer/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
+                My Profile
+            </a>
             
         <?php elseif ($role === 'canteen'): ?>
             <a href="/catering_system/canteen/dashboard.php" class="btn btn-ghost <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
@@ -45,6 +51,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="/catering_system/canteen/pending_orders.php" class="btn btn-ghost <?php echo $currentPage === 'pending_orders.php' ? 'active' : ''; ?>">
                 Pending Orders
+            </a>
+            <a href="/catering_system/canteen/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
+                My Profile
             </a>
             
         <?php elseif ($role === 'admin'): ?>
@@ -59,6 +68,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="/catering_system/admin/reports.php" class="btn btn-ghost <?php echo $currentPage === 'reports.php' ? 'active' : ''; ?>">
                 Reports
+            </a>
+            <a href="/catering_system/admin/profile.php" class="btn btn-ghost <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
+                My Profile
             </a>
         <?php endif; ?>
         
