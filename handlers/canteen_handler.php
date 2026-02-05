@@ -55,7 +55,7 @@ switch ($action) {
         
     case 'get_today_orders':
         $orders = fetchAll(
-            "SELECT cr.*, u.name as employee_name FROM catering_requests cr 
+            "SELECT cr.*, u.full_name as employee_name FROM catering_requests cr 
              JOIN users u ON cr.employee_id = u.id 
              WHERE cr.event_date = CURDATE() AND cr.status IN ('approved', 'in_progress') 
              ORDER BY cr.event_time ASC"

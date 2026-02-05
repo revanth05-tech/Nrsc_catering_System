@@ -40,17 +40,6 @@ $topItems = fetchAll(
     [$startDate, $endDate], "ss"
 );
 
-// Requests by department
-$byDept = fetchAll(
-    "SELECT u.department, COUNT(*) as count, SUM(cr.total_amount) as total
-     FROM catering_requests cr
-     JOIN users u ON cr.employee_id = u.id
-     WHERE DATE(cr.created_at) BETWEEN ? AND ?
-     GROUP BY u.department
-     ORDER BY count DESC",
-    [$startDate, $endDate], "ss"
-);
-
 // Monthly trend
 $monthlyData = fetchAll(
     "SELECT DATE_FORMAT(created_at, '%Y-%m') as month, 
@@ -168,37 +157,6 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </div>
     
-    <div class="card">
-        <div class="card-header">
-            <h3>Requests by Department</h3>
-        </div>
-        <div class="card-body">
-            <?php if (empty($byDept)): ?>
-                <p class="text-muted text-center">No data available</p>
-            <?php else: ?>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Department</th>
-                            <th>Requests</th>
-                            <th>Total Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($byDept as $dept): ?>
-                        <tr>
-                            <td><strong><?php echo htmlspecialchars($dept['department'] ?? 'Unknown'); ?></strong></td>
-                            <td><?php echo $dept['count']; ?></td>
-                            <td><?php echo formatCurrency($dept['total']); ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php endif; ?>
-        </div>
-    </div>
 </div>
 
 <div class="card mt-6">

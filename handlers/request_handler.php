@@ -30,7 +30,7 @@ switch ($action) {
     case 'get_request':
         $id = (int)($_GET['id'] ?? 0);
         $request = fetchOne(
-            "SELECT cr.*, u.name as employee_name FROM catering_requests cr 
+            "SELECT cr.*, u.full_name as employee_name FROM catering_requests cr 
              JOIN users u ON cr.employee_id = u.id WHERE cr.id = ?",
             [$id], "i"
         );

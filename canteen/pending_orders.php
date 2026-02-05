@@ -15,7 +15,7 @@ if (!$orderId) {
 }
 
 $order = fetchOne(
-    "SELECT cr.*, u.name as employee_name, u.department, u.phone 
+    "SELECT cr.*, u.full_name as employee_name 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.id = ?",
@@ -95,7 +95,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="form-row two-cols mt-4">
             <div>
                 <label class="text-muted">Requested By</label>
-                <p class="font-semibold"><?php echo htmlspecialchars($order['employee_name']); ?> (<?php echo htmlspecialchars($order['department']); ?>)</p>
+                <p class="font-semibold"><?php echo htmlspecialchars($order['employee_name']); ?></p>
             </div>
             <div>
                 <label class="text-muted">Number of Guests</label>
