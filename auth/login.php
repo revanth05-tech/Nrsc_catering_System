@@ -32,6 +32,7 @@ if ($user && password_verify($password, $user['password'])) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['userid'] = $user['username'];
     $_SESSION['name'] = $user['full_name'];
+    $_SESSION['user_name'] = $user['full_name']; // For modern layout
     $_SESSION['role'] = $user['role'];
     $_SESSION['login_time'] = time();
     

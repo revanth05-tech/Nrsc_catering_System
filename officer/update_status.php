@@ -16,7 +16,7 @@ if (!$requestId) {
 
 // Get request with employee info
 $request = fetchOne(
-    "SELECT cr.*, u.name as employee_name, u.department, u.email 
+    "SELECT cr.*, u.full_name as employee_name 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.id = ?",
@@ -77,14 +77,10 @@ include __DIR__ . '/../includes/header.php';
             
             <div class="form-section">
                 <h4 class="form-section-title">Employee Information</h4>
-                <div class="form-row two-cols">
+                <div class="form-row">
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" value="<?php echo htmlspecialchars($request['employee_name']); ?>" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Department</label>
-                        <input type="text" value="<?php echo htmlspecialchars($request['department']); ?>" readonly>
                     </div>
                 </div>
             </div>

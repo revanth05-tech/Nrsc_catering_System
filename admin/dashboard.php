@@ -25,7 +25,7 @@ $recentActivity = fetchAll(
 
 // Recent requests
 $recentRequests = fetchAll(
-    "SELECT cr.*, u.name as employee_name FROM catering_requests cr 
+    "SELECT cr.*, u.full_name as employee_name FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      ORDER BY cr.created_at DESC LIMIT 5"
 );
