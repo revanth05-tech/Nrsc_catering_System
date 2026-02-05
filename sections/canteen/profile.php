@@ -32,9 +32,9 @@ if (!$userData) {
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                     
                     <div class="info-group">
-                        <label class="d-block text-xs uppercase font-bold text-muted mb-1" style="letter-spacing: 0.05em;">Username</label>
+                        <label class="d-block text-xs uppercase font-bold text-muted mb-1" style="letter-spacing: 0.05em;">User ID</label>
                         <div class="text-base font-medium" style="color: var(--gray-100);">
-                            <?php echo htmlspecialchars($userData['username'] ?? 'N/A'); ?>
+                            <?php echo htmlspecialchars($userData['userid'] ?? 'N/A'); ?>
                         </div>
                     </div>
 

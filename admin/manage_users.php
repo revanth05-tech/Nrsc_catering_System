@@ -27,13 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($userid) || empty($name) || empty($password)) {
             $error = 'Username, Full Name, and Password are required.';
         } else {
-            $existing = fetchOne("SELECT id FROM users WHERE username = ?", [$userid], "s");
+            $existing = fetchOne("SELECT id FROM users WHERE userid = ?", [$userid], "s");
             if ($existing) {
-                $error = 'Username already exists.';
+                $error = 'User ID already exists.';
             } else {
                 $hashedPass = password_hash($password, PASSWORD_DEFAULT);
                 $result = insertAndGetId(
-                    "INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO users (userid, password, full_name, role) VALUES (?, ?, ?, ?)",
                     [$userid, $hashedPass, $name, $role],
                     "ssss"
                 );
@@ -83,7 +83,7 @@ include __DIR__ . '/../includes/header.php';
             <table>
                 <thead>
                     <tr>
-                        <th>Username</th>
+                        <th>User ID</th>
                         <th>Full Name</th>
                         <th>Role</th>
                         <th>Actions</th>
@@ -92,7 +92,7 @@ include __DIR__ . '/../includes/header.php';
                 <tbody>
                     <?php foreach ($users as $user): ?>
                     <tr>
-                        <td><strong><?php echo htmlspecialchars($user['username']); ?></strong></td>
+                        <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
                         <td><?php echo htmlspecialchars($user['full_name']); ?></td>
                         <td>
                             <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'approved' : 'progress'; ?>">
