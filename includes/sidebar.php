@@ -10,9 +10,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     
     <div class="user-profile-large">
         <div class="avatar-xl">
-             <?php echo strtoupper(substr($_SESSION['userid'] ?? 'U', 0, 2)); ?>
+             <?php echo strtoupper(substr($_SESSION['name'] ?? 'U', 0, 2)); ?>
         </div>
-        <h3 class="user-name"><?php echo htmlspecialchars($_SESSION['userid'] ?? 'User'); ?></h3>
+        <h3 class="user-name"><?php echo htmlspecialchars($_SESSION['name'] ?? 'User'); ?></h3>
         <p class="user-role"><?php echo ROLE_LABELS[$role] ?? 'User'; ?></p>
         
         <a href="/catering_system/<?php echo $role; ?>/profile.php" class="btn btn-sm btn-secondary mt-4 w-full" style="justify-content: center;">

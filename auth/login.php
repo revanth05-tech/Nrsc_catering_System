@@ -22,7 +22,7 @@ if (empty($userid) || empty($password) || empty($role)) {
 
 // Find user in database
 $user = fetchOne(
-    "SELECT * FROM users WHERE userid = ? AND role = ? AND status = 'active'",
+    "SELECT * FROM users WHERE username = ? AND role = ?",
     [$userid, $role],
     "ss"
 );
@@ -30,8 +30,8 @@ $user = fetchOne(
 if ($user && password_verify($password, $user['password'])) {
     // Successful login
     $_SESSION['user_id'] = $user['id'];
-    $_SESSION['userid'] = $user['userid'];
-    $_SESSION['name'] = $user['name'];
+    $_SESSION['userid'] = $user['username'];
+    $_SESSION['name'] = $user['full_name'];
     $_SESSION['role'] = $user['role'];
     $_SESSION['login_time'] = time();
     

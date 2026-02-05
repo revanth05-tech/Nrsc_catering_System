@@ -25,17 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         
         if (empty($userid) || empty($name) || empty($password)) {
-            $error = 'User ID, Name, and Password are required.';
+            $error = 'Username, Full Name, and Password are required.';
         } else {
-            $existing = fetchOne("SELECT id FROM users WHERE userid = ?", [$userid], "s");
+            $existing = fetchOne("SELECT id FROM users WHERE username = ?", [$userid], "s");
             if ($existing) {
-                $error = 'User ID already exists.';
+                $error = 'Username already exists.';
             } else {
                 $hashedPass = password_hash($password, PASSWORD_DEFAULT);
                 $result = insertAndGetId(
-                    "INSERT INTO users (userid, password, name, email, department, role) VALUES (?, ?, ?, ?, ?, ?)",
-                    [$userid, $hashedPass, $name, $email, $department, $role],
-                    "ssssss"
+                    "INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)",
+                    [$userid, $hashedPass, $name, $role],
+                    "ssss"
                 );
                 if ($result) {
                     $success = 'User created successfully!';
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get users
-$users = fetchAll("SELECT * FROM users ORDER BY role, name");
+$users = fetchAll("SELECT * FROM users ORDER BY role, full_name");
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -83,41 +83,23 @@ include __DIR__ . '/../includes/header.php';
             <table>
                 <thead>
                     <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Department</th>
+                        <th>Username</th>
+                        <th>Full Name</th>
                         <th>Role</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($users as $user): ?>
                     <tr>
-                        <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($user['name']); ?></td>
-                        <td><?php echo htmlspecialchars($user['email'] ?? '-'); ?></td>
-                        <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
+                        <td><strong><?php echo htmlspecialchars($user['username']); ?></strong></td>
+                        <td><?php echo htmlspecialchars($user['full_name']); ?></td>
                         <td>
                             <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'approved' : 'progress'; ?>">
                                 <?php echo ROLE_LABELS[$user['role']] ?? $user['role']; ?>
                             </span>
                         </td>
                         <td>
-                            <span class="badge badge-<?php echo $user['status'] === 'active' ? 'completed' : 'cancelled'; ?>">
-                                <?php echo ucfirst($user['status']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="action" value="toggle_status">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <input type="hidden" name="new_status" value="<?php echo $user['status'] === 'active' ? 'inactive' : 'active'; ?>">
-                                <button type="submit" class="btn btn-sm btn-secondary">
-                                    <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
-                                </button>
-                            </form>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="action" value="reset_password">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
@@ -144,23 +126,13 @@ include __DIR__ . '/../includes/header.php';
                 <input type="hidden" name="action" value="add">
                 
                 <div class="form-group">
-                    <label>User ID *</label>
+                    <label>Username *</label>
                     <input type="text" name="userid" required placeholder="e.g., emp002">
                 </div>
                 
                 <div class="form-group">
                     <label>Full Name *</label>
                     <input type="text" name="name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email">
-                </div>
-                
-                <div class="form-group">
-                    <label>Department</label>
-                    <input type="text" name="department">
                 </div>
                 
                 <div class="form-group">

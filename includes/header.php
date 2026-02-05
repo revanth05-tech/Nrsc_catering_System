@@ -13,7 +13,7 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $pageTitle = $pageTitle ?? 'Dashboard';
-$userInitials = $currentUser ? strtoupper(substr($currentUser['name'], 0, 2)) : 'U';
+$userInitials = $currentUser ? strtoupper(substr($currentUser['full_name'] ?? 'U', 0, 2)) : 'U';
 $userRole = ROLE_LABELS[$_SESSION['role'] ?? 'employee'] ?? 'User';
 ?>
 <!DOCTYPE html>
@@ -67,7 +67,7 @@ $userRole = ROLE_LABELS[$_SESSION['role'] ?? 'employee'] ?? 'User';
                 <div class="header-right">
                     <div class="user-dropdown">
                         <span class="text-sm font-medium mr-3 text-muted hidden-xs">
-                            <?php echo htmlspecialchars($currentUser['name'] ?? 'User'); ?>
+                            <?php echo htmlspecialchars($currentUser['full_name'] ?? 'User'); ?>
                         </span>
                         <div class="user-dropdown-avatar">
                             <?php echo $userInitials; ?>
