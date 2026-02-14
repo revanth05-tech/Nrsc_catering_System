@@ -10,7 +10,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
 $requests = fetchAll(
-    "SELECT cr.*, u.name as employee_name, u.department 
+    "SELECT cr.*, u.full_name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status IN ('approved', 'in_progress') 
@@ -47,8 +47,8 @@ include __DIR__ . '/../includes/header.php';
                         <tr>
                             <td><strong><?php echo htmlspecialchars($req['request_number']); ?></strong></td>
                             <td>
-                                <?php echo htmlspecialchars($req['employee_name']); ?><br>
-                                <small class="text-muted"><?php echo htmlspecialchars($req['department']); ?></small>
+                                <?php echo htmlspecialchars($req['employee_name'] ?? 'Unknown'); ?><br>
+                                <small class="text-muted"><?php echo htmlspecialchars($req['department'] ?? 'N/A'); ?></small>
                             </td>
                             <td><?php echo htmlspecialchars($req['event_name']); ?></td>
                             <td><?php echo formatDate($req['event_date']); ?></td>
@@ -59,7 +59,9 @@ include __DIR__ . '/../includes/header.php';
                                     <?php echo ucfirst(str_replace('_', ' ', $req['status'])); ?>
                                 </span>
                             </td>
-                            <td><?php echo $req['approved_at'] ? formatDate($req['approved_at']) : '-'; ?></td>
+                            <td>
+                                <?php echo $req['approved_at'] ? formatDate($req['approved_at']) : '-'; ?>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

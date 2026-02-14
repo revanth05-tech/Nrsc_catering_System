@@ -33,7 +33,7 @@ $stats = [
 
 // Get active orders
 $orders = fetchAll(
-    "SELECT cr.*, u.name as employee_name, u.department 
+    "SELECT cr.*, u.full_name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status IN ('approved', 'in_progress') 

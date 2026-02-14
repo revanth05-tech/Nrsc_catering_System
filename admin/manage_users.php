@@ -17,26 +17,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
     if ($action === 'add') {
-        $userid = sanitize($_POST['userid'] ?? '');
-        $name = sanitize($_POST['name'] ?? '');
-        $email = sanitize($_POST['email'] ?? '');
+        $userid     = sanitize($_POST['userid'] ?? '');
+        $fullName   = sanitize($_POST['name'] ?? '');
+        $email      = sanitize($_POST['email'] ?? '');
         $department = sanitize($_POST['department'] ?? '');
-        $role = sanitize($_POST['role'] ?? 'employee');
-        $password = $_POST['password'] ?? '';
+        $role       = sanitize($_POST['role'] ?? 'employee');
+        $password   = $_POST['password'] ?? '';
         
-        if (empty($userid) || empty($name) || empty($password)) {
-            $error = 'User ID, Name, and Password are required.';
+        if (empty($userid) || empty($fullName) || empty($password)) {
+            $error = 'User ID, Full Name, and Password are required.';
         } else {
             $existing = fetchOne("SELECT id FROM users WHERE userid = ?", [$userid], "s");
+            
             if ($existing) {
                 $error = 'User ID already exists.';
             } else {
                 $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+                
                 $result = insertAndGetId(
-                    "INSERT INTO users (userid, password, name, email, department, role) VALUES (?, ?, ?, ?, ?, ?)",
-                    [$userid, $hashedPass, $name, $email, $department, $role],
+                    "INSERT INTO users (userid, password, full_name, email, department, role, status) 
+                     VALUES (?, ?, ?, ?, ?, ?, 'active')",
+                    [$userid, $hashedPass, $fullName, $email, $department, $role],
                     "ssssss"
                 );
+                
                 if ($result) {
                     $success = 'User created successfully!';
                 } else {
@@ -44,30 +48,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-    } elseif ($action === 'toggle_status') {
-        $userId = (int)($_POST['user_id'] ?? 0);
+    } 
+    elseif ($action === 'toggle_status') {
+        $userId    = (int)($_POST['user_id'] ?? 0);
         $newStatus = $_POST['new_status'] ?? 'inactive';
-        executeAndGetAffected("UPDATE users SET status = ? WHERE id = ?", [$newStatus, $userId], "si");
+        
+        executeAndGetAffected(
+            "UPDATE users SET status = ? WHERE id = ?",
+            [$newStatus, $userId],
+            "si"
+        );
+        
         $success = 'User status updated.';
-    } elseif ($action === 'reset_password') {
+    } 
+    elseif ($action === 'reset_password') {
         $userId = (int)($_POST['user_id'] ?? 0);
         $newPass = password_hash('password', PASSWORD_DEFAULT);
-        executeAndGetAffected("UPDATE users SET password = ? WHERE id = ?", [$newPass, $userId], "si");
+        
+        executeAndGetAffected(
+            "UPDATE users SET password = ? WHERE id = ?",
+            [$newPass, $userId],
+            "si"
+        );
+        
         $success = 'Password reset to "password".';
     }
 }
 
-// Get users
-$users = fetchAll("SELECT * FROM users ORDER BY role, name");
+// Get users (FIXED: full_name instead of name)
+$users = fetchAll("SELECT * FROM users ORDER BY role, full_name");
 
 include __DIR__ . '/../includes/header.php';
 ?>
 
 <?php if ($error): ?>
-    <div class="alert alert-error"><?php echo $error; ?></div>
+    <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
 <?php endif; ?>
+
 <?php if ($success): ?>
-    <div class="alert alert-success"><?php echo $success; ?></div>
+    <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
 <?php endif; ?>
 
 <div class="flex-between mb-6">
@@ -84,7 +103,7 @@ include __DIR__ . '/../includes/header.php';
                 <thead>
                     <tr>
                         <th>User ID</th>
-                        <th>Name</th>
+                        <th>Full Name</th>
                         <th>Email</th>
                         <th>Department</th>
                         <th>Role</th>
@@ -96,12 +115,12 @@ include __DIR__ . '/../includes/header.php';
                     <?php foreach ($users as $user): ?>
                     <tr>
                         <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($user['name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['full_name'] ?? '-'); ?></td>
                         <td><?php echo htmlspecialchars($user['email'] ?? '-'); ?></td>
                         <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
                         <td>
                             <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'approved' : 'progress'; ?>">
-                                <?php echo ROLE_LABELS[$user['role']] ?? $user['role']; ?>
+                                <?php echo ROLE_LABELS[$user['role']] ?? ucfirst($user['role']); ?>
                             </span>
                         </td>
                         <td>
@@ -118,10 +137,13 @@ include __DIR__ . '/../includes/header.php';
                                     <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
                                 </button>
                             </form>
+
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="action" value="reset_password">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-warning" data-confirm="Reset password to 'password'?">Reset Pass</button>
+                                <button type="submit" class="btn btn-sm btn-warning">
+                                    Reset Pass
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -145,7 +167,7 @@ include __DIR__ . '/../includes/header.php';
                 
                 <div class="form-group">
                     <label>User ID *</label>
-                    <input type="text" name="userid" required placeholder="e.g., emp002">
+                    <input type="text" name="userid" required>
                 </div>
                 
                 <div class="form-group">

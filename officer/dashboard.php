@@ -16,9 +16,9 @@ $stats = [
     'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed')")['count'] ?? 0,
 ];
 
-// Get pending requests
+// ✅ FIXED HERE (name → full_name)
 $pendingRequests = fetchAll(
-    "SELECT cr.*, u.name as employee_name, u.department 
+    "SELECT cr.*, u.full_name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status = 'pending' 
@@ -75,10 +75,6 @@ include __DIR__ . '/../includes/header.php';
     <div class="card-body">
         <?php if (empty($pendingRequests)): ?>
             <div class="text-center p-6">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
                 <p class="text-muted mt-4">No pending requests. All caught up!</p>
             </div>
         <?php else: ?>
@@ -101,8 +97,8 @@ include __DIR__ . '/../includes/header.php';
                         <tr>
                             <td><strong><?php echo htmlspecialchars($req['request_number']); ?></strong></td>
                             <td>
-                                <?php echo htmlspecialchars($req['employee_name']); ?><br>
-                                <small class="text-muted"><?php echo htmlspecialchars($req['department']); ?></small>
+                                <?php echo htmlspecialchars($req['employee_name'] ?? 'Unknown'); ?><br>
+                                <small class="text-muted"><?php echo htmlspecialchars($req['department'] ?? 'N/A'); ?></small>
                             </td>
                             <td><?php echo htmlspecialchars($req['event_name']); ?></td>
                             <td><?php echo formatDate($req['event_date']); ?></td>
