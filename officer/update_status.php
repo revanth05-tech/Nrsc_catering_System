@@ -16,7 +16,7 @@ if (!$requestId) {
 
 // Get request with employee info
 $request = fetchOne(
-    "SELECT cr.*, u.name as employee_name, u.department, u.email 
+    "SELECT cr.*, u.full_name as employee_name, u.department, u.email 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.id = ?",
