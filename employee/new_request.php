@@ -224,8 +224,8 @@ data-price="<?= $item['price'] ?>">
 <?php endforeach; ?>
 </select>
 
-<input type="number" id="qty" value="1" min="1">
-<button type="button" onclick="addItem()">Add</button>
+    <input type="number" id="qty" value="1" min="1" class="form-control" style="width: 80px; display: inline-block;">
+    <button type="button" onclick="addItem()" class="btn btn-success">Add</button>
 </div>
 
 <table class="table" id="items-table">
@@ -247,15 +247,15 @@ data-price="<?= $item['price'] ?>">
 
 <!-- ================= ACTION BUTTONS ================= -->
 
-<div class="flex-between">
-<button type="reset">New</button>
-<button type="submit">Register</button>
-<button type="button" onclick="window.print()">Print</button>
-<button type="button">Save</button>
-<button type="button">Update</button>
-<button type="button">Delete</button>
-<button type="button">Search</button>
-<button type="reset">Clear</button>
+<div class="action-bar">
+    <button type="reset" class="btn btn-neutral">New</button>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="button" class="btn btn-neutral" onclick="window.print()">Print</button>
+    <button type="button" class="btn btn-secondary">Save</button>
+    <button type="button" class="btn btn-secondary">Update</button>
+    <button type="button" class="btn btn-danger">Delete</button>
+    <button type="button" class="btn btn-neutral">Search</button>
+    <button type="reset" class="btn btn-neutral">Clear</button>
 </div>
 
 </form>

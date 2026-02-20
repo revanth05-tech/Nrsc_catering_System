@@ -52,6 +52,7 @@ $userRole = ROLE_LABELS[$userRoleKey] ?? 'User';
     <link rel="stylesheet" href="/catering_system/assets/css/main.css">
     <link rel="stylesheet" href="/catering_system/assets/css/dashboard.css">
     <link rel="stylesheet" href="/catering_system/assets/css/convo.css">
+    <link rel="stylesheet" href="/catering_system/assets/css/request_form.css">
 
     <style>
         .field-error {
