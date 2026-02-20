@@ -1,145 +1,157 @@
--- NRSC Catering System Database Schema
--- Created for National Remote Sensing Centre
+-- NRSC Catering & Meeting Management System Database Schema
+-- Generated: 2026-02-20
+-- Target Version: MySQL 8.0+ / MariaDB 10.4+
+-- PHP Version: 8.1+ Compatible
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+05:30";
 
--- Database creation
-CREATE DATABASE IF NOT EXISTS `nrsc_catering` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+-- --------------------------------------------------------
+-- Database Creation
+-- --------------------------------------------------------
+DROP DATABASE IF EXISTS `nrsc_catering`;
+CREATE DATABASE IF NOT EXISTS `nrsc_catering` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `nrsc_catering`;
 
 -- --------------------------------------------------------
--- Table structure for users
+-- 1. Users Table
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `users` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `userid` VARCHAR(50) NOT NULL UNIQUE,
+    `userid` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Login ID',
     `password` VARCHAR(255) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
-    `email` VARCHAR(100),
-    `phone` VARCHAR(15),
-    `department` VARCHAR(100),
+    `email` VARCHAR(100) NOT NULL UNIQUE,
+    `phone` VARCHAR(20) DEFAULT NULL,
+    `designation` VARCHAR(100) DEFAULT NULL COMMENT 'Job Title',
+    `department` VARCHAR(100) DEFAULT NULL,
     `role` ENUM('employee', 'officer', 'canteen', 'admin') NOT NULL DEFAULT 'employee',
-    `status` ENUM('active', 'inactive') DEFAULT 'active',
+    `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_role` (`role`),
+    INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
--- Table structure for menu_items
+-- 2. Menu Items Table (Standard Catering Items)
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `menu_items` (
+CREATE TABLE `menu_items` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `item_name` VARCHAR(100) NOT NULL,
     `category` ENUM('breakfast', 'lunch', 'snacks', 'dinner', 'beverages') NOT NULL,
-    `price` DECIMAL(10,2) NOT NULL,
+    `price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     `description` TEXT,
-    `is_available` TINYINT(1) DEFAULT 1,
-    `image_url` VARCHAR(255),
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
--- Table structure for catering_requests
--- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `catering_requests` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `request_number` VARCHAR(20) NOT NULL UNIQUE,
-    `employee_id` INT NOT NULL,
-    `event_name` VARCHAR(200) NOT NULL,
-    `event_date` DATE NOT NULL,
-    `event_time` TIME NOT NULL,
-    `venue` VARCHAR(200) NOT NULL,
-    `guest_count` INT NOT NULL,
-    `purpose` TEXT,
-    `special_instructions` TEXT,
-    `total_amount` DECIMAL(12,2) DEFAULT 0,
-    `status` ENUM('pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
-    `approving_officer_id` INT,
-    `approved_at` TIMESTAMP NULL,
-    `rejection_reason` TEXT,
+    `is_available` TINYINT(1) NOT NULL DEFAULT 1,
+    `image_url` VARCHAR(255) DEFAULT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (`employee_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`approving_officer_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    INDEX `idx_category` (`category`),
+    INDEX `idx_availability` (`is_available`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
--- Table structure for request_items (order details)
+-- 3. Catering Requests Table (Meeting & Service Workflow)
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `request_items` (
+CREATE TABLE `catering_requests` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `request_number` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Unique Reference Number',
+    `employee_id` INT NOT NULL COMMENT 'Requester',
+    
+    -- Meeting Metadata
+    `meeting_name` VARCHAR(200) NOT NULL,
+    `meeting_date` DATE NOT NULL,
+    `meeting_time` TIME NOT NULL,
+    `meeting_area` VARCHAR(150) NOT NULL COMMENT 'General Area/Building',
+    `venue` VARCHAR(200) NOT NULL COMMENT 'Specific Room/Venue',
+    `lic` VARCHAR(100) DEFAULT NULL COMMENT 'Leader/Officer In Charge',
+    
+    -- Primary Service Information (Defaults for the request)
+    `service_date` DATE NOT NULL,
+    `service_time` TIME NOT NULL,
+    `service_location` VARCHAR(200) DEFAULT NULL,
+    `hall_code` VARCHAR(50) DEFAULT NULL,
+
+    -- Financials
+    `total_amount` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+
+    -- Workflow Status
+    `status` ENUM('draft', 'pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
+    
+    -- Approval Details
+    `approving_officer_id` INT DEFAULT NULL,
+    `approved_at` TIMESTAMP NULL DEFAULT NULL,
+    `rejection_reason` TEXT DEFAULT NULL,
+
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    -- Constraints
+    FOREIGN KEY (`employee_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`approving_officer_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+    INDEX `idx_status` (`status`),
+    INDEX `idx_dates` (`meeting_date`, `service_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- 4. Request Items Table (Line Items with Specific Service Details)
+-- --------------------------------------------------------
+CREATE TABLE `request_items` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `request_id` INT NOT NULL,
     `item_id` INT NOT NULL,
-    `quantity` INT NOT NULL,
-    `unit_price` DECIMAL(10,2) NOT NULL,
-    `subtotal` DECIMAL(12,2) NOT NULL,
+    
+    -- Item Details
+    `quantity` INT NOT NULL DEFAULT 1,
+    `unit_price` DECIMAL(10,2) NOT NULL COMMENT 'Snapshot of price at time of order',
+    `subtotal` DECIMAL(12,2) NOT NULL GENERATED ALWAYS AS (`quantity` * `unit_price`) STORED,
+
+    -- Item Specific Service Details (Overrides request defaults if needed)
+    `service_date` DATE DEFAULT NULL,
+    `service_time` TIME DEFAULT NULL,
+    `service_location` VARCHAR(200) DEFAULT NULL,
+    `hall_code` VARCHAR(50) DEFAULT NULL,
+
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
     FOREIGN KEY (`request_id`) REFERENCES `catering_requests`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`item_id`) REFERENCES `menu_items`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    FOREIGN KEY (`item_id`) REFERENCES `menu_items`(`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
--- Table structure for activity_log
+-- 5. Activity Log Table
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `activity_log` (
+CREATE TABLE `activity_log` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `user_id` INT,
+    `user_id` INT DEFAULT NULL,
     `action` VARCHAR(100) NOT NULL,
     `details` TEXT,
-    `ip_address` VARCHAR(45),
+    `ip_address` VARCHAR(45) DEFAULT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+    INDEX `idx_action` (`action`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
--- Insert default admin user (password: admin123)
+-- SAMPLE DATA INJECTION
 -- --------------------------------------------------------
-INSERT INTO `users` (`userid`, `password`, `name`, `email`, `role`, `department`) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@nrsc.gov.in', 'admin', 'IT Department'),
-('officer1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Approving Officer', 'officer@nrsc.gov.in', 'officer', 'Administration'),
-('canteen1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Canteen Manager', 'canteen@nrsc.gov.in', 'canteen', 'Canteen Services'),
-('emp001', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Test Employee', 'employee@nrsc.gov.in', 'employee', 'Research Division');
 
--- --------------------------------------------------------
--- Insert sample menu items
--- --------------------------------------------------------
-INSERT INTO `menu_items` (`item_name`, `category`, `price`, `description`, `is_available`) VALUES
--- Breakfast items
-('Idli (2 pcs)', 'breakfast', 30.00, 'Soft steamed rice cakes served with sambar and chutney', 1),
-('Dosa', 'breakfast', 40.00, 'Crispy rice crepe served with sambar and chutney', 1),
-('Upma', 'breakfast', 35.00, 'Savory semolina porridge with vegetables', 1),
-('Poori (3 pcs)', 'breakfast', 45.00, 'Deep-fried wheat bread served with potato curry', 1),
-('Vada (2 pcs)', 'breakfast', 35.00, 'Crispy lentil fritters served with sambar and chutney', 1),
+-- 1. Users
+-- Password for all: 'password123' -> hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+INSERT INTO `users` (`userid`, `password`, `name`, `email`, `designation`, `department`, `role`, `status`) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@nrsc.gov.in', 'IT Lead', 'IT Services', 'admin', 'active'),
+('officer', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Rajesh Kumar', 'officer@nrsc.gov.in', 'Senior Scientist', 'Remote Sensing', 'officer', 'active'),
+('canteen', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Canteen Manager', 'canteen@nrsc.gov.in', 'Manager', 'Hospitality', 'canteen', 'active'),
+('emp01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Suresh Reddy', 'suresh@nrsc.gov.in', 'Technical Assistant', 'Ground Station', 'employee', 'active');
 
--- Lunch items
-('Veg Thali', 'lunch', 120.00, 'Complete meal with rice, dal, sabzi, roti, salad, and dessert', 1),
-('Non-Veg Thali', 'lunch', 180.00, 'Complete meal with rice, chicken curry, dal, roti, salad', 1),
-('Veg Biryani', 'lunch', 100.00, 'Fragrant rice cooked with mixed vegetables and spices', 1),
-('Chicken Biryani', 'lunch', 150.00, 'Aromatic rice cooked with tender chicken pieces', 1),
-('Paneer Butter Masala', 'lunch', 140.00, 'Cottage cheese in rich tomato-butter gravy', 1),
-
--- Snacks
-('Samosa (2 pcs)', 'snacks', 30.00, 'Crispy pastry filled with spiced potatoes', 1),
-('Pakoda', 'snacks', 40.00, 'Mixed vegetable fritters served with chutney', 1),
-('Sandwich', 'snacks', 50.00, 'Grilled vegetable sandwich', 1),
-('Spring Roll (4 pcs)', 'snacks', 60.00, 'Crispy rolls filled with vegetables', 1),
-('Cutlet (2 pcs)', 'snacks', 45.00, 'Spiced vegetable patties', 1),
-
--- Beverages
-('Tea', 'beverages', 15.00, 'Hot Indian chai', 1),
-('Coffee', 'beverages', 20.00, 'Filter coffee', 1),
-('Fresh Lime Soda', 'beverages', 30.00, 'Refreshing lime soda (sweet/salt)', 1),
-('Buttermilk', 'beverages', 25.00, 'Spiced yogurt drink', 1),
-('Mango Lassi', 'beverages', 45.00, 'Sweet mango yogurt smoothie', 1),
-
--- Dinner items
-('Chapati (4 pcs)', 'dinner', 40.00, 'Soft wheat flatbread', 1),
-('Dal Tadka', 'dinner', 80.00, 'Yellow lentils tempered with spices', 1),
-('Mixed Veg Curry', 'dinner', 90.00, 'Seasonal vegetables in gravy', 1),
-('Jeera Rice', 'dinner', 60.00, 'Cumin-flavored basmati rice', 1),
-('Raita', 'dinner', 40.00, 'Yogurt with cucumber and spices', 1);
+-- 2. Menu Items
+INSERT INTO `menu_items` (`item_name`, `category`, `price`, `description`) VALUES
+('Masala Tea', 'beverages', 15.00, 'Spiced Indian tea'),
+('Coffee', 'beverages', 20.00, 'Freshly brewed coffee'),
+('Veg Sandwich', 'snacks', 45.00, 'Cucumber and tomato sandwich with mint chutney'),
+('Samosa (2pcs)', 'snacks', 30.00, 'Potato stuffed pastry'),
+('Working Lunch (Veg)', 'lunch', 150.00, 'Rice, Dal, Curd, Sweet, 2 Roti, Curry'),
+('Premium Lunch', 'lunch', 250.00, 'Paneer, Dal Makhani, Jeera Rice, Roti, Salad, Sweet');
 
 COMMIT;
