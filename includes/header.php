@@ -103,7 +103,13 @@ $userRole = ROLE_LABELS[$userRoleKey] ?? 'User';
                     </span>
 
                     <div class="user-dropdown-avatar">
-                        <?php echo $userInitials; ?>
+                        <?php if (!empty($currentUser['profile_image'])): ?>
+                            <img src="/catering_system/<?php echo htmlspecialchars($currentUser['profile_image']); ?>" 
+                                 alt="Profile" 
+                                 style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <?php else: ?>
+                            <?php echo $userInitials; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

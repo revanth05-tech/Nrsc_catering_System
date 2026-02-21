@@ -15,7 +15,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <h3 class="user-name"><?php echo htmlspecialchars($_SESSION['userid'] ?? 'User'); ?></h3>
         <p class="user-role"><?php echo ROLE_LABELS[$role] ?? 'User'; ?></p>
         
-        <a href="/catering_system/<?php echo $role; ?>/profile.php" class="btn btn-sm btn-secondary mt-4 w-full" style="justify-content: center;">
+        <a href="/catering_system/profile.php" class="btn btn-sm btn-secondary mt-4 w-full" style="justify-content: center;">
             My Profile
         </a>
     </div>
