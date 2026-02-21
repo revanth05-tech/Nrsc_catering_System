@@ -149,8 +149,8 @@ include __DIR__ . '/../includes/header.php';
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-lg-11">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white py-3">
+            <div class="card border-0">
+                <div class="card-header text-white py-3">
                     <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>NRSC Meeting & Catering Request Form</h5>
                 </div>
                 
@@ -349,10 +349,156 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <style>
-    .bg-light-blue { background-color: #f0f7ff !important; }
-    .section-title h6 { letter-spacing: 0.5px; }
-    .form-control:focus { box-shadow: 0 0 0 0.25 cold-grey; border-color: var(--primary-400); }
-    .table-info { --bs-table-bg: #e7f1ff; }
+    :root {
+        --nrc-primary: #1a56db;
+        --nrc-primary-dark: #1e429f;
+        --nrc-secondary: #4b5563;
+        --nrc-accent: #0694a2;
+        --nrc-success: #057a55;
+        --nrc-danger: #e02424;
+        --nrc-bg-blue: #f0f7ff;
+    }
+
+    /* Section Enhancements */
+    .section-title {
+        border-left: 4px solid var(--nrc-primary);
+        padding-left: 15px;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title h6 {
+        letter-spacing: 0.8px;
+        color: var(--nrc-primary-dark) !important;
+        text-transform: uppercase;
+        margin-bottom: 0;
+    }
+
+    .bg-light-blue { 
+        background-color: var(--nrc-bg-blue) !important; 
+        border-color: #d1e5ff !important;
+    }
+
+    /* Form Control Padding & Transitions */
+    .form-control, .form-select {
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--nrc-primary);
+        box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.1);
+        background-color: #fff;
+    }
+
+    /* Premium Button Styles */
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--nrc-primary) 0%, var(--nrc-primary-dark) 100%);
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--nrc-primary-dark) 0%, #173677 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--nrc-success) 0%, #046c4e 100%);
+        border: none;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #046c4e 0%, #03543f 100%);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+        border-color: #9ca3af;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: var(--nrc-danger);
+        color: #fff;
+        border-color: var(--nrc-danger);
+    }
+
+    /* Table Improvements */
+    .table-bordered {
+        border-radius: 12px;
+        overflow: hidden;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #e5e7eb;
+    }
+
+    .table thead th {
+        background-color: #f9fafb;
+        color: #374151;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        color: #4b5563;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+        transition: background-color 0.2s ease;
+    }
+
+    #grand-total {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--nrc-primary);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Card Padding & Shadow */
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .card-header {
+        border-top-left-radius: 16px !important;
+        border-top-right-radius: 16px !important;
+        background: linear-gradient(to right, var(--nrc-primary-dark), var(--nrc-primary));
+    }
+
+    .card-body {
+        padding: 2.5rem !important;
+    }
+
+    /* Select Group Styling */
+    optgroup {
+        font-weight: 700;
+        color: var(--nrc-primary-dark);
+        background: #fdfdfd;
+    }
 </style>
 
 <script>
@@ -392,7 +538,7 @@ function addItem() {
         <td class="fw-bold">₹${subtotal.toFixed(2)}</td>
         <td class="text-center">
             <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this, ${subtotal})">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-trash-can me-1"></i> Delete
             </button>
         </td>
     `;
