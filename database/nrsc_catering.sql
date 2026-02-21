@@ -18,7 +18,7 @@ USE `nrsc_catering`;
 -- 1. Users Table
 -- --------------------------------------------------------
 CREATE TABLE `users` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `id` INT AUTO_INCREMENT PRIMARY KEY,                                    
     `userid` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Login ID',
     `password` VARCHAR(255) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
@@ -57,14 +57,19 @@ CREATE TABLE `menu_items` (
 CREATE TABLE `catering_requests` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `request_number` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Unique Reference Number',
-    `employee_id` INT NOT NULL COMMENT 'Requester',
+    `employee_id` INT NOT NULL COMMENT 'FK to Users table',
     
+    -- Requesting Person Details (Snapshot at time of request)
+    `requesting_person` VARCHAR(100) NOT NULL,
+    `requesting_department` VARCHAR(100) DEFAULT NULL,
+    `requesting_designation` VARCHAR(100) DEFAULT NULL,
+    `phone_number` VARCHAR(20) DEFAULT NULL,
+
     -- Meeting Metadata
     `meeting_name` VARCHAR(200) NOT NULL,
     `meeting_date` DATE NOT NULL,
     `meeting_time` TIME NOT NULL,
-    `meeting_area` VARCHAR(150) NOT NULL COMMENT 'General Area/Building',
-    `venue` VARCHAR(200) NOT NULL COMMENT 'Specific Room/Venue',
+    `area` VARCHAR(150) NOT NULL COMMENT 'General Area/Building',
     `lic` VARCHAR(100) DEFAULT NULL COMMENT 'Leader/Officer In Charge',
     
     -- Primary Service Information (Defaults for the request)
@@ -73,17 +78,19 @@ CREATE TABLE `catering_requests` (
     `service_location` VARCHAR(200) DEFAULT NULL,
     `hall_code` VARCHAR(50) DEFAULT NULL,
 
+    -- Approval Details
+    `approving_officer_id` INT DEFAULT NULL COMMENT 'Reference to Officer User',
+    `approving_by` VARCHAR(100) NOT NULL COMMENT 'Snapshot of Officer Name',
+    `approving_department` VARCHAR(100) DEFAULT NULL COMMENT 'Snapshot of Officer Dept',
+    `approved_at` TIMESTAMP NULL DEFAULT NULL,
+    `rejection_reason` TEXT DEFAULT NULL,
+
     -- Financials
     `total_amount` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
 
     -- Workflow Status
     `status` ENUM('draft', 'pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
     
-    -- Approval Details
-    `approving_officer_id` INT DEFAULT NULL,
-    `approved_at` TIMESTAMP NULL DEFAULT NULL,
-    `rejection_reason` TEXT DEFAULT NULL,
-
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -91,7 +98,8 @@ CREATE TABLE `catering_requests` (
     FOREIGN KEY (`employee_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`approving_officer_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
     INDEX `idx_status` (`status`),
-    INDEX `idx_dates` (`meeting_date`, `service_date`)
+    INDEX `idx_dates` (`meeting_date`, `service_date`),
+    INDEX `idx_request_num` (`request_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
