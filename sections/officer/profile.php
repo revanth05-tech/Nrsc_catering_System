@@ -16,7 +16,7 @@ if (!$userData) {
 }
 
 // Safe variables
-$fullName   = $userData['full_name'] ?? 'Officer';
+$fullName   = $userData['name'] ?? 'Officer';
 $initials   = strtoupper(substr($fullName, 0, 2));
 $userid     = $userData['userid'] ?? 'N/A';
 $email      = $userData['email'] ?? 'N/A';

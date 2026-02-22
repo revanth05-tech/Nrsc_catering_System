@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashedPass = password_hash($password, PASSWORD_DEFAULT);
                 
                 $result = insertAndGetId(
-                    "INSERT INTO users (userid, password, full_name, email, department, role, status) 
+                    "INSERT INTO users (userid, password, name, email, department, role, status) 
                      VALUES (?, ?, ?, ?, ?, ?, 'active')",
                     [$userid, $hashedPass, $fullName, $email, $department, $role],
                     "ssssss"
@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get users (FIXED: full_name instead of name)
-$users = fetchAll("SELECT * FROM users ORDER BY role, full_name");
+// Get users (FIXED: name instead of name)
+$users = fetchAll("SELECT * FROM users ORDER BY role, name");
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -115,7 +115,7 @@ include __DIR__ . '/../includes/header.php';
                     <?php foreach ($users as $user): ?>
                     <tr>
                         <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($user['full_name'] ?? '-'); ?></td>
+                        <td><?php echo htmlspecialchars($user['name'] ?? '-'); ?></td>
                         <td><?php echo htmlspecialchars($user['email'] ?? '-'); ?></td>
                         <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
                         <td>

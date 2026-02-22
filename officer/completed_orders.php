@@ -10,7 +10,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
 $requests = fetchAll(
-    "SELECT cr.*, u.full_name as employee_name, u.department 
+    "SELECT cr.*, u.name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status = 'completed' 

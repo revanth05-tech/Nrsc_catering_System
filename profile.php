@@ -190,9 +190,6 @@ include __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="d-flex gap-2 justify-content-center">
-                            <button type="button" id="editTrigger" class="btn btn-primary btn-enterprise" onclick="toggleEdit(true)">
-                                <i class="fas fa-user-pen me-2"></i>Edit Profile
-                            </button>
                             <a href="auth/change_pass.php" class="btn btn-enterprise-ghost text-dark">
                                 <i class="fas fa-key me-2"></i>Reset Pin
                             </a>
@@ -201,21 +198,14 @@ include __DIR__ . '/includes/header.php';
                 </header>
 
                 <!-- Informatics Panel -->
-                <section class="p-4">
+                <section class="p-4 p-md-5">
                     <form id="mainProfileForm" method="POST">
                         <input type="hidden" name="action" value="update_profile">
                         
-                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
-                            <h2 class="mb-0 fs-6 fw-bold color-gray-700">Enterprise Informatics</h2>
-                            <div class="ms-auto text-muted small">
-                                <i class="fas fa-lock me-1"></i> SSL Protected
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
+                        <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="info-label">Full Name</label>
-                                <input type="text" name="name" class="form-control profile-field" value="<?= htmlspecialchars($u['name']) ?>" readonly required>
+                                <input type="text" name="name" class="form-control profile-field" value="<?= htmlspecialchars($u['name']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="info-label">Personal ID</label>
@@ -223,39 +213,26 @@ include __DIR__ . '/includes/header.php';
                             </div>
                             <div class="col-md-6">
                                 <label class="info-label">E-Mail Identity</label>
-                                <input type="email" name="email" class="form-control profile-field" value="<?= htmlspecialchars($u['email']) ?>" readonly required>
+                                <input type="email" name="email" class="form-control profile-field" value="<?= htmlspecialchars($u['email']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="info-label">Contact Node</label>
-                                <input type="text" name="phone" class="form-control profile-field" value="<?= htmlspecialchars($u['phone']) ?>" readonly>
+                                <input type="text" name="phone" class="form-control profile-field" value="<?= htmlspecialchars($u['phone']) ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="info-label">Dept / Unit Code</label>
-                                <input type="text" name="department" class="form-control profile-field" value="<?= htmlspecialchars($u['dept']) ?>" readonly>
+                                <input type="text" name="department" class="form-control profile-field" value="<?= htmlspecialchars($u['dept']) ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="info-label">Office Designation</label>
-                                <input type="text" name="designation" class="form-control profile-field" value="<?= htmlspecialchars($u['desig']) ?>" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label">Status Level</label>
-                                <div class="px-1 py-0 fw-bold text-<?= $u['status'] === 'active' ? 'success' : 'danger' ?>" style="font-size: 0.9rem;">
-                                    <i class="fas fa-circle-check me-1"></i> <?= strtoupper($u['status']) ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label">Credential Role</label>
-                                <div class="px-1 py-0 fw-bold text-dark" style="font-size: 0.9rem;"><?= strtoupper($u['role']) ?> ACCESS</div>
+                                <input type="text" name="designation" class="form-control profile-field" value="<?= htmlspecialchars($u['desig']) ?>">
                             </div>
                         </div>
 
-                        <div id="saveCluster" class="mt-4 pt-3 border-top d-none">
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button type="submit" class="btn btn-success px-4 btn-enterprise">
+                        <div class="mt-5 pt-4 border-top">
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary px-5 btn-enterprise shadow-sm">
                                     <i class="fas fa-save me-2"></i>SAVE CHANGES
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary px-3 btn-enterprise" onclick="toggleEdit(false)">
-                                    DISCARD
                                 </button>
                             </div>
                         </div>

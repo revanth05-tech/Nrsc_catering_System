@@ -4,7 +4,7 @@
 $userId = $_SESSION['user_id'] ?? 0;
 
 $userData = fetchOne(
-    "SELECT id, userid, full_name, email, department, role, status 
+    "SELECT id, userid, name, email, department, role, status 
      FROM users WHERE id = ?", 
     [$userId], 
     "i"
@@ -16,7 +16,7 @@ if (!$userData) {
 }
 
 // Safe values (avoid null warnings completely)
-$fullName   = $userData['full_name'] ?? '';
+$fullName   = $userData['name'] ?? '';
 $userid     = $userData['userid'] ?? '';
 $email      = $userData['email'] ?? '';
 $department = $userData['department'] ?? '';

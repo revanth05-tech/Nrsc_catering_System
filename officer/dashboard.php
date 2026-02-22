@@ -16,9 +16,9 @@ $stats = [
     'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed')")['count'] ?? 0,
 ];
 
-// ✅ FIXED HERE (name → full_name)
+// ✅ FIXED HERE (name → name)
 $pendingRequests = fetchAll(
-    "SELECT cr.*, u.full_name as employee_name, u.department 
+    "SELECT cr.*, u.name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status = 'pending' 

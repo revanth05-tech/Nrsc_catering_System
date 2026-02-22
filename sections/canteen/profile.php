@@ -18,7 +18,7 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 
 $userData = fetchOne(
-    "SELECT id, userid, full_name, email, department, role 
+    "SELECT id, userid, name, email, department, role 
      FROM users 
      WHERE id = ?",
     [$userId],
@@ -34,7 +34,7 @@ if (!$userData) {
    SAFE VARIABLE INITIALIZATION
 --------------------------------*/
 
-$fullName   = $userData['full_name'] ?? 'User';
+$fullName   = $userData['name'] ?? 'User';
 $email      = $userData['email'] ?? 'N/A';
 $department = $userData['department'] ?? 'General';
 $userid     = $userData['userid'] ?? 'N/A';

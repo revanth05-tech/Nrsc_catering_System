@@ -9,10 +9,16 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     </div>
     
     <div class="user-profile-large">
-        <div class="avatar-xl">
-             <?php echo strtoupper(substr($_SESSION['userid'] ?? 'U', 0, 2)); ?>
+        <div class="avatar-xl" style="overflow: hidden;">
+             <?php if (!empty($currentUser['profile_image'])): ?>
+                 <img src="/catering_system/<?php echo htmlspecialchars($currentUser['profile_image']); ?>" 
+                      alt="Avatar" 
+                      style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+             <?php else: ?>
+                 <?php echo htmlspecialchars($userInitials ?? 'U'); ?>
+             <?php endif; ?>
         </div>
-        <h3 class="user-name"><?php echo htmlspecialchars($_SESSION['userid'] ?? 'User'); ?></h3>
+        <h3 class="user-name"><?php echo htmlspecialchars($userName ?? 'User'); ?></h3>
         <p class="user-role"><?php echo ROLE_LABELS[$role] ?? 'User'; ?></p>
         
         <a href="/catering_system/profile.php" class="btn btn-sm btn-secondary mt-4 w-full" style="justify-content: center;">
