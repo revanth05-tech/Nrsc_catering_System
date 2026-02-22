@@ -2,7 +2,7 @@
 /**
  * NRSC Catering & Meeting Management System
  * Unified Enterprise Profile System - PHP 8.1+ Hardened Version
- * Production Grade Workflow | Refined Enterprise UI (Compact & Professional)
+ * Production Grade Workflow | Refined Enterprise UI (Centered Layout)
  */
 
 require_once __DIR__ . '/includes/auth.php';
@@ -102,7 +102,7 @@ $userDataRaw = fetchOne("SELECT * FROM users WHERE id = ?", [$userId], "i");
 
 if (!$userDataRaw) {
     include __DIR__ . '/includes/header.php';
-    echo '<div class="container py-4"><div class="alert alert-danger p-4 shadow-sm border-0 rounded-3">
+    echo '<div class="container py-4"><div class="alert alert-danger p-4 shadow-sm border-0 rounded-3 text-center">
             <h4 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Critical Integrity Error</h4>
             <p class="mb-0">Your user node profile could not be synchronized with the central enterprise directory.</p>
             <a href="index.php" class="btn btn-primary mt-3">Re-authenticate</a>
@@ -134,16 +134,16 @@ $roleColors = [
 ];
 $badgeClass = $roleColors[$u['role']] ?? 'bg-body-secondary';
 
-$pageTitle = 'Profile Management';
+$pageTitle = 'My Profile';
 include __DIR__ . '/includes/header.php';
 ?>
 
 <div class="container py-4 fade-in">
     <div class="row justify-content-center">
-        <div class="col-xl-10">
+        <div class="col-xl-9">
             
             <?php if ($success): ?>
-                <div class="alert alert-success border-0 shadow-sm mb-3 py-2 px-3 d-flex align-items-center small">
+                <div class="alert alert-success border-0 shadow-sm mb-3 py-2 px-3 d-flex align-items-center small fade show">
                     <i class="fas fa-check-circle me-2"></i>
                     <div><?= htmlspecialchars((string)$success) ?></div>
                     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" style="font-size: 0.5rem;"></button>
@@ -151,7 +151,7 @@ include __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <?php if (!empty($errors)): ?>
-                <div class="alert alert-danger border-0 shadow-sm mb-3 py-2 px-3 small">
+                <div class="alert alert-danger border-0 shadow-sm mb-3 py-2 px-3 small fade show">
                     <div class="fw-bold mb-1"><i class="fas fa-times-circle me-2"></i>Validation Errors:</div>
                     <ul class="mb-0 ps-3">
                         <?php foreach ($errors as $err): ?>
@@ -162,10 +162,10 @@ include __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <div class="card profile-card border-0 shadow-sm rounded-3 overflow-hidden">
-                <main class="row g-0">
-                    <!-- Left: Identity Panel -->
-                    <aside class="col-lg-4 bg-light p-4 text-center border-bottom border-lg-0 border-lg-end">
-                        <div class="avatar-container position-relative mb-3">
+                <!-- Profile Header - Centered Layout -->
+                <header class="profile-header bg-light border-bottom">
+                    <div class="profile-header-container">
+                        <div class="avatar-wrapper position-relative mb-3">
                             <?php if ($u['img']): ?>
                                 <img src="<?= htmlspecialchars($u['img']) ?>" alt="Avatar" class="profile-avatar shadow-sm">
                             <?php else: ?>
@@ -174,105 +174,106 @@ include __DIR__ . '/includes/header.php';
                                 </div>
                             <?php endif; ?>
                             
-                            <form id="uploadForm" method="POST" enctype="multipart/form-data" class="position-absolute bottom-0 end-0 translate-middle-x">
-                                <label for="profile_image" class="btn btn-primary btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center shadow-sm" style="width: 28px; height: 28px;" title="Update Photo">
-                                    <i class="fas fa-camera" style="font-size: 0.75rem;"></i>
+                            <form id="uploadForm" method="POST" enctype="multipart/form-data" class="position-absolute bottom-0 start-50 translate-middle-x" style="bottom: -15px;">
+                                <label for="profile_image" class="btn btn-white btn-sm px-2 py-1 shadow-sm border rounded-pill d-flex align-items-center gap-1" style="cursor: pointer; font-size: 11px; font-weight: 600;">
+                                    <i class="fas fa-camera text-primary"></i> <span>Edit</span>
                                 </label>
                                 <input type="file" id="profile_image" name="profile_image" class="d-none" onchange="this.form.submit()">
                             </form>
                         </div>
 
-                        <h2 class="mb-1 text-dark" style="font-size: 1.15rem; font-weight: 700;"><?= htmlspecialchars($u['name']) ?></h2>
-                        <div class="text-secondary small mb-3" style="font-size: 0.85rem; font-weight: 500;"><?= htmlspecialchars($u['desig']) ?></div>
+                        <h2 class="profile-name mb-1"><?= htmlspecialchars($u['name']) ?></h2>
+                        <div class="profile-role mb-2"><?= htmlspecialchars($u['desig']) ?></div>
                         
-                        <div class="badge <?= $badgeClass ?> border border-opacity-10 px-2 py-1 mb-4 rounded-pill" style="font-size: 11px;">
+                        <div class="badge <?= $badgeClass ?> border border-opacity-10 px-2 py-1 mb-3 rounded-pill" style="font-size: 11px;">
                             <i class="fas fa-shield-halved me-1"></i> <?= strtoupper($u['role']) ?> ACCESS
                         </div>
 
-                        <div class="d-grid gap-2 mb-4 px-3">
+                        <div class="d-flex gap-2 justify-content-center">
                             <button type="button" id="editTrigger" class="btn btn-primary btn-enterprise" onclick="toggleEdit(true)">
-                                <i class="fas fa-user-pen me-2"></i>Edit Records
+                                <i class="fas fa-user-pen me-2"></i>Edit Profile
                             </button>
-                            <a href="auth/change_pass.php" class="btn btn-secondary btn-enterprise-ghost">
-                                <i class="fas fa-key me-2"></i>Security Key
+                            <a href="auth/change_pass.php" class="btn btn-enterprise-ghost text-dark">
+                                <i class="fas fa-key me-2"></i>Reset Pin
                             </a>
                         </div>
+                    </div>
+                </header>
 
-                        <div class="metadata-box text-start p-3 mx-2 border-top">
-                            <div class="metadata-label mb-2">System Informatics</div>
+                <!-- Informatics Panel -->
+                <section class="p-4">
+                    <form id="mainProfileForm" method="POST">
+                        <input type="hidden" name="action" value="update_profile">
+                        
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+                            <h2 class="mb-0 fs-6 fw-bold color-gray-700">Enterprise Informatics</h2>
+                            <div class="ms-auto text-muted small">
+                                <i class="fas fa-lock me-1"></i> SSL Protected
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="info-label">Full Name</label>
+                                <input type="text" name="name" class="form-control profile-field" value="<?= htmlspecialchars($u['name']) ?>" readonly required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Personal ID</label>
+                                <input type="text" class="form-control profile-field-static" value="<?= htmlspecialchars($u['userid']) ?>" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">E-Mail Identity</label>
+                                <input type="email" name="email" class="form-control profile-field" value="<?= htmlspecialchars($u['email']) ?>" readonly required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Contact Node</label>
+                                <input type="text" name="phone" class="form-control profile-field" value="<?= htmlspecialchars($u['phone']) ?>" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Dept / Unit Code</label>
+                                <input type="text" name="department" class="form-control profile-field" value="<?= htmlspecialchars($u['dept']) ?>" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Office Designation</label>
+                                <input type="text" name="designation" class="form-control profile-field" value="<?= htmlspecialchars($u['desig']) ?>" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Status Level</label>
+                                <div class="px-1 py-0 fw-bold text-<?= $u['status'] === 'active' ? 'success' : 'danger' ?>" style="font-size: 0.9rem;">
+                                    <i class="fas fa-circle-check me-1"></i> <?= strtoupper($u['status']) ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="info-label">Credential Role</label>
+                                <div class="px-1 py-0 fw-bold text-dark" style="font-size: 0.9rem;"><?= strtoupper($u['role']) ?> ACCESS</div>
+                            </div>
+                        </div>
+
+                        <div id="saveCluster" class="mt-4 pt-3 border-top d-none">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button type="submit" class="btn btn-success px-4 btn-enterprise">
+                                    <i class="fas fa-save me-2"></i>SAVE CHANGES
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary px-3 btn-enterprise" onclick="toggleEdit(false)">
+                                    DISCARD
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <footer class="mt-5 pt-3 border-top">
+                        <div class="metadata-row d-flex justify-content-between">
                             <div class="metadata-item">
-                                <span class="metadata-key">Node ID:</span>
+                                <span class="metadata-key">System Identifier:</span>
                                 <span class="metadata-val"><?= htmlspecialchars($u['userid']) ?></span>
                             </div>
                             <div class="metadata-item">
-                                <span class="metadata-key">Last Sync:</span>
-                                <span class="metadata-val"><?= date('d M Y, H:i', strtotime($u['updated'])) ?></span>
+                                <span class="metadata-key">Last Directory Sync:</span>
+                                <span class="metadata-val"><?= date('d M Y, h:i A', strtotime($u['updated'])) ?></span>
                             </div>
                         </div>
-                    </aside>
-
-                    <!-- Right: Informatics Panel -->
-                    <section class="col-lg-8 p-4">
-                        <form id="mainProfileForm" method="POST">
-                            <input type="hidden" name="action" value="update_profile">
-                            
-                            <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-                                <h2 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #374151;">Account Informatics</h2>
-                                <div class="ms-auto text-muted" style="font-size: 0.75rem;">
-                                    <i class="fas fa-lock me-1"></i> Enterprise Secured
-                                </div>
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="info-label">Full Name</label>
-                                    <input type="text" name="name" class="form-control profile-field" value="<?= htmlspecialchars($u['name']) ?>" readonly required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Employee ID</label>
-                                    <input type="text" class="form-control profile-field-static" value="<?= htmlspecialchars($u['userid']) ?>" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Email Address</label>
-                                    <input type="email" name="email" class="form-control profile-field" value="<?= htmlspecialchars($u['email']) ?>" readonly required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Phone Contact</label>
-                                    <input type="text" name="phone" class="form-control profile-field" value="<?= htmlspecialchars($u['phone']) ?>" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Department / Unit</label>
-                                    <input type="text" name="department" class="form-control profile-field" value="<?= htmlspecialchars($u['dept']) ?>" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Designation</label>
-                                    <input type="text" name="designation" class="form-control profile-field" value="<?= htmlspecialchars($u['desig']) ?>" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Security Node Status</label>
-                                    <div class="p-1 fw-bold text-<?= $u['status'] === 'active' ? 'success' : 'danger' ?> shadow-none border-0" style="font-size: 0.9rem;">
-                                        <i class="fas fa-circle-check me-1"></i> <?= strtoupper($u['status']) ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="info-label">Access Level</label>
-                                    <div class="p-1 fw-bold text-dark" style="font-size: 0.9rem;"><?= strtoupper($u['role']) ?></div>
-                                </div>
-                            </div>
-
-                            <div id="saveCluster" class="mt-4 pt-3 border-top d-none">
-                                <div class="d-flex gap-2 justify-content-end">
-                                    <button type="submit" class="btn btn-primary px-4 btn-enterprise">
-                                        <i class="fas fa-save me-2"></i>SAVE CHANGES
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary px-3 btn-enterprise" onclick="toggleEdit(false)">
-                                        DISCARD
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </section>
-                </main>
+                    </footer>
+                </section>
             </div>
         </div>
     </div>
@@ -282,42 +283,59 @@ include __DIR__ . '/includes/header.php';
     :root {
         --nrc-primary: #1a56db;
         --nrc-primary-dark: #12429f;
-        --nrc-border: #e2e8f0;
+        --nrc-border: #eef2f6;
         --nrc-bg-light: #f8fafc;
-        --nrc-text-main: #1e293b;
-        --nrc-text-muted: #64748b;
-        --radius: 12px;
+        --nrc-text-main: #1f2937;
+        --nrc-text-muted: #6b7280;
     }
 
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f1f5f9; }
+    body { font-family: 'Inter', system-ui, sans-serif; background-color: #f3f4f6; }
 
     .fade-in { animation: fadeInAnim 0.3s ease-out; }
-    @keyframes fadeInAnim { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInAnim { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .profile-card {
-        border-radius: var(--radius);
         border: 1px solid var(--nrc-border);
         background: #fff;
-        box-shadow: 0 2px 6px -1px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+    }
+
+    /* Centered Header Layout */
+    .profile-header {
+        padding: 32px 24px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+    }
+
+    .profile-header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
     }
 
     .profile-avatar {
         width: 80px;
         height: 80px;
-        border-radius: 16px;
+        border-radius: 50% !important; /* Perfect circle as requested */
         object-fit: cover;
-        border: 2px solid #fff;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         transition: all 0.2s ease;
     }
 
-    .avatar-container:hover .profile-avatar {
+    .avatar-wrapper:hover .profile-avatar {
         transform: scale(1.05);
     }
     
     .profile-avatar-placeholder {
         width: 80px;
         height: 80px;
-        border-radius: 16px;
+        border-radius: 50% !important; /* Perfect circle as requested */
         background: linear-gradient(135deg, var(--nrc-primary), var(--nrc-primary-dark));
         color: white;
         display: flex;
@@ -325,9 +343,12 @@ include __DIR__ . '/includes/header.php';
         justify-content: center;
         font-size: 2rem;
         font-weight: 700;
-        border: 2px solid #fff;
-        transition: all 0.2s ease;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+
+    .profile-name { font-size: 18px; font-weight: 700; color: var(--nrc-text-main); }
+    .profile-role { font-size: 14px; font-weight: 500; color: var(--nrc-text-muted); }
 
     .info-label {
         font-size: 11px;
@@ -335,30 +356,28 @@ include __DIR__ . '/includes/header.php';
         text-transform: uppercase;
         color: var(--nrc-text-muted);
         letter-spacing: 0.5px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         display: block;
     }
 
     .profile-field[readonly] {
         background: transparent !important;
         border: 1px solid transparent !important;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 14px;
-        color: var(--nrc-text-main);
+        color: #111;
         padding: 4px 0;
         height: auto;
-        min-height: unset;
         box-shadow: none !important;
     }
 
     .profile-field-static {
-        background: #f1f5f9 !important;
+        background: #f3f4f6 !important;
         border: 1px solid transparent !important;
         font-weight: 500;
         font-size: 14px;
         padding: 6px 12px;
         border-radius: 8px;
-        color: var(--nrc-text-main);
     }
 
     .profile-field:not([readonly]) {
@@ -367,76 +386,66 @@ include __DIR__ . '/includes/header.php';
         padding: 8px 12px;
         border-radius: 8px;
         font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s ease;
+        transition: border 0.2s;
     }
 
     .profile-field:not([readonly]):focus {
         border-color: var(--nrc-primary);
         box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
-        outline: none;
     }
 
-    /* Enterprise Buttons */
+    /* Button Styling Fixed */
     .btn-enterprise {
         font-size: 13px;
-        font-weight: 600;
-        padding: 8px 16px;
+        font-weight: 500;
+        padding: 8px 18px;
         border-radius: 8px;
         transition: all 0.2s ease;
-    }
-
-    .btn-enterprise-ghost {
-        background: #f1f5f9;
-        color: #475569;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 8px 16px;
-        border: 1px solid transparent;
-        border-radius: 8px;
-        transition: all 0.2s ease;
+        text-align: center;
     }
 
     .btn-primary.btn-enterprise {
         background: var(--nrc-primary);
+        color: #ffffff !important; /* Forced white text visibility */
         border: none;
     }
 
     .btn-primary.btn-enterprise:hover {
         background: var(--nrc-primary-dark);
-        transform: translateY(-1px);
+        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(26, 86, 219, 0.2);
     }
 
+    .btn-enterprise-ghost {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151 !important;
+    }
+
     .btn-enterprise-ghost:hover {
-        background: #e2e8f0;
-        color: #1e293b;
+        background: #f9fafb;
+        transform: translateY(-2px);
     }
 
-    /* Metadata Items */
-    .metadata-label {
-        font-size: 10px;
-        font-weight: 800;
-        text-transform: uppercase;
-        color: var(--nrc-text-muted);
-        letter-spacing: 1px;
+    .btn-white {
+        background: #fff;
+        color: #374151;
+        border: 1px solid #d1d5db;
     }
 
-    .metadata-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
-        font-size: 12px;
+    .btn-white:hover {
+        background: #f9fafb;
+        color: var(--nrc-primary);
+        border-color: var(--nrc-primary);
     }
 
-    .metadata-key { color: #94a3b8; }
-    .metadata-val { color: #475569; font-weight: 600; }
+    /* Metadata Footer */
+    .metadata-item { font-size: 12px; }
+    .metadata-key { color: #9ca3af; margin-right: 5px; }
+    .metadata-val { color: #4b5563; font-weight: 600; }
 
-    @media (max-width: 768px) {
-        .col-lg-4 {
-            border-right: none;
-            padding-bottom: 24px;
-        }
+    @media (max-width: 576px) {
+        .metadata-row { flex-direction: column; gap: 8px; text-align: center; }
     }
 </style>
 
