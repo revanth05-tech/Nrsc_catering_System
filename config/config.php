@@ -61,7 +61,8 @@ function generateRequestNumber() {
  * Format date for display
  */
 function formatDate($date, $format = 'd M Y') {
-    return date($format, strtotime($date));
+    if (!$date) return 'N/A';
+    return date($format, strtotime((string)$date));
 }
 
 /**

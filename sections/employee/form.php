@@ -7,10 +7,10 @@ $categories = CATEGORY_LABELS; // Assumed defined in config
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $eventName = sanitize($_POST['event_name'] ?? '');
-    $eventDate = sanitize($_POST['event_date'] ?? '');
-    $eventTime = sanitize($_POST['event_time'] ?? '');
-    $venue = sanitize($_POST['venue'] ?? '');
+    $eventName = sanitize($_POST['meeting_name'] ?? '');
+    $eventDate = sanitize($_POST['meeting_date'] ?? '');
+    $eventTime = sanitize($_POST['meeting_time'] ?? '');
+    $area = sanitize($_POST['area'] ?? '');
     $guestCount = (int)($_POST['guest_count'] ?? 0);
     $purpose = sanitize($_POST['purpose'] ?? '');
     $instructions = sanitize($_POST['special_instructions'] ?? '');
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($eventName)) $errors[] = 'Event name is required';
     if (empty($eventDate)) $errors[] = 'Event date is required';
     if (empty($eventTime)) $errors[] = 'Event time is required';
-    if (empty($venue)) $errors[] = 'Venue is required';
+    if (empty($area)) $errors[] = 'Venue is required';
     if ($guestCount < 1) $errors[] = 'Guest count must be at least 1';
     if (empty($items)) $errors[] = 'Please select at least one menu item';
     
@@ -46,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Insert request
             $requestId = insertAndGetId(
-                "INSERT INTO catering_requests (request_number, employee_id, event_name, event_date, event_time, venue, guest_count, purpose, special_instructions, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [$requestNumber, $userId, $eventName, $eventDate, $eventTime, $venue, $guestCount, $purpose, $instructions, $totalAmount],
+                "INSERT INTO catering_requests (request_number, employee_id, meeting_name, meeting_date, meeting_time, area, guest_count, purpose, special_instructions, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [$requestNumber, $userId, $eventName, $eventDate, $eventTime, $area, $guestCount, $purpose, $instructions, $totalAmount],
                 "sissssissd"
             );
             
@@ -107,32 +107,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
-                        <label for="event_name">Event Name *</label>
-                        <input type="text" id="event_name" name="event_name" required 
-                               value="<?php echo htmlspecialchars($_POST['event_name'] ?? ''); ?>" 
+                        <label for="meeting_name">Event Name *</label>
+                        <input type="text" id="meeting_name" name="meeting_name" required 
+                               value="<?php echo htmlspecialchars($_POST['meeting_name'] ?? ''); ?>" 
                                placeholder="e.g. Project Review Meeting">
                     </div>
                     
                     <div class="form-group">
-                        <label for="venue">Venue *</label>
-                        <input type="text" id="venue" name="venue" required 
-                               value="<?php echo htmlspecialchars($_POST['venue'] ?? ''); ?>" 
+                        <label for="area">Venue *</label>
+                        <input type="text" id="area" name="area" required 
+                               value="<?php echo htmlspecialchars($_POST['area'] ?? ''); ?>" 
                                placeholder="Building / Room No.">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
                     <div class="form-group">
-                        <label for="event_date">Date *</label>
-                        <input type="date" id="event_date" name="event_date" required 
-                               value="<?php echo $_POST['event_date'] ?? ''; ?>" 
+                        <label for="meeting_date">Date *</label>
+                        <input type="date" id="meeting_date" name="meeting_date" required 
+                               value="<?php echo $_POST['meeting_date'] ?? ''; ?>" 
                                min="<?php echo date('Y-m-d'); ?>">
                     </div>
                     
                     <div class="form-group">
-                        <label for="event_time">Time *</label>
-                        <input type="time" id="event_time" name="event_time" required 
-                               value="<?php echo $_POST['event_time'] ?? ''; ?>">
+                        <label for="meeting_time">Time *</label>
+                        <input type="time" id="meeting_time" name="meeting_time" required 
+                               value="<?php echo $_POST['meeting_time'] ?? ''; ?>">
                     </div>
 
                     <div class="form-group">

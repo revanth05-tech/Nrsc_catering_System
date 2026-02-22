@@ -86,14 +86,14 @@ function getStatusUrl($status) {
                         <?php echo htmlspecialchars($req['request_number']); ?>
                     </td>
                     <td>
-                        <div class="font-bold text-white"><?php echo htmlspecialchars($req['event_name']); ?></div>
+                        <div class="font-bold text-white"><?php echo htmlspecialchars($req['meeting_name']); ?></div>
                         <div class="text-xs text-muted">
-                            <?php echo date('M d, Y', strtotime($req['event_date'])); ?> • 
-                            <?php echo date('h:i A', strtotime($req['event_time'])); ?>
+                            <?php echo date('M d, Y', strtotime($req['meeting_date'])); ?> • 
+                            <?php echo date('h:i A', strtotime($req['meeting_time'])); ?>
                         </div>
                         <div class="text-xs text-muted"><?php echo $req['guest_count']; ?> guests</div>
                     </td>
-                    <td><?php echo htmlspecialchars($req['venue']); ?></td>
+                    <td><?php echo htmlspecialchars($req['area']); ?></td>
                     <td class="font-mono text-white">
                         ₹<?php echo number_format($req['total_amount'], 2); ?>
                     </td>

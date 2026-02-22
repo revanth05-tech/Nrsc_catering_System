@@ -14,7 +14,7 @@ $requests = fetchAll(
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status IN ('approved', 'in_progress') 
-     ORDER BY cr.event_date ASC"
+     ORDER BY cr.meeting_date ASC"
 );
 
 include __DIR__ . '/../includes/header.php';
@@ -50,9 +50,9 @@ include __DIR__ . '/../includes/header.php';
                                 <?php echo htmlspecialchars($req['employee_name'] ?? 'Unknown'); ?><br>
                                 <small class="text-muted"><?php echo htmlspecialchars($req['department'] ?? 'N/A'); ?></small>
                             </td>
-                            <td><?php echo htmlspecialchars($req['event_name']); ?></td>
-                            <td><?php echo formatDate($req['event_date']); ?></td>
-                            <td><?php echo htmlspecialchars($req['venue']); ?></td>
+                            <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
+                            <td><?php echo formatDate($req['meeting_date']); ?></td>
+                            <td><?php echo htmlspecialchars($req['area']); ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td>
                                 <span class="badge badge-<?php echo $req['status']; ?>">

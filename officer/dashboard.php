@@ -100,8 +100,8 @@ include __DIR__ . '/../includes/header.php';
                                 <?php echo htmlspecialchars($req['employee_name'] ?? 'Unknown'); ?><br>
                                 <small class="text-muted"><?php echo htmlspecialchars($req['department'] ?? 'N/A'); ?></small>
                             </td>
-                            <td><?php echo htmlspecialchars($req['event_name']); ?></td>
-                            <td><?php echo formatDate($req['event_date']); ?></td>
+                            <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
+                            <td><?php echo formatDate($req['meeting_date']); ?></td>
                             <td><?php echo $req['guest_count']; ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td><?php echo formatDate($req['created_at'], 'd M'); ?></td>

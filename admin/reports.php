@@ -20,7 +20,7 @@ $summary = fetchOne(
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
         SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
         SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
-        SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) as total_revenue,
+        SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) as total_rearea,
         SUM(guest_count) as total_guests
      FROM catering_requests 
      WHERE DATE(created_at) BETWEEN ? AND ?",
@@ -55,7 +55,7 @@ $byDept = fetchAll(
 $monthlyData = fetchAll(
     "SELECT DATE_FORMAT(created_at, '%Y-%m') as month, 
             COUNT(*) as requests, 
-            SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) as revenue
+            SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) as rearea
      FROM catering_requests 
      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
      GROUP BY DATE_FORMAT(created_at, '%Y-%m')
@@ -112,8 +112,8 @@ include __DIR__ . '/../includes/header.php';
             </svg>
         </div>
         <div class="stat-content">
-            <div class="stat-label">Total Revenue</div>
-            <div class="stat-value"><?php echo formatCurrency($summary['total_revenue'] ?? 0); ?></div>
+            <div class="stat-label">Total Rearea</div>
+            <div class="stat-value"><?php echo formatCurrency($summary['total_rearea'] ?? 0); ?></div>
         </div>
     </div>
     
@@ -215,7 +215,7 @@ include __DIR__ . '/../includes/header.php';
                     <tr>
                         <th>Month</th>
                         <th>Requests</th>
-                        <th>Revenue</th>
+                        <th>Rearea</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/header.php';
                     <tr>
                         <td><strong><?php echo date('F Y', strtotime($month['month'] . '-01')); ?></strong></td>
                         <td><?php echo $month['requests']; ?></td>
-                        <td><?php echo formatCurrency($month['revenue']); ?></td>
+                        <td><?php echo formatCurrency($month['rearea']); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

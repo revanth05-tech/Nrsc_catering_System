@@ -81,22 +81,22 @@ include __DIR__ . '/../includes/header.php';
                 <div class="form-row two-cols">
                     <div class="form-group">
                         <label>Event Name</label>
-                        <input type="text" value="<?php echo htmlspecialchars($request['event_name']); ?>" readonly>
+                        <input type="text" value="<?php echo htmlspecialchars($request['meeting_name']); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label>Venue</label>
-                        <input type="text" value="<?php echo htmlspecialchars($request['venue']); ?>" readonly>
+                        <input type="text" value="<?php echo htmlspecialchars($request['area']); ?>" readonly>
                     </div>
                 </div>
                 
                 <div class="form-row three-cols">
                     <div class="form-group">
                         <label>Date</label>
-                        <input type="text" value="<?php echo formatDate($request['event_date']); ?>" readonly>
+                        <input type="text" value="<?php echo formatDate($request['meeting_date']); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label>Time</label>
-                        <input type="text" value="<?php echo date('h:i A', strtotime($request['event_time'])); ?>" readonly>
+                        <input type="text" value="<?php echo date('h:i A', strtotime($request['meeting_time'])); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label>Guests</label>

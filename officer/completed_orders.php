@@ -49,8 +49,8 @@ include __DIR__ . '/../includes/header.php';
                             <td>
                                 <?php echo htmlspecialchars($req['employee_name'] ?? 'Unknown'); ?>
                             </td>
-                            <td><?php echo htmlspecialchars($req['event_name']); ?></td>
-                            <td><?php echo formatDate($req['event_date']); ?></td>
+                            <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
+                            <td><?php echo formatDate($req['meeting_date']); ?></td>
                             <td><?php echo $req['guest_count']; ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td><?php echo formatDate($req['updated_at']); ?></td>

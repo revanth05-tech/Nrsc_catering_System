@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $stats = [
     'approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'approved'")['count'] ?? 0,
     'in_progress' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'in_progress'")['count'] ?? 0,
-    'today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress') AND event_date = CURDATE()")['count'] ?? 0,
+    'today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress') AND meeting_date = CURDATE()")['count'] ?? 0,
     'completed_today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'completed' AND DATE(updated_at) = CURDATE()")['count'] ?? 0,
 ];
 
@@ -37,7 +37,7 @@ $orders = fetchAll(
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.status IN ('approved', 'in_progress') 
-     ORDER BY cr.event_date ASC, cr.event_time ASC"
+     ORDER BY cr.meeting_date ASC, cr.meeting_time ASC"
 );
 
 include __DIR__ . '/../includes/header.php';
@@ -132,11 +132,11 @@ include __DIR__ . '/../includes/header.php';
                                 <strong><?php echo htmlspecialchars($order['request_number']); ?></strong><br>
                                 <small class="text-muted"><?php echo htmlspecialchars($order['employee_name']); ?></small>
                             </td>
-                            <td><?php echo htmlspecialchars($order['event_name']); ?></td>
-                            <td><?php echo htmlspecialchars($order['venue']); ?></td>
+                            <td><?php echo htmlspecialchars($order['meeting_name']); ?></td>
+                            <td><?php echo htmlspecialchars($order['area']); ?></td>
                             <td>
-                                <strong><?php echo formatDate($order['event_date']); ?></strong><br>
-                                <?php echo date('h:i A', strtotime($order['event_time'])); ?>
+                                <strong><?php echo formatDate($order['meeting_date']); ?></strong><br>
+                                <?php echo date('h:i A', strtotime($order['meeting_time'])); ?>
                             </td>
                             <td><strong><?php echo $order['guest_count']; ?></strong></td>
                             <td>

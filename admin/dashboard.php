@@ -15,7 +15,7 @@ $stats = [
     'total_items' => fetchOne("SELECT COUNT(*) as count FROM menu_items")['count'] ?? 0,
     'total_requests' => fetchOne("SELECT COUNT(*) as count FROM catering_requests")['count'] ?? 0,
     'pending_requests' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending'")['count'] ?? 0,
-    'this_month_revenue' => fetchOne("SELECT COALESCE(SUM(total_amount), 0) as total FROM catering_requests WHERE status = 'completed' AND MONTH(created_at) = MONTH(CURRENT_DATE())")['total'] ?? 0,
+    'this_month_rearea' => fetchOne("SELECT COALESCE(SUM(total_amount), 0) as total FROM catering_requests WHERE status = 'completed' AND MONTH(created_at) = MONTH(CURRENT_DATE())")['total'] ?? 0,
 ];
 
 // Recent activity
@@ -85,8 +85,8 @@ include __DIR__ . '/../includes/header.php';
             </svg>
         </div>
         <div class="stat-content">
-            <div class="stat-label">This Month Revenue</div>
-            <div class="stat-value"><?php echo formatCurrency($stats['this_month_revenue']); ?></div>
+            <div class="stat-label">This Month Rearea</div>
+            <div class="stat-value"><?php echo formatCurrency($stats['this_month_rearea']); ?></div>
         </div>
     </div>
 </div>
@@ -136,9 +136,9 @@ include __DIR__ . '/../includes/header.php';
                             </svg>
                         </div>
                         <div class="request-details">
-                            <div class="request-title"><?php echo htmlspecialchars($req['event_name']); ?></div>
+                            <div class="request-title"><?php echo htmlspecialchars($req['meeting_name']); ?></div>
                             <div class="request-meta">
-                                <?php echo htmlspecialchars($req['employee_name']); ?> • <?php echo formatDate($req['event_date']); ?>
+                                <?php echo htmlspecialchars($req['employee_name']); ?> • <?php echo formatDate($req['meeting_date']); ?>
                             </div>
                         </div>
                         <div class="request-status">

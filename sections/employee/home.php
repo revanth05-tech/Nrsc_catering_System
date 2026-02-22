@@ -82,10 +82,10 @@ $recentRequests = fetchAll(
                         <span class="font-mono text-xs text-primary"><?php echo htmlspecialchars($req['request_number']); ?></span>
                     </td>
                     <td>
-                        <div class="font-medium text-white"><?php echo htmlspecialchars($req['event_name']); ?></div>
+                        <div class="font-medium text-white"><?php echo htmlspecialchars($req['meeting_name']); ?></div>
                         <div class="text-xs text-muted"><?php echo $req['guest_count']; ?> Guests</div>
                     </td>
-                    <td><?php echo date('M d, Y', strtotime($req['event_date'])); ?></td>
+                    <td><?php echo date('M d, Y', strtotime($req['meeting_date'])); ?></td>
                     <td>
                         <span class="badge badge-<?php echo $req['status']; ?>">
                             <?php echo ucfirst($req['status']); ?>

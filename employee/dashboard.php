@@ -122,8 +122,8 @@ include __DIR__ . '/../includes/header.php';
                         <?php foreach ($recentRequests as $req): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($req['request_number']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($req['event_name']); ?></td>
-                            <td><?php echo formatDate($req['event_date']); ?></td>
+                            <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
+                            <td><?php echo formatDate($req['meeting_date']); ?></td>
                             <td><?php echo $req['guest_count']; ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td>

@@ -57,8 +57,8 @@ switch ($action) {
         $orders = fetchAll(
             "SELECT cr.*, u.name as employee_name FROM catering_requests cr 
              JOIN users u ON cr.employee_id = u.id 
-             WHERE cr.event_date = CURDATE() AND cr.status IN ('approved', 'in_progress') 
-             ORDER BY cr.event_time ASC"
+             WHERE cr.meeting_date = CURDATE() AND cr.status IN ('approved', 'in_progress') 
+             ORDER BY cr.meeting_time ASC"
         );
         echo json_encode(['success' => true, 'orders' => $orders]);
         break;

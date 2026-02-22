@@ -80,15 +80,15 @@ include __DIR__ . '/../includes/header.php';
         <div class="form-row three-cols">
             <div>
                 <label class="text-muted">Event</label>
-                <p class="font-semibold"><?php echo htmlspecialchars($order['event_name']); ?></p>
+                <p class="font-semibold"><?php echo htmlspecialchars($order['meeting_name']); ?></p>
             </div>
             <div>
                 <label class="text-muted">Date & Time</label>
-                <p class="font-semibold"><?php echo formatDate($order['event_date']); ?> at <?php echo date('h:i A', strtotime($order['event_time'])); ?></p>
+                <p class="font-semibold"><?php echo formatDate($order['meeting_date']); ?> at <?php echo date('h:i A', strtotime($order['meeting_time'])); ?></p>
             </div>
             <div>
                 <label class="text-muted">Venue</label>
-                <p class="font-semibold"><?php echo htmlspecialchars($order['venue']); ?></p>
+                <p class="font-semibold"><?php echo htmlspecialchars($order['area']); ?></p>
             </div>
         </div>
         
