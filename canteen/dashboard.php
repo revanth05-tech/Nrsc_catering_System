@@ -120,7 +120,6 @@ include __DIR__ . '/../includes/header.php';
                             <th>Event</th>
                             <th>Venue</th>
                             <th>Date & Time</th>
-                            <th>Guests</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -138,7 +137,6 @@ include __DIR__ . '/../includes/header.php';
                                 <strong><?php echo formatDate($order['meeting_date']); ?></strong><br>
                                 <?php echo date('h:i A', strtotime($order['meeting_time'])); ?>
                             </td>
-                            <td><strong><?php echo $order['guest_count']; ?></strong></td>
                             <td>
                                 <span class="badge badge-<?php echo $order['status']; ?>">
                                     <?php echo ucfirst(str_replace('_', ' ', $order['status'])); ?>

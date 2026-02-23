@@ -97,18 +97,7 @@ include __DIR__ . '/../includes/header.php';
                 <label class="text-muted">Requested By</label>
                 <p class="font-semibold"><?php echo htmlspecialchars($order['employee_name']); ?> (<?php echo htmlspecialchars($order['department']); ?>)</p>
             </div>
-            <div>
-                <label class="text-muted">Number of Guests</label>
-                <p class="font-semibold" style="font-size:var(--text-2xl);color:var(--primary-600);"><?php echo $order['guest_count']; ?></p>
-            </div>
         </div>
-        
-        <?php if ($order['special_instructions']): ?>
-        <div class="mt-4" style="background:var(--warning-100);padding:15px;border-radius:var(--radius-lg);border-left:4px solid var(--warning-500);">
-            <label class="font-semibold" style="color:var(--warning-500);">Special Instructions</label>
-            <p class="mb-0"><?php echo nl2br(htmlspecialchars($order['special_instructions'])); ?></p>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
 

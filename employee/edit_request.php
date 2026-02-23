@@ -99,17 +99,10 @@ include __DIR__ . '/../includes/header.php';
                         <input type="text" value="<?php echo date('h:i A', strtotime($request['meeting_time'])); ?>" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Guests</label>
-                        <input type="text" value="<?php echo $request['guest_count']; ?>" readonly>
+                        <label>LIC (Leader In-Charge)</label>
+                        <input type="text" value="<?php echo htmlspecialchars($request['lic'] ?? 'N/A'); ?>" readonly>
                     </div>
                 </div>
-                
-                <?php if ($request['purpose']): ?>
-                <div class="form-group">
-                    <label>Purpose</label>
-                    <textarea readonly><?php echo htmlspecialchars($request['purpose']); ?></textarea>
-                </div>
-                <?php endif; ?>
             </div>
             
             <div class="form-section">
@@ -149,12 +142,7 @@ include __DIR__ . '/../includes/header.php';
                 </div>
             </div>
             
-            <?php if ($request['special_instructions']): ?>
-            <div class="form-section">
-                <h4 class="form-section-title">Special Instructions</h4>
-                <p><?php echo nl2br(htmlspecialchars($request['special_instructions'])); ?></p>
-            </div>
-            <?php endif; ?>
+
             
             <?php if ($request['rejection_reason']): ?>
             <div class="alert alert-error">

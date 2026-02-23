@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $conn->commit();
-            redirect('my_requests.php', "Request #$requestNumber submitted successfully!", 'success');
+            redirect('my_reqs.php', "Request #$requestNumber submitted successfully!", 'success');
 
         } catch (Exception $e) {
             $conn->rollback();

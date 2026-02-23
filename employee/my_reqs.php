@@ -65,7 +65,6 @@ include __DIR__ . '/../includes/header.php';
                             <th>Event</th>
                             <th>Date & Time</th>
                             <th>Venue</th>
-                            <th>Guests</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -81,7 +80,6 @@ include __DIR__ . '/../includes/header.php';
                                 <small class="text-muted"><?php echo date('h:i A', strtotime($req['meeting_time'])); ?></small>
                             </td>
                             <td><?php echo htmlspecialchars($req['area']); ?></td>
-                            <td><?php echo $req['guest_count']; ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td>
                                 <span class="badge badge-<?php echo $req['status']; ?>">

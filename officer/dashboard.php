@@ -86,7 +86,6 @@ include __DIR__ . '/../includes/header.php';
                             <th>Employee</th>
                             <th>Event</th>
                             <th>Date</th>
-                            <th>Guests</th>
                             <th>Amount</th>
                             <th>Submitted</th>
                             <th>Actions</th>
@@ -102,7 +101,6 @@ include __DIR__ . '/../includes/header.php';
                             </td>
                             <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
                             <td><?php echo formatDate($req['meeting_date']); ?></td>
-                            <td><?php echo $req['guest_count']; ?></td>
                             <td><?php echo formatCurrency($req['total_amount']); ?></td>
                             <td><?php echo formatDate($req['created_at'], 'd M'); ?></td>
                             <td>
