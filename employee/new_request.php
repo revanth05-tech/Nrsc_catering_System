@@ -168,179 +168,186 @@ include __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
 
                     <form method="POST" id="cateringRequestForm" class="needs-validation">
-                        
-                        <!-- 1. MEETING DETAILS SECTION -->
-                        <div class="section-title mb-4">
-                            <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
-                                <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
-                            </h6>
-                        </div>
-
-                        <div class="row g-3">
-                            <!-- Left Column -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Meeting Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="meeting_name" class="form-control" placeholder="Enter meeting purpose/name" required>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Meeting Date <span class="text-danger">*</span></label>
-                                        <input type="date" name="meeting_date" class="form-control" required min="<?= date('Y-m-d') ?>">
+                        <div class="row g-4 align-items-start">
+                            
+                            <!-- LEFT COLUMN -->
+                            <div class="col-lg-6 d-flex flex-column gap-4">
+                                
+                                <!-- SECTION 1: MEETING & REQUESTER -->
+                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                    <div class="section-title mt-0 mb-4">
+                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                            <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
+                                        </h6>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Meeting Time</label>
-                                        <input type="time" name="meeting_time" class="form-control">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Meeting Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="meeting_name" class="form-control" placeholder="Enter meeting purpose/name" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Area / Building <span class="text-danger">*</span></label>
+                                            <input type="text" name="area" class="form-control" placeholder="e.g. Ground Station Area" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Meeting Date <span class="text-danger">*</span></label>
+                                            <input type="date" name="meeting_date" class="form-control" required min="<?= date('Y-m-d') ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Meeting Time</label>
+                                            <input type="time" name="meeting_time" class="form-control">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">LIC (Leader In-Charge)</label>
+                                            <input type="text" name="lic" class="form-control" placeholder="Name of LIC">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
+                                            <input type="text" name="requesting_person" class="form-control" value="<?= htmlspecialchars($defName ?? '') ?>" placeholder="Search name...">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Designation</label>
+                                            <input type="text" name="requesting_designation" class="form-control" value="<?= htmlspecialchars($defDesig ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Phone Number</label>
+                                            <input type="text" name="phone_number" class="form-control" value="<?= htmlspecialchars($defPhone ?? '') ?>">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Requesting Department</label>
+                                            <input type="text" name="requesting_department" class="form-control" value="<?= htmlspecialchars($defDept ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Approving Officer</label>
+                                            <input type="text" name="approving_by" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerName ?? '') ?>">
+                                            <input type="hidden" name="officer_id" value="<?= htmlspecialchars($defOfficerId ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Approving Department</label>
+                                            <input type="text" name="approving_department" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerDept ?? '') ?>">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
-                                    <input type="text" name="requesting_person" class="form-control" value="<?= htmlspecialchars($defName ?? '') ?>" placeholder="Search name...">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Requesting Department</label>
-                                    <input type="text" name="requesting_department" class="form-control" value="<?= htmlspecialchars($defDept ?? '') ?>">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Approving Officer Name</label>
-                                    <input type="text" name="approving_by" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerName ?? '') ?>">
-                                    <input type="hidden" name="officer_id" value="<?= htmlspecialchars($defOfficerId ?? '') ?>">
+
+                                <!-- SECTION 2: SERVICE DETAILS -->
+                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                    <div class="section-title mt-0 mb-4">
+                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                            <i class="fas fa-utensils me-2"></i>2. Primary Service Details
+                                        </h6>
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Service Date</label>
+                                            <input type="date" name="service_date" class="form-control" value="<?= date('Y-m-d') ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Service Time</label>
+                                            <input type="time" name="service_time" class="form-control">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Venue/Location</label>
+                                            <input type="text" name="service_location" class="form-control" placeholder="e.g. Conf Room 101">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Hall Code</label>
+                                            <input type="text" name="hall_code" class="form-control" placeholder="Optional">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Right Column -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Area / Building <span class="text-danger">*</span></label>
-                                    <input type="text" name="area" class="form-control" placeholder="e.g. Ground Station Area" required>
+                            <!-- RIGHT COLUMN -->
+                            <div class="col-lg-6 d-flex flex-column gap-4">
+                                
+                                <!-- SECTION 3: ITEM SELECTION -->
+                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                    <div class="section-title mt-0 mb-4">
+                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                            <i class="fas fa-list-check me-2"></i>3. Catering Item Selection
+                                        </h6>
+                                    </div>
+                                    <div class="bg-light p-3 rounded mb-0">
+                                        <div class="row align-items-end g-3">
+                                            <div class="col-md-7">
+                                                <label class="form-label fw-semibold">Select Menu Item</label>
+                                                <select id="menu-selector" class="form-select">
+                                                    <option value="">-- Choose Item --</option>
+                                                    <?php 
+                                                    $currentCat = '';
+                                                    foreach ($menuItems as $item): 
+                                                        if ($currentCat !== $item['category']): 
+                                                            if ($currentCat !== '') echo '</optgroup>';
+                                                            $currentCat = $item['category'];
+                                                            echo '<optgroup label="' . ucfirst($currentCat) . '">';
+                                                        endif;
+                                                    ?>
+                                                        <option value="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['item_name']) ?>" data-price="<?= $item['price'] ?>">
+                                                            <?= htmlspecialchars($item['item_name']) ?> (₹<?= $item['price'] ?>)
+                                                        </option>
+                                                    <?php endforeach; if ($currentCat !== '') echo '</optgroup>'; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold">Qty</label>
+                                                <input type="number" id="qty" value="1" min="1" class="form-control">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button" onclick="addItem()" class="btn btn-success w-100">
+                                                    <i class="fas fa-plus"></i> Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">LIC (Leader In-Charge)</label>
-                                    <input type="text" name="lic" class="form-control" placeholder="Name of LIC">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Designation</label>
-                                    <input type="text" name="requesting_designation" class="form-control" value="<?= htmlspecialchars($defDesig ?? '') ?>">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Phone Number</label>
-                                    <input type="text" name="phone_number" class="form-control" value="<?= htmlspecialchars($defPhone ?? '') ?>">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Approving Department</label>
-                                    <input type="text" name="approving_department" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerDept ?? '') ?>">
+
+                                <!-- SECTION 4: ORDER SUMMARY & ACTIONS -->
+                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                    <div class="section-title mt-0 mb-4">
+                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                            <i class="fas fa-cart-shopping me-2"></i>4. Order Summary
+                                        </h6>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover align-middle mb-0" id="items-table">
+                                            <thead class="table-info">
+                                                <tr>
+                                                    <th width="40">#</th>
+                                                    <th>Description</th>
+                                                    <th width="100">Price</th>
+                                                    <th width="80">Qty</th>
+                                                    <th width="100">Subtotal</th>
+                                                    <th width="50"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr id="empty-row">
+                                                    <td colspan="6" class="text-center text-muted py-4">No items added yet.</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot class="table-light">
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Total:</th>
+                                                    <th id="grand-total" class="text-primary">₹0.00</th>
+                                                    <th></th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 pt-4 border-top">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-paper-plane me-2"></i>Submit Request
+                                        </button>
+                                        <button type="reset" class="btn btn-outline-secondary px-4" onclick="return confirm('Clear data?')">
+                                            Clear
+                                        </button>
+                                        <button type="button" class="btn btn-secondary px-4" onclick="window.location.href='dashboard.php'">
+                                            Cancel
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 2. SERVICE INFORMATION SECTION -->
-                        <div class="section-title mt-4 mb-4">
-                            <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
-                                <i class="fas fa-utensils me-2"></i>2. Primary Service Details
-                            </h6>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Service Date</label>
-                                <input type="date" name="service_date" class="form-control" value="<?= date('Y-m-d') ?>">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Service Time</label>
-                                <input type="time" name="service_time" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Specific Venue/Location</label>
-                                <input type="text" name="service_location" class="form-control" placeholder="e.g. Conf Room 101">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label fw-semibold">Hall Code</label>
-                                <input type="text" name="hall_code" class="form-control" placeholder="Optional">
-                            </div>
-                        </div>
-
-                        <!-- 3. ITEM SELECTION SECTION -->
-                        <div class="section-title mt-5 mb-4">
-                            <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
-                                <i class="fas fa-list-check me-2"></i>3. Catering Item Selection
-                            </h6>
-                        </div>
-
-                        <div class="bg-light p-3 rounded mb-4">
-                            <div class="row align-items-end g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Select Menu Item</label>
-                                    <select id="menu-selector" class="form-select">
-                                        <option value="">-- Choose Item --</option>
-                                        <?php 
-                                        $currentCat = '';
-                                        foreach ($menuItems as $item): 
-                                            if ($currentCat !== $item['category']): 
-                                                if ($currentCat !== '') echo '</optgroup>';
-                                                $currentCat = $item['category'];
-                                                echo '<optgroup label="' . ucfirst($currentCat) . '">';
-                                            endif;
-                                        ?>
-                                            <option value="<?= $item['id'] ?>" 
-                                                    data-name="<?= htmlspecialchars($item['item_name']) ?>" 
-                                                    data-price="<?= $item['price'] ?>">
-                                                <?= htmlspecialchars($item['item_name']) ?> (₹<?= $item['price'] ?>)
-                                            </option>
-                                        <?php endforeach; if ($currentCat !== '') echo '</optgroup>'; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-semibold">Quantity</label>
-                                    <input type="number" id="qty" value="1" min="1" class="form-control">
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="button" onclick="addItem()" class="btn btn-success w-100">
-                                        <i class="fas fa-plus me-1"></i> Add to List
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle" id="items-table">
-                                <thead class="table-info">
-                                    <tr>
-                                        <th width="80">#</th>
-                                        <th>Description</th>
-                                        <th width="120">Unit Price</th>
-                                        <th width="100">Qty</th>
-                                        <th width="120">Subtotal</th>
-                                        <th width="80">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr id="empty-row">
-                                        <td colspan="6" class="text-center text-muted py-4">No items added yet. Search or select above to add.</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot class="table-light">
-                                    <tr>
-                                        <th colspan="4" class="text-end">Total Amount:</th>
-                                        <th id="grand-total" class="text-primary fs-5">₹0.00</th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        <!-- ACTION BAR -->
-                        <div class="d-flex flex-wrap gap-2 justify-content-center mt-5 p-3 border-top">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-paper-plane me-2"></i>Submit Request
-                            </button>
-                            <button type="reset" class="btn btn-outline-secondary px-4" onclick="return confirm('Clear all data?')">
-                                <i class="fas fa-trash-can me-2"></i>Clear Form
-                            </button>
-                            <button type="button" class="btn btn-secondary px-4" onclick="window.location.href='dashboard.php'">
-                                <i class="fas fa-times me-2"></i>Cancel
-                            </button>
-                        </div>
-
                     </form>
                 </div>
             </div>
