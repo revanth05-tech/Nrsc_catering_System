@@ -57,69 +57,6 @@ include __DIR__ . '/../includes/header.php';
     </div>
 <?php endif; ?>
 
-<!-- Pending Approvals Section -->
-<div class="section-container mb-8">
-    <div class="flex-between mb-4">
-        <h2 class="section-title">Pending Approvals</h2>
-        <span class="badge badge-warning"><?php echo count($pendingUsers); ?> Request(s)</span>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <?php if (empty($pendingUsers)): ?>
-                <div class="text-center py-6">
-                    <p class="text-muted">No pending user registrations at the moment.</p>
-                </div>
-            <?php else: ?>
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Department</th>
-                                <th>Role</th>
-                                <th>Created Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($pendingUsers as $user): ?>
-                            <tr>
-                                <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
-                                <td><?php echo htmlspecialchars($user['name']); ?></td>
-                                <td><?php echo htmlspecialchars($user['email']); ?></td>
-                                <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
-                                <td>
-                                    <span class="badge badge-info">
-                                        <?php echo ROLE_LABELS[$user['role']] ?? ucfirst($user['role']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo formatDate($user['created_at'], 'd M Y, H:i'); ?></td>
-                                <td>
-                                    <div style="display: flex; gap: 8px;">
-                                        <a href="approve_user.php?id=<?php echo $user['id']; ?>" 
-                                           class="btn btn-sm btn-success" 
-                                           onclick="return confirm('Approve this user?')">
-                                            Approve
-                                        </a>
-                                        <a href="reject_user.php?id=<?php echo $user['id']; ?>" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Reject this user?')">
-                                            Reject
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
 
 <!-- Active Users Section -->
 <div class="section-container">

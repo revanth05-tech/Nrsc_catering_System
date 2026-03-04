@@ -25,12 +25,29 @@ if ($userId > 0) {
             "isss"
         );
         
+        if (isset($_GET['ajax'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => 'User rejected successfully.']);
+            exit();
+        }
+
         $_SESSION['flash_message'] = "User rejected and removed successfully.";
         $_SESSION['flash_type'] = "success";
     } else {
+        if (isset($_GET['ajax'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Failed to reject user.']);
+            exit();
+        }
         $_SESSION['flash_message'] = "Failed to reject user.";
         $_SESSION['flash_type'] = "error";
     }
+}
+
+if (isset($_GET['ajax'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Invalid User ID.']);
+    exit();
 }
 
 header("Location: manage_users.php");
