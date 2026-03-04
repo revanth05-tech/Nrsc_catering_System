@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // Insert into database
         $sql = "INSERT INTO users (name, userid, email, phone, department, role, password, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'active')";
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'inactive')";
         
         $params = [$name, $userid, $email, $phone, $department, $role, $hashedPassword];
         $types = "sssssss";
@@ -62,11 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Log activity
             insertAndGetId(
                 "INSERT INTO activity_log (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)",
-                [$userId, 'registration', 'New user registered', $_SERVER['REMOTE_ADDR'] ?? 'unknown'],
+                [$userId, 'registration', 'New user registered (pending approval)', $_SERVER['REMOTE_ADDR'] ?? 'unknown'],
                 "isss"
             );
             
-            $_SESSION['flash_message'] = "Registration successful! You can now log in.";
+            $_SESSION['flash_message'] = "Registration submitted successfully. Your account will be activated after admin approval.";
             $_SESSION['flash_type'] = "success";
             header("Location: ../index.php");
             exit();

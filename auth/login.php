@@ -22,13 +22,19 @@ if (empty($userid) || empty($password) || empty($role)) {
 
 // Find user in database
 $user = fetchOne(
-    "SELECT * FROM users WHERE userid = ? AND role = ? AND status = 'active'",
+    "SELECT * FROM users WHERE userid = ? AND role = ?",
     [$userid, $role],
     "ss"
 );
 
 if ($user && password_verify($password, $user['password'])) {
-    // Successful login
+    // Check user status
+    if ($user['status'] === 'inactive') {
+        redirect('../index.php?error=pending', 'Your account is pending admin approval. Please contact the administrator.', 'warning');
+        exit();
+    }
+
+    // Successful login (must be active)
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['userid'] = $user['userid'];
     $_SESSION['name'] = $user['name'];

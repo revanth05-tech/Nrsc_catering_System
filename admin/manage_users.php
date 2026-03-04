@@ -1,169 +1,182 @@
 <?php
 /**
- * Manage Users
+ * Manage Users & Approval - NRSC Catering System
  */
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin');
 
-$pageTitle = 'Manage Users';
+$pageTitle = 'User Management';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
-$error = '';
-$success = '';
-
-// Handle add/edit user
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
+// Handle manual add user
+if (isset($_POST['action']) && $_POST['action'] === 'add_manual') {
+    $uid = sanitize($_POST['userid']);
+    $nm = sanitize($_POST['name']);
+    $em = sanitize($_POST['email']);
+    $rl = sanitize($_POST['role']);
+    $dept = sanitize($_POST['department'] ?? '');
+    $pw = password_hash($_POST['password'], PASSWORD_DEFAULT);
     
-    if ($action === 'add') {
-        $userid     = sanitize($_POST['userid'] ?? '');
-        $fullName   = sanitize($_POST['name'] ?? '');
-        $email      = sanitize($_POST['email'] ?? '');
-        $department = sanitize($_POST['department'] ?? '');
-        $role       = sanitize($_POST['role'] ?? 'employee');
-        $password   = $_POST['password'] ?? '';
-        
-        if (empty($userid) || empty($fullName) || empty($password)) {
-            $error = 'User ID, Full Name, and Password are required.';
+    $existing = fetchOne("SELECT id FROM users WHERE userid = ?", [$uid], "s");
+    if (!$existing) {
+        $res = insertAndGetId(
+            "INSERT INTO users (userid, name, email, role, department, password, status) VALUES (?, ?, ?, ?, ?, ?, 'active')",
+            [$uid, $nm, $em, $rl, $dept, $pw],
+            "ssssss"
+        );
+        if ($res) {
+            redirect('manage_users.php', 'User created successfully.', 'success');
         } else {
-            $existing = fetchOne("SELECT id FROM users WHERE userid = ?", [$userid], "s");
-            
-            if ($existing) {
-                $error = 'User ID already exists.';
-            } else {
-                $hashedPass = password_hash($password, PASSWORD_DEFAULT);
-                
-                $result = insertAndGetId(
-                    "INSERT INTO users (userid, password, name, email, department, role, status) 
-                     VALUES (?, ?, ?, ?, ?, ?, 'active')",
-                    [$userid, $hashedPass, $fullName, $email, $department, $role],
-                    "ssssss"
-                );
-                
-                if ($result) {
-                    $success = 'User created successfully!';
-                } else {
-                    $error = 'Failed to create user.';
-                }
-            }
+            $_SESSION['flash_message'] = "Failed to create user.";
+            $_SESSION['flash_type'] = "error";
         }
-    } 
-    elseif ($action === 'toggle_status') {
-        $userId    = (int)($_POST['user_id'] ?? 0);
-        $newStatus = $_POST['new_status'] ?? 'inactive';
-        
-        executeAndGetAffected(
-            "UPDATE users SET status = ? WHERE id = ?",
-            [$newStatus, $userId],
-            "si"
-        );
-        
-        $success = 'User status updated.';
-    } 
-    elseif ($action === 'reset_password') {
-        $userId = (int)($_POST['user_id'] ?? 0);
-        $newPass = password_hash('password', PASSWORD_DEFAULT);
-        
-        executeAndGetAffected(
-            "UPDATE users SET password = ? WHERE id = ?",
-            [$newPass, $userId],
-            "si"
-        );
-        
-        $success = 'Password reset to "password".';
+    } else {
+        $_SESSION['flash_message'] = "User ID already exists.";
+        $_SESSION['flash_type'] = "error";
     }
 }
 
-// Get users (FIXED: name instead of name)
-$users = fetchAll("SELECT * FROM users ORDER BY role, name");
+// Handle flash messages
+$success = $_SESSION['flash_message'] ?? '';
+$flash_type = $_SESSION['flash_type'] ?? 'success';
+unset($_SESSION['flash_message'], $_SESSION['flash_type']);
+
+// Fetch Pending Users (status = 'inactive')
+$pendingUsers = fetchAll("SELECT * FROM users WHERE status = 'inactive' ORDER BY created_at DESC");
+
+// Fetch Active Users (status = 'active')
+$activeUsers = fetchAll("SELECT * FROM users WHERE status = 'active' AND role != 'admin' ORDER BY name ASC");
 
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<?php if ($error): ?>
-    <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-<?php endif; ?>
-
 <?php if ($success): ?>
-    <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+    <div class="alert alert-<?php echo $flash_type; ?>">
+        <?php echo htmlspecialchars($success); ?>
+    </div>
 <?php endif; ?>
 
-<div class="flex-between mb-6">
-    <div></div>
-    <button onclick="document.getElementById('add-user-modal').style.display='block'" class="btn btn-primary">
-        Add New User
-    </button>
+<!-- Pending Approvals Section -->
+<div class="section-container mb-8">
+    <div class="flex-between mb-4">
+        <h2 class="section-title">Pending Approvals</h2>
+        <span class="badge badge-warning"><?php echo count($pendingUsers); ?> Request(s)</span>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <?php if (empty($pendingUsers)): ?>
+                <div class="text-center py-6">
+                    <p class="text-muted">No pending user registrations at the moment.</p>
+                </div>
+            <?php else: ?>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Role</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pendingUsers as $user): ?>
+                            <tr>
+                                <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($user['name']); ?></td>
+                                <td><?php echo htmlspecialchars($user['email']); ?></td>
+                                <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        <?php echo ROLE_LABELS[$user['role']] ?? ucfirst($user['role']); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo formatDate($user['created_at'], 'd M Y, H:i'); ?></td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="approve_user.php?id=<?php echo $user['id']; ?>" 
+                                           class="btn btn-sm btn-success" 
+                                           onclick="return confirm('Approve this user?')">
+                                            Approve
+                                        </a>
+                                        <a href="reject_user.php?id=<?php echo $user['id']; ?>" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Reject this user?')">
+                                            Reject
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Department</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($user['name'] ?? '-'); ?></td>
-                        <td><?php echo htmlspecialchars($user['email'] ?? '-'); ?></td>
-                        <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
-                        <td>
-                            <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'approved' : 'progress'; ?>">
-                                <?php echo ROLE_LABELS[$user['role']] ?? ucfirst($user['role']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge badge-<?php echo $user['status'] === 'active' ? 'completed' : 'cancelled'; ?>">
-                                <?php echo ucfirst($user['status']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="action" value="toggle_status">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <input type="hidden" name="new_status" value="<?php echo $user['status'] === 'active' ? 'inactive' : 'active'; ?>">
-                                <button type="submit" class="btn btn-sm btn-secondary">
-                                    <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
-                                </button>
-                            </form>
+<!-- Active Users Section -->
+<div class="section-container">
+    <div class="flex-between mb-4">
+        <h2 class="section-title">Active Users</h2>
+        <button onclick="document.getElementById('add-user-modal').style.display='block'" class="btn btn-primary btn-sm">
+            + Add New User
+        </button>
+    </div>
 
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="action" value="reset_password">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-warning">
-                                    Reset Pass
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($activeUsers as $user): ?>
+                        <tr>
+                            <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
+                            <td><?php echo htmlspecialchars($user['name']); ?></td>
+                            <td><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
+                            <td>
+                                <span class="badge badge-approved">
+                                    <?php echo ROLE_LABELS[$user['role']] ?? ucfirst($user['role']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-completed">Active</span>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Add User Modal -->
-<div id="add-user-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;">
-    <div style="max-width:500px;margin:50px auto;background:white;border-radius:var(--radius-xl);overflow:hidden;">
-        <div class="card-header flex-between">
-            <h3 style="margin:0;">Add New User</h3>
-            <button onclick="document.getElementById('add-user-modal').style.display='none'" style="background:none;border:none;font-size:24px;cursor:pointer;">&times;</button>
+<div id="add-user-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;backdrop-filter: blur(4px);">
+    <div style="max-width:500px;margin:50px auto;background:white;border-radius:12px;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);overflow:hidden;">
+        <div class="card-header" style="padding: 1.5rem; border-bottom: 1px solid #eee;">
+            <h3 style="margin:0;">Create New User</h3>
         </div>
-        <div class="card-body">
-            <form method="POST">
-                <input type="hidden" name="action" value="add">
+        <div class="card-body" style="padding: 1.5rem;">
+            <form action="manage_users.php" method="POST">
+                <input type="hidden" name="action" value="add_manual">
                 
                 <div class="form-group">
                     <label>User ID *</label>
@@ -175,32 +188,32 @@ include __DIR__ . '/../includes/header.php';
                     <input type="text" name="name" required>
                 </div>
                 
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email">
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="role" required>
+                            <option value="employee">Employee</option>
+                            <option value="officer">Officer</option>
+                            <option value="canteen">Canteen</option>
+                        </select>
+                    </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Department</label>
                     <input type="text" name="department">
                 </div>
-                
-                <div class="form-group">
-                    <label>Role *</label>
-                    <select name="role" required>
-                        <option value="employee">Employee</option>
-                        <option value="officer">Approving Officer</option>
-                        <option value="canteen">Canteen Staff</option>
-                        <option value="admin">Administrator</option>
-                    </select>
-                </div>
-                
+
                 <div class="form-group">
                     <label>Password *</label>
                     <input type="password" name="password" required minlength="6">
                 </div>
                 
-                <div class="flex-between">
+                <div class="flex-between" style="margin-top: 1.5rem;">
                     <button type="button" onclick="document.getElementById('add-user-modal').style.display='none'" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create User</button>
                 </div>
@@ -210,3 +223,4 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
+
