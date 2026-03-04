@@ -56,7 +56,8 @@
             </form>
             
             <div class="login-footer">
-                <p>National Remote Sensing Centre &copy; <?php echo date('Y'); ?></p>
+                <p>Don't have an account? <a href="/catering_system/auth/signup.php" style="color: var(--primary-600); font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Register here</a></p>
+                <p style="margin-top: 15px;">National Remote Sensing Centre &copy; <?php echo date('Y'); ?></p>
                 <p style="margin-top:10px;font-size:11px;color:#999;">
                     Demo: admin/password, officer1/password, emp001/password
                 </p>
