@@ -1,166 +1,249 @@
 -- NRSC Catering & Meeting Management System Database Schema
--- Generated: 2026-02-20
--- Target Version: MySQL 8.0+ / MariaDB 10.4+
--- PHP Version: 8.1+ Compatible
+-- Compatible with XAMPP MariaDB
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+05:30";
 
--- --------------------------------------------------------
--- Database Creation
--- --------------------------------------------------------
 DROP DATABASE IF EXISTS `nrsc_catering`;
-CREATE DATABASE IF NOT EXISTS `nrsc_catering` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `nrsc_catering` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `nrsc_catering`;
 
 -- --------------------------------------------------------
--- 1. Users Table
+-- 1. USERS TABLE
 -- --------------------------------------------------------
+
 CREATE TABLE `users` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,                                    
-    `userid` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Login ID',
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `userid` VARCHAR(50) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL UNIQUE,
     `phone` VARCHAR(15) DEFAULT NULL,
-    `designation` VARCHAR(100) DEFAULT NULL COMMENT 'Job Title',
+    `designation` VARCHAR(100) DEFAULT NULL,
     `department` VARCHAR(100) DEFAULT NULL,
     `profile_image` VARCHAR(255) DEFAULT NULL,
-    `role` ENUM('employee', 'officer', 'canteen', 'admin') NOT NULL DEFAULT 'employee',
-    `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+
+    `role` ENUM('employee','officer','canteen','admin') 
+    NOT NULL DEFAULT 'employee',
+
+    `status` ENUM('active','inactive') 
+    NOT NULL DEFAULT 'active',
+
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_role` (`role`),
-    INDEX `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    INDEX (`role`),
+    INDEX (`status`)
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- 2. Menu Items Table (Standard Catering Items)
+-- 2. MENU ITEMS TABLE
 -- --------------------------------------------------------
+
 CREATE TABLE `menu_items` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `item_name` VARCHAR(100) NOT NULL,
-    `category` ENUM('breakfast', 'lunch', 'snacks', 'dinner', 'beverages') NOT NULL,
+
+    `category` ENUM('breakfast','lunch','snacks','dinner','beverages') 
+    NOT NULL,
+
     `price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     `description` TEXT,
-    `is_available` TINYINT(1) NOT NULL DEFAULT 1,
+    `is_available` TINYINT(1) DEFAULT 1,
     `image_url` VARCHAR(255) DEFAULT NULL,
+
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_category` (`category`),
-    INDEX `idx_availability` (`is_available`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    INDEX (`category`)
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- 3. Catering Requests Table (Meeting & Service Workflow)
+-- 3. CATERING REQUESTS
 -- --------------------------------------------------------
+
 CREATE TABLE `catering_requests` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `request_number` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Unique Reference Number',
-    `employee_id` INT NOT NULL COMMENT 'FK to Users table',
-    
-    -- Requesting Person Details (Snapshot at time of request)
-    `requesting_person` VARCHAR(100) NOT NULL,
-    `requesting_department` VARCHAR(100) DEFAULT NULL,
-    `requesting_designation` VARCHAR(100) DEFAULT NULL,
-    `phone_number` VARCHAR(20) DEFAULT NULL,
 
-    -- Meeting Metadata
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+
+    `request_number` VARCHAR(50) NOT NULL UNIQUE,
+
+    `employee_id` INT NOT NULL,
+
+    `requesting_person` VARCHAR(100) NOT NULL,
+    `requesting_department` VARCHAR(100),
+    `requesting_designation` VARCHAR(100),
+    `phone_number` VARCHAR(20),
+
     `meeting_name` VARCHAR(200) NOT NULL,
     `meeting_date` DATE NOT NULL,
     `meeting_time` TIME NOT NULL,
-    `area` VARCHAR(150) NOT NULL COMMENT 'General Area/Building',
-    `lic` VARCHAR(100) DEFAULT NULL COMMENT 'Leader/Officer In Charge',
-    
-    -- Primary Service Information (Defaults for the request)
+
+    `area` VARCHAR(150) NOT NULL,
+    `lic` VARCHAR(100),
+
     `service_date` DATE NOT NULL,
     `service_time` TIME NOT NULL,
-    `service_location` VARCHAR(200) DEFAULT NULL,
-    `hall_code` VARCHAR(50) DEFAULT NULL,
+    `service_location` VARCHAR(200),
+    `hall_code` VARCHAR(50),
 
-    -- Approval Details
-    `approving_officer_id` INT DEFAULT NULL COMMENT 'Reference to Officer User',
-    `approving_by` VARCHAR(100) NOT NULL COMMENT 'Snapshot of Officer Name',
-    `approving_department` VARCHAR(100) DEFAULT NULL COMMENT 'Snapshot of Officer Dept',
+    `approving_officer_id` INT DEFAULT NULL,
+    `approving_by` VARCHAR(100),
+    `approving_department` VARCHAR(100),
+
     `approved_at` TIMESTAMP NULL DEFAULT NULL,
-    `rejection_reason` TEXT DEFAULT NULL,
+    `rejection_reason` TEXT,
 
-    -- Financials
-    `total_amount` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    `total_amount` DECIMAL(12,2) DEFAULT 0.00,
 
-    -- Workflow Status
-    `status` ENUM('draft', 'pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
-    
+    `status` ENUM(
+        'draft',
+        'pending',
+        'approved',
+        'rejected',
+        'in_progress',
+        'completed',
+        'cancelled'
+    ) DEFAULT 'pending',
+
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    -- Constraints
-    FOREIGN KEY (`employee_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`approving_officer_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    INDEX `idx_status` (`status`),
-    INDEX `idx_dates` (`meeting_date`, `service_date`),
-    INDEX `idx_request_num` (`request_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (`employee_id`)
+    REFERENCES `users`(`id`)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (`approving_officer_id`)
+    REFERENCES `users`(`id`)
+    ON DELETE SET NULL
+
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- 4. Request Items Table (Line Items with Specific Service Details)
+-- 4. REQUEST ITEMS
 -- --------------------------------------------------------
+
 CREATE TABLE `request_items` (
+
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+
     `request_id` INT NOT NULL,
     `item_id` INT NOT NULL,
-    
-    -- Item Details
-    `quantity` INT NOT NULL DEFAULT 1,
-    `unit_price` DECIMAL(10,2) NOT NULL COMMENT 'Snapshot of price at time of order',
-    `subtotal` DECIMAL(12,2) NOT NULL GENERATED ALWAYS AS (`quantity` * `unit_price`) STORED,
 
-    -- Item Specific Service Details (Overrides request defaults if needed)
+    `quantity` INT NOT NULL DEFAULT 1,
+    `unit_price` DECIMAL(10,2) NOT NULL,
+
+    -- removed generated column (MariaDB compatibility)
+    `subtotal` DECIMAL(12,2) NOT NULL,
+
     `service_date` DATE DEFAULT NULL,
     `service_time` TIME DEFAULT NULL,
-    `service_location` VARCHAR(200) DEFAULT NULL,
-    `hall_code` VARCHAR(50) DEFAULT NULL,
+    `service_location` VARCHAR(200),
+    `hall_code` VARCHAR(50),
 
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (`request_id`) REFERENCES `catering_requests`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`item_id`) REFERENCES `menu_items`(`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (`request_id`)
+    REFERENCES `catering_requests`(`id`)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (`item_id`)
+    REFERENCES `menu_items`(`id`)
+    ON DELETE RESTRICT
+
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- 5. Activity Log Table
+-- 5. ACTIVITY LOG
 -- --------------------------------------------------------
+
 CREATE TABLE `activity_log` (
+
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+
     `user_id` INT DEFAULT NULL,
     `action` VARCHAR(100) NOT NULL,
     `details` TEXT,
-    `ip_address` VARCHAR(45) DEFAULT NULL,
+    `ip_address` VARCHAR(45),
+
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-    INDEX `idx_action` (`action`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users`(`id`)
+    ON DELETE SET NULL
+
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- SAMPLE DATA INJECTION
+-- SAMPLE USERS
 -- --------------------------------------------------------
 
--- 1. Users
--- Password for all: 'password123' -> hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
-INSERT INTO `users` (`userid`, `password`, `name`, `email`, `designation`, `department`, `role`, `status`) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@nrsc.gov.in', 'IT Lead', 'IT Services', 'admin', 'active'),
-('officer', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Rajesh Kumar', 'officer@nrsc.gov.in', 'Senior Scientist', 'Remote Sensing', 'officer', 'active'),
-('canteen', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Canteen Manager', 'canteen@nrsc.gov.in', 'Manager', 'Hospitality', 'canteen', 'active'),
-('emp01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Suresh Reddy', 'suresh@nrsc.gov.in', 'Technical Assistant', 'Ground Station', 'employee', 'active');
+INSERT INTO `users`
+(`userid`,`password`,`name`,`email`,`designation`,`department`,`role`,`status`)
+VALUES
+(
+'admin',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'System Administrator',
+'admin@nrsc.gov.in',
+'IT Lead',
+'IT Services',
+'admin',
+'active'
+),
 
--- 2. Menu Items
-INSERT INTO `menu_items` (`item_name`, `category`, `price`, `description`) VALUES
-('Masala Tea', 'beverages', 15.00, 'Spiced Indian tea'),
-('Coffee', 'beverages', 20.00, 'Freshly brewed coffee'),
-('Veg Sandwich', 'snacks', 45.00, 'Cucumber and tomato sandwich with mint chutney'),
-('Samosa (2pcs)', 'snacks', 30.00, 'Potato stuffed pastry'),
-('Working Lunch (Veg)', 'lunch', 150.00, 'Rice, Dal, Curd, Sweet, 2 Roti, Curry'),
-('Premium Lunch', 'lunch', 250.00, 'Paneer, Dal Makhani, Jeera Rice, Roti, Salad, Sweet');
+(
+'officer',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'Rajesh Kumar',
+'officer@nrsc.gov.in',
+'Senior Scientist',
+'Remote Sensing',
+'officer',
+'active'
+),
+
+(
+'canteen',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'Canteen Manager',
+'canteen@nrsc.gov.in',
+'Manager',
+'Hospitality',
+'canteen',
+'active'
+),
+
+(
+'emp01',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'Suresh Reddy',
+'suresh@nrsc.gov.in',
+'Technical Assistant',
+'Ground Station',
+'employee',
+'active'
+);
+
+-- --------------------------------------------------------
+-- SAMPLE MENU ITEMS
+-- --------------------------------------------------------
+
+INSERT INTO `menu_items`
+(`item_name`,`category`,`price`,`description`)
+VALUES
+
+('Masala Tea','beverages',15,'Spiced Indian tea'),
+
+('Coffee','beverages',20,'Freshly brewed coffee'),
+
+('Veg Sandwich','snacks',45,'Cucumber tomato sandwich'),
+
+('Samosa (2pcs)','snacks',30,'Potato stuffed pastry'),
+
+('Working Lunch (Veg)','lunch',150,'Rice Dal Curd Sweet'),
+
+('Premium Lunch','lunch',250,'Paneer Dal Makhani Jeera Rice');
 
 COMMIT;
