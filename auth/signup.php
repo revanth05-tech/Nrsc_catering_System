@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             foreach ($admins as $admin) {
                 insertAndGetId(
                     "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'admin', ?, ?)",
-                    [$admin['id'], "New user registration: $name requires approval.", "/catering_system/notifications.php"],
+                    [$admin['id'], "New user registration: $name requires approval.", "/catering_system/notifications/notifications.php"],
                     "iss"
                 );
             }

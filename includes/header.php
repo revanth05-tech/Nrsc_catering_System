@@ -152,7 +152,7 @@ $totalBadgeCount = $notificationCount + $inactiveCount;
 
             <div class="header-right" style="display: flex; align-items: center;">
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="/catering_system/notifications.php" class="notification-icon" title="Notifications">
+                    <a href="<?php echo APP_URL; ?>/notifications/notifications.php" class="notification-icon" title="Notifications">
                         <i class="fa-solid fa-envelope"></i>
                         <?php if ($totalBadgeCount > 0): ?>
                             <span class="notification-badge"><?php echo $totalBadgeCount; ?></span>

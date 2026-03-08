@@ -2,9 +2,9 @@
 /**
  * Universal Notifications Page
  */
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/config/config.php';
-require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
 
 $pageTitle = 'Notifications';
 $userId = $_SESSION['user_id'] ?? 0;
@@ -27,7 +27,7 @@ if ($userRole === 'admin') {
     $pendingUsers = fetchAll("SELECT * FROM users WHERE status = 'inactive' ORDER BY created_at DESC");
 }
 
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="card">
@@ -177,4 +177,4 @@ include __DIR__ . '/includes/header.php';
 }
 </style>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
