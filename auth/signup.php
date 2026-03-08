@@ -65,6 +65,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 [$userId, 'registration', 'New user registered (pending approval)', $_SERVER['REMOTE_ADDR'] ?? 'unknown'],
                 "isss"
             );
+
+            // Notify Admins
+            $admins = fetchAll("SELECT id FROM users WHERE role = 'admin'");
+            foreach ($admins as $admin) {
+                insertAndGetId(
+                    "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'admin', ?, ?)",
+                    [$admin['id'], "New user registration: $name requires approval.", "/catering_system/notifications.php"],
+                    "iss"
+                );
+            }
             
             $_SESSION['flash_message'] = "Registration submitted successfully. Your account will be activated after admin approval.";
             $_SESSION['flash_type'] = "success";

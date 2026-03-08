@@ -106,13 +106,23 @@ $userRole = ROLE_LABELS[$userRoleKey] ?? 'User';
 <body>
 
 <?php
-// Fetch inactive users for admin notification
+// Fetch unread notifications for all users
+$notificationCount = 0;
+if (isset($_SESSION['user_id'])) {
+    $notif = fetchOne("SELECT COUNT(*) as active_count FROM notifications WHERE user_id = ? AND is_read = 0", [$_SESSION['user_id']], "i");
+    $notificationCount = $notif['active_count'] ?? 0;
+}
+
+// Fetch inactive users for admin notification (keep for compatibility)
 $inactiveCount = 0;
 $pendingUsersList = [];
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $pendingUsersList = fetchAll("SELECT id, name, userid, email, department, role, created_at FROM users WHERE status = 'inactive' ORDER BY created_at DESC");
     $inactiveCount = count($pendingUsersList);
 }
+
+// Total badge count
+$totalBadgeCount = $notificationCount + $inactiveCount;
 ?>
 
 <div class="convo-layout">
@@ -141,13 +151,18 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
             </div>
 
             <div class="header-right" style="display: flex; align-items: center;">
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                    <button type="button" class="notification-icon" title="Pending Approvals" onclick="document.getElementById('pending-users-modal').style.display='flex'" style="background: none; border: none; padding: 0;">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="/catering_system/notifications.php" class="notification-icon" title="Notifications">
                         <i class="fa-solid fa-envelope"></i>
-                        <?php if ($inactiveCount > 0): ?>
-                            <span class="notification-badge"><?php echo $inactiveCount; ?></span>
+                        <?php if ($totalBadgeCount > 0): ?>
+                            <span class="notification-badge"><?php echo $totalBadgeCount; ?></span>
                         <?php endif; ?>
-                    </button>
+                    </a>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && $inactiveCount > 0): ?>
+                    <!-- Hidden button to keep the modal trigger for now if we want to link it from notifications.php -->
+                    <button id="trigger-admin-modal" style="display:none;" onclick="document.getElementById('pending-users-modal').style.display='flex'"></button>
                     
                     <!-- Pending Approvals Modal Overlay -->
                     <div id="pending-users-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center; min-height:100vh; backdrop-filter: blur(6px); padding: 20px;">

@@ -41,6 +41,13 @@ switch ($action) {
                 "UPDATE catering_requests SET status = 'completed' WHERE id = ?",
                 [$id], "i"
             );
+
+            // Notify Employee
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your catering order #{$request['request_number']} is completed.", "/catering_system/employee/my_reqs.php"],
+                "iss"
+            );
             echo json_encode(['success' => true, 'message' => 'Order completed']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Order not found or not in progress']);

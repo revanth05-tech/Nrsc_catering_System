@@ -69,6 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Items
     $items           = $_POST['items'] ?? [];
     $quantities      = $_POST['quantities'] ?? [];
+    
+    // Additional fields
+    $guestCount      = (int)($_POST['guest_count'] ?? 0);
+    $specialInstr    = sanitize($_POST['special_instructions'] ?? '');
 
     // Validation
     if (empty($meetingName)) $errors[] = "Meeting name is required.";
@@ -98,20 +102,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO catering_requests 
                     (request_number, employee_id, requesting_person, requesting_department, 
                      requesting_designation, phone_number, meeting_name, meeting_date, 
-                     meeting_time, area, lic, service_date, service_time, 
+                     meeting_time, area, lic, guest_count, special_instructions, service_date, service_time, 
                      service_location, hall_code, approving_officer_id, approving_by, 
                      approving_department, total_amount, status)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             
             $params = [
                 $requestNumber, $userId, $reqPerson, $reqDept,
                 $reqDesig, $reqPhone, $meetingName, $meetingDate,
-                $meetingTime, $area, $lic, $serviceDate, $serviceTime,
+                $meetingTime, $area, $lic, $guestCount, $specialInstr, $serviceDate, $serviceTime,
                 $serviceLocation, $hallCode, $targetOfficerId, $apprBy,
                 $apprDept, $totalAmount
             ];
             
-            $requestId = insertAndGetId($sql, $params, "sisssssssssssssissd");
+            $requestId = insertAndGetId($sql, $params, "sisssssssssisssssisdd");
 
             if (!$requestId) {
                 throw new Exception("Failed to create request header.");
@@ -131,6 +135,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         "iiid"
                     );
                 }
+            }
+
+            // Notify Officer
+            if ($targetOfficerId) {
+                insertAndGetId(
+                    "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'officer', ?, ?)",
+                    [$targetOfficerId, "New catering request #$requestNumber submitted by $reqPerson.", "/catering_system/officer/dashboard.php"],
+                    "iss"
+                );
             }
 
             $conn->commit();
@@ -197,9 +210,13 @@ include __DIR__ . '/../includes/header.php';
                                             <label class="form-label fw-semibold">Meeting Time</label>
                                             <input type="time" name="meeting_time" class="form-control">
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-md-6">
                                             <label class="form-label fw-semibold">LIC (Leader In-Charge)</label>
                                             <input type="text" name="lic" class="form-control" placeholder="Name of LIC">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Guest Count</label>
+                                            <input type="number" name="guest_count" class="form-control" value="0" min="0">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
@@ -252,6 +269,10 @@ include __DIR__ . '/../includes/header.php';
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Hall Code</label>
                                             <input type="text" name="hall_code" class="form-control" placeholder="Optional">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold text-danger">Special Instructions (e.g. less oil, spicy, boiled, VIP)</label>
+                                            <textarea name="special_instructions" class="form-control" rows="2" placeholder="Enter preparation notes or special requirements..."></textarea>
                                         </div>
                                     </div>
                                 </div>

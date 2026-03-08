@@ -19,6 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "UPDATE catering_requests SET status = ? WHERE id = ?",
             [$newStatus, $requestId], "si"
         );
+
+        // Fetch request info for notification
+        $request = fetchOne("SELECT employee_id, request_number FROM catering_requests WHERE id = ?", [$requestId], "i");
+        if ($request) {
+            $statusLabel = $newStatus === 'completed' ? 'completed' : 'now in progress';
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your catering order #{$request['request_number']} is $statusLabel.", "/catering_system/employee/my_reqs.php"],
+                "iss"
+            );
+        }
+
         redirect('dashboard.php', 'Order status updated!', 'success');
     }
 }

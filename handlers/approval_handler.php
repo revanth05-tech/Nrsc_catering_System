@@ -26,6 +26,24 @@ switch ($action) {
                 "UPDATE catering_requests SET status = 'approved', approving_officer_id = ?, approved_at = NOW() WHERE id = ?",
                 [$_SESSION['user_id'], $id], "ii"
             );
+
+            // Notify Employee
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your request #{$request['request_number']} has been approved.", "/catering_system/employee/my_reqs.php"],
+                "iss"
+            );
+
+            // Notify Canteen Staff
+            $canteenStaff = fetchAll("SELECT id FROM users WHERE role = 'canteen'");
+            $specialNotes = !empty($request['special_instructions']) ? " Notes: " . $request['special_instructions'] : "";
+            foreach ($canteenStaff as $staff) {
+                insertAndGetId(
+                    "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'canteen', ?, ?)",
+                    [$staff['id'], "New approved request #{$request['request_number']} for preparation.$specialNotes", "/catering_system/canteen/dashboard.php"],
+                    "iss"
+                );
+            }
             echo json_encode(['success' => true, 'message' => 'Request approved']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Request not found or already processed']);
@@ -47,6 +65,13 @@ switch ($action) {
             executeAndGetAffected(
                 "UPDATE catering_requests SET status = 'rejected', approving_officer_id = ?, rejection_reason = ? WHERE id = ?",
                 [$_SESSION['user_id'], $reason, $id], "isi"
+            );
+
+            // Notify Employee
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your request #{$request['request_number']} has been rejected. Reason: $reason", "/catering_system/employee/my_reqs.php"],
+                "iss"
             );
             echo json_encode(['success' => true, 'message' => 'Request rejected']);
         } else {
