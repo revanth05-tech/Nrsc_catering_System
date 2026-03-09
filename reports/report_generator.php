@@ -21,7 +21,9 @@ function getReportData($type, $userId, $userRole) {
 
     // Security check: Only allow users to generate reports meant for their role (Admin has full access)
     if ($userRole !== 'admin' && $typePrefix !== $userRole) {
-        if (!($userRole === 'officer' && $type === 'approved_orders')) {
+        if (in_array($userRole, ['officer', 'canteen']) && in_array($type, ['approved_orders', 'completed_orders'])) {
+            // Allow generic cross-dashboard reports
+        } else {
             return false;
         }
     }
@@ -68,6 +70,13 @@ function getReportData($type, $userId, $userRole) {
             $query = "SELECT r.request_number, u.name AS employee_name, r.meeting_name, r.meeting_date, r.service_location, r.total_amount, r.status, r.approved_at 
                       FROM catering_requests r JOIN users u ON r.employee_id = u.id 
                       WHERE r.status = 'approved' ORDER BY r.approved_at DESC";
+            break;
+
+        case 'completed_orders':
+            $data['title'] = 'Completed Orders Report';
+            $query = "SELECT r.request_number, u.name AS employee_name, r.meeting_name, r.meeting_date, r.service_location, r.total_amount, r.status, r.updated_at 
+                      FROM catering_requests r JOIN users u ON r.employee_id = u.id 
+                      WHERE r.status = 'completed' ORDER BY r.updated_at DESC";
             break;
 
         // CANTEEN REPORTS

@@ -1,11 +1,11 @@
 <?php
 /**
- * Completed Orders List
+ * Approved Orders List
  */
 require_once __DIR__ . '/../includes/auth.php';
-requireRole('officer');
+requireRole('canteen');
 
-$pageTitle = 'Completed Orders';
+$pageTitle = 'Approved Orders';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
@@ -13,8 +13,8 @@ $requests = fetchAll(
     "SELECT cr.*, u.name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
-     WHERE cr.status = 'completed' 
-     ORDER BY cr.updated_at DESC"
+     WHERE cr.status = 'approved' 
+     ORDER BY cr.approved_at DESC"
 );
 
 include __DIR__ . '/../includes/header.php';
@@ -22,14 +22,14 @@ include __DIR__ . '/../includes/header.php';
 
 <div class="card">
     <div class="card-header flex-between">
-        <h3 class="mb-0">Completed Orders</h3>
-        <a href="../reports/export_pdf.php?type=completed_orders" class="btn btn-primary btn-sm">
+        <h3 class="mb-0">Approved Orders</h3>
+        <a href="../reports/export_pdf.php?type=approved_orders" class="btn btn-primary btn-sm">
             Download PDF
         </a>
     </div>
     <div class="card-body">
         <?php if (empty($requests)): ?>
-            <p class="text-center text-muted p-6">No completed orders yet.</p>
+            <p class="text-center text-muted p-6">No approved orders found.</p>
         <?php else: ?>
             <div class="table-container">
                 <table>
@@ -63,7 +63,9 @@ include __DIR__ . '/../includes/header.php';
                                     <?php echo ucfirst(str_replace('_', ' ', $req['status'])); ?>
                                 </span>
                             </td>
-                            <td><?php echo formatDate($req['updated_at']); ?></td>
+                            <td>
+                                <?php echo $req['approved_at'] ? formatDate($req['approved_at']) : '-'; ?>
+                            </td>
                             <td>
                                 <a href="../requests/view_request.php?id=<?php echo $req['id']; ?>" class="btn btn-sm btn-outline-primary">
                                     View

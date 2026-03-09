@@ -3,7 +3,7 @@
  * Completed Orders List
  */
 require_once __DIR__ . '/../includes/auth.php';
-requireRole('officer');
+requireRole('admin');
 
 $pageTitle = 'Completed Orders';
 require_once __DIR__ . '/../config/config.php';
@@ -29,7 +29,7 @@ include __DIR__ . '/../includes/header.php';
     </div>
     <div class="card-body">
         <?php if (empty($requests)): ?>
-            <p class="text-center text-muted p-6">No completed orders yet.</p>
+            <p class="text-center text-muted p-6">No completed orders found.</p>
         <?php else: ?>
             <div class="table-container">
                 <table>
@@ -63,7 +63,9 @@ include __DIR__ . '/../includes/header.php';
                                     <?php echo ucfirst(str_replace('_', ' ', $req['status'])); ?>
                                 </span>
                             </td>
-                            <td><?php echo formatDate($req['updated_at']); ?></td>
+                            <td>
+                                <?php echo $req['updated_at'] ? formatDate($req['updated_at']) : '-'; ?>
+                            </td>
                             <td>
                                 <a href="../requests/view_request.php?id=<?php echo $req['id']; ?>" class="btn btn-sm btn-outline-primary">
                                     View

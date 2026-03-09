@@ -297,7 +297,7 @@ if ($requestId > 0) {
     
     <?php else: ?>
 
-    <?php if ($type === 'approved_orders'): ?>
+    <?php if (in_array($type, ['approved_orders', 'completed_orders'])): ?>
         <table>
             <thead>
                 <tr>
@@ -308,7 +308,7 @@ if ($requestId > 0) {
                     <th>Venue</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Approved Date</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -317,7 +317,9 @@ if ($requestId > 0) {
                         <td colspan="8" style="text-align: center; padding: 30px;">No requests found for this report.</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($requests as $row): ?>
+                    <?php foreach ($requests as $row): 
+                          $dateField = $type === 'approved_orders' ? ($row['approved_at'] ?? '') : ($row['updated_at'] ?? '');
+                    ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($row['request_number']); ?></strong></td>
                             <td><?php echo htmlspecialchars($row['employee_name']); ?></td>
@@ -326,7 +328,7 @@ if ($requestId > 0) {
                             <td><?php echo htmlspecialchars($row['service_location']); ?></td>
                             <td><?php echo formatCurrency($row['total_amount']); ?></td>
                             <td class="status-badge"><?php echo htmlspecialchars($row['status']); ?></td>
-                            <td><?php echo $row['approved_at'] ? formatDate($row['approved_at']) : '-'; ?></td>
+                            <td><?php echo $dateField ? formatDate($dateField) : '-'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
