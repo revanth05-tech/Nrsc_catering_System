@@ -56,6 +56,15 @@ if ($requestId > 0) {
             color: #333;
             margin: 0;
             padding: 40px;
+            background-color: #f4f6fb;
+        }
+        .report-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         .header {
             text-align: center;
@@ -76,43 +85,45 @@ if ($requestId > 0) {
             color: #555;
             font-weight: normal;
         }
-        .meta-info {
+        .report-meta {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 15px;
             line-height: 1.6;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 40px;
+            margin-top: 20px;
             font-size: 14px;
         }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
+        table th {
+            background: #f4f6fb;
+            font-weight: 600;
             padding: 12px;
             text-align: left;
-        }
-        th {
-            background-color: #f4f6f9;
             color: #1a56db;
-            font-weight: bold;
             text-transform: uppercase;
             font-size: 13px;
+            border: 1px solid #ccc;
+        }
+        table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-bottom: 1px solid #eaeaea;
         }
         tr:nth-child(even) {
             background-color: #fafafa;
         }
-        .summary {
-            width: 350px;
-            float: right;
-            border: 2px solid #1a56db;
+        .summary-box {
+            margin-top: 30px;
+            width: 300px;
             padding: 20px;
-            background-color: #f9fbff;
             border-radius: 8px;
+            border: 2px solid #3a6ff7;
+            float: right;
+            background-color: #f9fbff;
             page-break-inside: avoid;
         }
         .summary-row {
@@ -135,10 +146,24 @@ if ($requestId > 0) {
             font-weight: bold;
             color: #666;
         }
+        .report-actions {
+            text-align: center;
+        }
         @media print {
-            body { padding: 0; }
-            .no-print { display: none !important; }
-            .summary { 
+            body { 
+                padding: 0; 
+                background-color: white;
+            }
+            .report-actions { 
+                display: none; 
+            }
+            .report-container {
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .summary-box { 
                 border: 1px solid #000; 
                 background-color: transparent; 
                 color: #000;
@@ -175,17 +200,19 @@ if ($requestId > 0) {
     </style>
 </head>
 <body onload="setTimeout(function(){ window.print(); }, 500);">
-    <div class="no-print" style="text-align: center;">
+    <div class="report-actions">
         <button onclick="window.print()" class="no-print-btn">🖨️ Print / Save as PDF</button>
         <button onclick="window.close()" class="no-print-btn" style="background-color: #6b7280; box-shadow: none;">❌ Close</button>
     </div>
+    
+    <div class="report-container">
 
     <div class="header">
         <h1>NRSC Catering Management System</h1>
         <h2>National Remote Sensing Centre</h2>
     </div>
 
-    <div class="meta-info">
+    <div class="report-meta">
         <div>
             <strong>Report Title:</strong> <?php echo htmlspecialchars($reportTitle); ?><br>
             <strong>Role Context:</strong> <?php echo $generatedBy; ?>
@@ -256,7 +283,7 @@ if ($requestId > 0) {
     </table>
 
     <div class="clearfix">
-        <div class="summary">
+        <div class="summary-box">
             <div class="summary-row">
                 <span>Total Items:</span>
                 <span><?php $t = 0; foreach($items as $i) $t += $i['quantity']; echo $t; ?></span>
@@ -302,7 +329,7 @@ if ($requestId > 0) {
     </table>
 
     <div class="clearfix">
-        <div class="summary">
+        <div class="summary-box">
             <div class="summary-row">
                 <span>Total Requests:</span>
                 <span><?php echo $totalRequests; ?></span>
@@ -315,5 +342,6 @@ if ($requestId > 0) {
     </div>
     
     <?php endif; ?>
+    </div>
 </body>
 </html>

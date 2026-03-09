@@ -31,8 +31,17 @@ $requests = fetchAll(
 include __DIR__ . '/../includes/header.php';
 ?>
 
+<style>
+.request-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+</style>
+
 <div class="flex-between mb-6">
-    <div>
+    <div class="request-actions mb-0">
         <a href="new_request.php" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -40,7 +49,7 @@ include __DIR__ . '/../includes/header.php';
             </svg>
             New Request
         </a>
-        <a href="../reports/export_pdf.php?type=employee_requests" class="btn btn-primary ms-2" target="_blank">
+        <a href="../reports/export_pdf.php?type=employee_requests" class="btn btn-secondary" target="_blank">
             Download PDF
         </a>
     </div>
