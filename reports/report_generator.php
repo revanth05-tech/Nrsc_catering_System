@@ -99,3 +99,49 @@ function getReportData($type, $userId, $userRole) {
 
     return $data;
 }
+
+function getSingleRequestData($requestId, $userId, $userRole) {
+    $whereClause = "cr.id = ?";
+    $params = [$requestId];
+    $types = "i";
+
+    // Security check logic per role
+    if ($userRole === 'employee') {
+        $whereClause .= " AND cr.employee_id = ?";
+        $params[] = $userId;
+        $types .= "i";
+    } elseif ($userRole === 'officer') {
+        $whereClause .= " AND cr.approving_officer_id = ?";
+        $params[] = $userId;
+        $types .= "i";
+    } elseif ($userRole === 'canteen') {
+        $whereClause .= " AND cr.status IN ('approved', 'in_progress', 'completed')";
+    }
+
+    // Admin has full access, no additional where clauses needed.
+
+    global $conn;
+    $request = fetchOne(
+        "SELECT cr.*, u.name as requestor_name, u.department 
+         FROM catering_requests cr 
+         JOIN users u ON cr.employee_id = u.id 
+         WHERE $whereClause",
+        $params, $types
+    );
+
+    if (!$request) {
+        return false;
+    }
+
+    $items = fetchAll(
+        "SELECT ri.*, mi.item_name FROM request_items ri 
+         JOIN menu_items mi ON ri.item_id = mi.id 
+         WHERE ri.request_id = ?",
+        [$requestId], "i"
+    );
+
+    return [
+        'request' => $request,
+        'items' => $items
+    ];
+}

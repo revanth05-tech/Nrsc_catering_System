@@ -138,6 +138,11 @@ include __DIR__ . '/../includes/header.php';
                 </tfoot>
             </table>
         </div>
+        <div class="mt-4" style="text-align: right;">
+            <a href="../reports/export_pdf.php?request_id=<?php echo $orderId; ?>" class="btn btn-primary" target="_blank">
+                <i class="fa-solid fa-download me-2"></i> Download PDF
+            </a>
+        </div>
     </div>
 </div>
 

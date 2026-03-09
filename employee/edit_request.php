@@ -160,6 +160,9 @@ include __DIR__ . '/../includes/header.php';
                     </button>
                 </form>
                 <?php endif; ?>
+                <a href="../reports/export_pdf.php?request_id=<?php echo $requestId; ?>" class="btn btn-primary" target="_blank">
+                    <i class="fa-solid fa-download me-2"></i> Download PDF
+                </a>
             </div>
         </div>
     </div>

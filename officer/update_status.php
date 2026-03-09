@@ -235,8 +235,11 @@ include __DIR__ . '/../includes/header.php';
             </script>
             <?php endif; ?>
             
-            <div class="mt-6">
+            <div class="flex-between mt-6">
                 <a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
+                <a href="../reports/export_pdf.php?request_id=<?php echo $requestId; ?>" class="btn btn-primary" target="_blank">
+                    <i class="fa-solid fa-download me-2"></i> Download PDF
+                </a>
             </div>
         </div>
     </div>
