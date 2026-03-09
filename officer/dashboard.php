@@ -69,8 +69,9 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <h3>Pending Approval Requests</h3>
+    <div class="card-header flex-between" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Pending Approval Requests</h3>
+        <a href="../reports/export_pdf.php?type=officer_pending" class="btn btn-primary btn-sm" target="_blank">Download PDF</a>
     </div>
     <div class="card-body">
         <?php if (empty($pendingRequests)): ?>

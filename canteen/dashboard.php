@@ -111,8 +111,9 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <h3>Active Orders</h3>
+    <div class="card-header flex-between" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Active Orders</h3>
+        <a href="../reports/export_pdf.php?type=canteen_active" class="btn btn-primary btn-sm" target="_blank">Download PDF</a>
     </div>
     <div class="card-body">
         <?php if (empty($orders)): ?>

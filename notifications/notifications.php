@@ -15,6 +15,14 @@ if ($userId > 0) {
     executeAndGetAffected("UPDATE notifications SET is_read = 1 WHERE user_id = ?", [$userId], "i");
 }
 
+// Handle clearing notifications
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_notifications'])) {
+    if ($userId > 0) {
+        executeAndGetAffected("DELETE FROM notifications WHERE user_id = ?", [$userId], "i");
+        redirect('notifications.php', 'All notifications cleared.', 'success');
+    }
+}
+
 // Fetch notifications
 $notifications = fetchAll(
     "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
@@ -36,8 +44,13 @@ include __DIR__ . '/../includes/header.php';
             <h3 class="card-title">Notifications</h3>
             <p class="text-muted" style="font-size: 0.85rem;">Stay updated with system activities</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
             <?php if (!empty($notifications)): ?>
+                <form method="POST" onsubmit="return confirm('Are you sure you want to clear all notifications? This action cannot be undone.');">
+                    <button type="submit" name="clear_notifications" class="btn btn-sm btn-danger" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                    </button>
+                </form>
                 <span class="badge badge-primary"><?php echo count($notifications); ?> Recent</span>
             <?php endif; ?>
         </div>

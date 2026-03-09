@@ -68,14 +68,24 @@ include __DIR__ . '/../includes/header.php';
 <form method="GET" class="flex-between mb-6" style="background:white;padding:20px;border-radius:var(--radius-lg);">
     <div class="d-flex gap-4" style="align-items:flex-end;">
         <div class="form-group mb-0">
-            <label>Start Date</label>
+            <label>From Date</label>
             <input type="date" name="start" value="<?php echo $startDate; ?>">
         </div>
         <div class="form-group mb-0">
-            <label>End Date</label>
+            <label>To Date</label>
             <input type="date" name="end" value="<?php echo $endDate; ?>">
         </div>
-        <button type="submit" class="btn btn-primary">Apply Filter</button>
+        <div class="form-group mb-0">
+            <label>Report Type</label>
+            <select name="report_type" class="form-control" style="min-width: 180px;">
+                <option value="all" <?php echo (isset($_GET['report_type']) && $_GET['report_type'] == 'all') ? 'selected' : ''; ?>>All Requests</option>
+                <option value="approved" <?php echo (isset($_GET['report_type']) && $_GET['report_type'] == 'approved') ? 'selected' : ''; ?>>Approved Requests</option>
+                <option value="completed" <?php echo (isset($_GET['report_type']) && $_GET['report_type'] == 'completed') ? 'selected' : ''; ?>>Completed Requests</option>
+                <option value="revenue" <?php echo (isset($_GET['report_type']) && $_GET['report_type'] == 'revenue') ? 'selected' : ''; ?>>Revenue Report</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" formaction="reports.php">Apply Filter</button>
+        <button type="submit" class="btn btn-success" formaction="export_report.php" formtarget="_blank">Download PDF Report</button>
     </div>
 </form>
 

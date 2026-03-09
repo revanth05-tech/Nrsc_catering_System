@@ -40,6 +40,9 @@ include __DIR__ . '/../includes/header.php';
             </svg>
             New Request
         </a>
+        <a href="../reports/export_pdf.php?type=employee_requests" class="btn btn-primary ms-2" target="_blank">
+            Download PDF
+        </a>
     </div>
     <div class="d-flex gap-2">
         <a href="?status=" class="btn btn-sm <?php echo !$statusFilter ? 'btn-primary' : 'btn-secondary'; ?>">All</a>
