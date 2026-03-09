@@ -21,7 +21,9 @@ function getReportData($type, $userId, $userRole) {
 
     // Security check: Only allow users to generate reports meant for their role (Admin has full access)
     if ($userRole !== 'admin' && $typePrefix !== $userRole) {
-        return false;
+        if (!($userRole === 'officer' && $type === 'approved_orders')) {
+            return false;
+        }
     }
 
     switch ($type) {
@@ -59,6 +61,13 @@ function getReportData($type, $userId, $userRole) {
                       WHERE cr.approving_officer_id = ? AND cr.status != 'pending' ORDER BY cr.created_at DESC";
             $params = [$userId];
             $types = "i";
+            break;
+            
+        case 'approved_orders':
+            $data['title'] = 'Approved Orders Report';
+            $query = "SELECT r.request_number, u.name AS employee_name, r.meeting_name, r.meeting_date, r.service_location, r.total_amount, r.status, r.approved_at 
+                      FROM catering_requests r JOIN users u ON r.employee_id = u.id 
+                      WHERE r.status = 'approved' ORDER BY r.approved_at DESC";
             break;
 
         // CANTEEN REPORTS

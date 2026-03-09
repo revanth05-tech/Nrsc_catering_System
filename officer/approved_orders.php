@@ -21,8 +21,11 @@ include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="card">
-    <div class="card-header">
-        <h3>Approved Orders</h3>
+    <div class="card-header flex-between">
+        <h3 class="mb-0">Approved Orders</h3>
+        <a href="../reports/export_pdf.php?type=approved_orders" class="btn btn-primary btn-sm">
+            Download PDF
+        </a>
     </div>
     <div class="card-body">
         <?php if (empty($requests)): ?>
@@ -40,6 +43,7 @@ include __DIR__ . '/../includes/header.php';
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Approved On</th>
+                            <th>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,6 +65,11 @@ include __DIR__ . '/../includes/header.php';
                             </td>
                             <td>
                                 <?php echo $req['approved_at'] ? formatDate($req['approved_at']) : '-'; ?>
+                            </td>
+                            <td>
+                                <a href="../requests/view_request.php?id=<?php echo $req['id']; ?>" class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

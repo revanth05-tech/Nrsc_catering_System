@@ -297,36 +297,73 @@ if ($requestId > 0) {
     
     <?php else: ?>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Request Number</th>
-                <th>Meeting Name</th>
-                <th>Department</th>
-                <th>Service Date</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($requests)): ?>
+    <?php if ($type === 'approved_orders'): ?>
+        <table>
+            <thead>
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 30px;">No requests found for this report.</td>
+                    <th>Request Number</th>
+                    <th>Employee</th>
+                    <th>Meeting/Event</th>
+                    <th>Event Date</th>
+                    <th>Venue</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Approved Date</th>
                 </tr>
-            <?php else: ?>
-                <?php foreach ($requests as $row): ?>
+            </thead>
+            <tbody>
+                <?php if (empty($requests)): ?>
                     <tr>
-                        <td><strong><?php echo htmlspecialchars($row['request_number']); ?></strong></td>
-                        <td><?php echo htmlspecialchars($row['meeting_name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['department'] ?? 'N/A'); ?></td>
-                        <td><?php echo formatDate($row['service_date']); ?></td>
-                        <td><?php echo formatCurrency($row['total_amount']); ?></td>
-                        <td class="status-badge"><?php echo htmlspecialchars($row['status']); ?></td>
+                        <td colspan="8" style="text-align: center; padding: 30px;">No requests found for this report.</td>
                     </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php else: ?>
+                    <?php foreach ($requests as $row): ?>
+                        <tr>
+                            <td><strong><?php echo htmlspecialchars($row['request_number']); ?></strong></td>
+                            <td><?php echo htmlspecialchars($row['employee_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['meeting_name']); ?></td>
+                            <td><?php echo formatDate($row['meeting_date']); ?></td>
+                            <td><?php echo htmlspecialchars($row['service_location']); ?></td>
+                            <td><?php echo formatCurrency($row['total_amount']); ?></td>
+                            <td class="status-badge"><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td><?php echo $row['approved_at'] ? formatDate($row['approved_at']) : '-'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Request Number</th>
+                    <th>Meeting Name</th>
+                    <th>Department</th>
+                    <th>Service Date</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($requests)): ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 30px;">No requests found for this report.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($requests as $row): ?>
+                        <tr>
+                            <td><strong><?php echo htmlspecialchars($row['request_number']); ?></strong></td>
+                            <td><?php echo htmlspecialchars($row['meeting_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['department'] ?? 'N/A'); ?></td>
+                            <td><?php echo formatDate($row['service_date']); ?></td>
+                            <td><?php echo formatCurrency($row['total_amount']); ?></td>
+                            <td class="status-badge"><?php echo htmlspecialchars($row['status']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 
     <div class="clearfix">
         <div class="summary-box">
