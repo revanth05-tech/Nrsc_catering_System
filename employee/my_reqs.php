@@ -101,9 +101,9 @@ include __DIR__ . '/../includes/header.php';
                             </td>
                             <td>
                                 <?php if ($req['status'] === 'pending' || $req['status'] === 'new'): ?>
-                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-sm btn-secondary">Edit</a>
+                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-xs btn-secondary">Edit</a>
                                 <?php else: ?>
-                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>&view=1" class="btn btn-sm btn-secondary">View</a>
+                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>&view=1" class="btn btn-xs btn-secondary">View</a>
                                 <?php endif; ?>
                             </td>
                         </tr>

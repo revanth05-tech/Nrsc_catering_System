@@ -80,6 +80,78 @@ include __DIR__ . '/../includes/header.php';
     </div>
 <?php endif; ?>
 
+<style>
+/* Modern Action Buttons Styling */
+.action-buttons {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+.action-btn {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 6px 16px !important;
+    border-radius: 20px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1.2 !important;
+    outline: none !important;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+    color: white !important;
+}
+
+.btn-edit {
+    background: #e8f0ff !important;
+    color: #2563eb !important;
+}
+
+.btn-edit:hover {
+    background: #2563eb !important;
+}
+
+.btn-submit {
+    background: #e8fff1 !important;
+    color: #16a34a !important;
+}
+
+.btn-submit:hover {
+    background: #16a34a !important;
+}
+
+.btn-delete {
+    background: #ffeaea !important;
+    color: #dc2626 !important;
+}
+
+.btn-delete:hover {
+    background: #dc2626 !important;
+}
+
+/* Ensure forms don't break the layout */
+.action-buttons form {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: contents !important;
+}
+
+/* Fix for button height */
+button.action-btn {
+    height: auto !important;
+    min-height: unset !important;
+}
+</style>
+
 <div class="card">
     <div class="card-body">
         <?php if (empty($requests)): ?>
@@ -117,19 +189,19 @@ include __DIR__ . '/../includes/header.php';
                                 </span>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-primary btn-sm mx-1 rounded">Edit</a>
+                                <div class="action-buttons">
+                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="action-btn btn-edit">Edit</a>
                                     
-                                    <form method="POST" class="d-inline" onsubmit="return confirm('Submit this request for approval?');">
+                                    <form method="POST" onsubmit="return confirm('Submit this request for approval?');">
                                         <input type="hidden" name="action" value="submit_saved">
                                         <input type="hidden" name="request_id" value="<?php echo $req['id']; ?>">
-                                        <button type="submit" class="btn btn-success btn-sm mx-1 rounded">Submit</button>
+                                        <button type="submit" class="action-btn btn-submit">Submit</button>
                                     </form>
                                     
-                                    <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this saved request?');">
+                                    <form method="POST" onsubmit="return confirm('Are you sure you want to delete this saved request?');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="request_id" value="<?php echo $req['id']; ?>">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-1 rounded">Delete</button>
+                                        <button type="submit" class="action-btn btn-delete">Delete</button>
                                     </form>
                                 </div>
                             </td>
