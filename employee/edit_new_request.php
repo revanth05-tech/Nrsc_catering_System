@@ -18,17 +18,21 @@ require_once __DIR__ . '/../config/db.php';
 $userId = getCurrentUserId();
 $user   = fetchOne("SELECT * FROM users WHERE id = ?", [$userId], "i") ?? [];
 
-// Default suggestions from users table
-$defName  = $user['name'] ?? '';
-$defDept  = $user['department'] ?? '';
-$defDesig = $user['designation'] ?? '';
-$defPhone = $user['phone'] ?? '';
+// Default suggestions from users table & request
+$defName  = $request['requesting_person'] ?? $user['name'] ?? '';
+$defDept  = $request['requesting_department'] ?? $user['department'] ?? '';
+$defDesig = $request['requesting_designation'] ?? $user['designation'] ?? '';
+$defPhone = $request['phone_number'] ?? $user['phone'] ?? '';
 
 // Active approving officer (auto-assignment)
 $officer = fetchOne("SELECT * FROM users WHERE role='officer' AND status='active' LIMIT 1") ?? [];
-$defOfficerId   = $officer['id'] ?? null;
-$defOfficerName = $officer['name'] ?? '';
-$defOfficerDept = $officer['department'] ?? '';
+$defOfficerId   = $request['approving_officer_id'] ?? $officer['id'] ?? null;
+$defOfficerName = $request['approving_by'] ?? $officer['name'] ?? '';
+$defOfficerDept = $request['approving_department'] ?? $officer['department'] ?? '';
+
+// Fetch existing items for display
+$existingItems = fetchAll("SELECT ri.*, mi.item_name FROM request_items ri JOIN menu_items mi ON ri.item_id = mi.id WHERE ri.request_id = ?", [$requestId], "i");
+
 
 // Available menu items
 $menuItems = fetchAll("SELECT * FROM menu_items WHERE is_available=1 ORDER BY category, item_name") ?? [];
@@ -88,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->begin_transaction();
 
         try {
-            $requestNumber = generateRequestNumber();
+            
             $totalAmount = 0;
 
             // Calculate total first
@@ -102,28 +106,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $status = ($action === 'save') ? 'new' : 'pending';
 
-            // Insert Main Request
-            $sql = "INSERT INTO catering_requests 
-                    (request_number, employee_id, requesting_person, requesting_department, 
-                     requesting_designation, phone_number, meeting_name, meeting_date, 
-                     meeting_time, area, lic, guest_count, special_instructions, service_date, service_time, 
-                     service_location, hall_code, approving_officer_id, approving_by, 
-                     approving_department, total_amount, status)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Update Main Request
+            $requestNumber = $request['request_number']; // reuse existing
+            $sql = "UPDATE catering_requests SET 
+                     requesting_person=?, requesting_department=?, 
+                     requesting_designation=?, phone_number=?, meeting_name=?, meeting_date=?, 
+                     meeting_time=?, area=?, lic=?, guest_count=?, special_instructions=?, service_date=?, service_time=?, 
+                     service_location=?, hall_code=?, approving_officer_id=?, approving_by=?, 
+                     approving_department=?, total_amount=?, status=? 
+                     WHERE id=? AND employee_id=?";
             
             $params = [
-                $requestNumber, $userId, $reqPerson, $reqDept,
+                $reqPerson, $reqDept,
                 $reqDesig, $reqPhone, $meetingName, $meetingDate,
                 $meetingTime, $area, $lic, $guestCount, $specialInstr, $serviceDate, $serviceTime,
                 $serviceLocation, $hallCode, $targetOfficerId, $apprBy,
-                $apprDept, $totalAmount, $status
+                $apprDept, $totalAmount, $status, $requestId, $userId
             ];
             
-            $requestId = insertAndGetId($sql, $params, "sisssssssssisssssissds");
+            executeQuery($sql, $params, "ssssssssssisssssissdsii");
 
-            if (!$requestId) {
-                throw new Exception("Failed to create request header.");
-            }
+            // Delete old items and insert new ones
+            executeQuery("DELETE FROM request_items WHERE request_id=?", [$requestId], "i");
 
             // Insert Items
             foreach ($items as $idx => $itemId) {
@@ -204,27 +208,27 @@ include __DIR__ . '/../includes/header.php';
                                     <div class="row g-3">
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Meeting Name <span class="text-danger">*</span></label>
-                                            <input type="text" name="meeting_name" class="form-control" placeholder="Enter meeting purpose/name" required>
+                                            <input type="text" name="meeting_name" class="form-control" value="<?= htmlspecialchars($request['meeting_name'] ?? '') ?>" required>
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Area / Building <span class="text-danger">*</span></label>
-                                            <input type="text" name="area" class="form-control" placeholder="e.g. Ground Station Area" required>
+                                            <input type="text" name="area" class="form-control" value="<?= htmlspecialchars($request['area'] ?? '') ?>" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Meeting Date <span class="text-danger">*</span></label>
-                                            <input type="date" name="meeting_date" class="form-control" required min="<?= date('Y-m-d') ?>">
+                                            <input type="date" name="meeting_date" class="form-control" required value="<?= htmlspecialchars($request['meeting_date'] ?? '') ?>" min="<?= date('Y-m-d') ?>">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Meeting Time</label>
-                                            <input type="time" name="meeting_time" class="form-control">
+                                            <input type="time" name="meeting_time" class="form-control" value="<?= htmlspecialchars($request['meeting_time'] ?? '') ?>">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">LIC (Leader In-Charge)</label>
-                                            <input type="text" name="lic" class="form-control" placeholder="Name of LIC">
+                                            <input type="text" name="lic" class="form-control" value="<?= htmlspecialchars($request['lic'] ?? '') ?>">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Guest Count</label>
-                                            <input type="number" name="guest_count" class="form-control" value="0" min="0">
+                                            <input type="number" name="guest_count" class="form-control" value="<?= htmlspecialchars($request['guest_count'] ?? '0') ?>" min="0">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
@@ -264,23 +268,23 @@ include __DIR__ . '/../includes/header.php';
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Service Date</label>
-                                            <input type="date" name="service_date" class="form-control" value="<?= date('Y-m-d') ?>">
+                                            <input type="date" name="service_date" class="form-control" value="<?= htmlspecialchars($request['service_date'] ?? date('Y-m-d')) ?>">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Service Time</label>
-                                            <input type="time" name="service_time" class="form-control">
+                                            <input type="time" name="service_time" class="form-control" value="<?= htmlspecialchars($request['service_time'] ?? '') ?>">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Venue/Location</label>
-                                            <input type="text" name="service_location" class="form-control" placeholder="e.g. Conf Room 101">
+                                            <input type="text" name="service_location" class="form-control" value="<?= htmlspecialchars($request['service_location'] ?? '') ?>">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Hall Code</label>
-                                            <input type="text" name="hall_code" class="form-control" placeholder="Optional">
+                                            <input type="text" name="hall_code" class="form-control" value="<?= htmlspecialchars($request['hall_code'] ?? '') ?>">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold text-danger">Special Instructions (e.g. less oil, spicy, boiled, VIP)</label>
-                                            <textarea name="special_instructions" class="form-control" rows="2" placeholder="Enter preparation notes or special requirements..."></textarea>
+                                            <textarea name="special_instructions" class="form-control" rows="2"><?= htmlspecialchars($request['special_instructions'] ?? '') ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -350,14 +354,37 @@ include __DIR__ . '/../includes/header.php';
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr id="empty-row">
-                                                    <td colspan="6" class="text-center text-muted py-4">No items added yet.</td>
-                                                </tr>
+                                                <?php if(empty($existingItems)): ?>
+                                                    <tr id="empty-row">
+                                                        <td colspan="6" class="text-center text-muted py-4">No items added yet.</td>
+                                                    </tr>
+                                                <?php else: ?>
+                                                    <?php $rowCounter=1; foreach($existingItems as $it): ?>
+                                                    <tr>
+                                                        <td class="text-center fw-bold"><?= $rowCounter++ ?></td>
+                                                        <td>
+                                                            <?= htmlspecialchars($it['item_name']) ?>
+                                                            <input type="hidden" name="items[]" value="<?= $it['item_id'] ?>">
+                                                        </td>
+                                                        <td>₹<?= number_format($it['unit_price'], 2) ?></td>
+                                                        <td>
+                                                            <input type="hidden" name="quantities[]" value="<?= $it['quantity'] ?>">
+                                                            <?= $it['quantity'] ?>
+                                                        </td>
+                                                        <td class="fw-bold">₹<?= number_format($it['quantity'] * $it['unit_price'], 2) ?></td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this, <?= $it['quantity'] * $it['unit_price'] ?>)">
+                                                                <i class="fas fa-trash-can me-1"></i> Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </tbody>
                                             <tfoot class="table-light">
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
-                                                    <th id="grand-total" class="text-primary">₹0.00</th>
+                                                    <th id="grand-total" class="text-primary">₹<?= number_format($request['total_amount'] ?? 0, 2) ?></th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -541,7 +568,7 @@ include __DIR__ . '/../includes/header.php';
 </style>
 
 <script>
-let totalAmount = 0;
+let totalAmount = <?= $request['total_amount'] ?? 0 ?>;
 
 function addItem() {
     const select = document.getElementById('menu-selector');

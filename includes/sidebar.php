@@ -34,8 +34,11 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a href="/catering_system/employee/new_request.php" class="btn btn-ghost <?php echo $currentPage === 'new_request.php' ? 'active' : ''; ?>">
                 New Request
             </a>
+            <a href="/catering_system/employee/saved_requests.php" class="btn btn-ghost <?php echo $currentPage === 'saved_requests.php' ? 'active' : ''; ?>">
+                Saved Requests
+            </a>
             <a href="/catering_system/employee/my_reqs.php" class="btn btn-ghost <?php echo $currentPage === 'my_reqs.php' ? 'active' : ''; ?>">
-                My Request History
+                My Requests
             </a>
 
         

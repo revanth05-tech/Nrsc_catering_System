@@ -469,6 +469,12 @@ tbody tr:last-child td {
     border-radius: var(--radius-full);
 }
 
+.badge-new {
+    background: var(--gray-700);
+    color: var(--gray-300);
+    border: 1px solid var(--gray-600);
+}
+
 .badge-pending {
     background: var(--warning-100);
     color: var(--warning-500);

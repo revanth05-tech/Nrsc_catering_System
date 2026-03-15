@@ -26,9 +26,14 @@ if (!$request) {
     redirect('my_reqs.php', 'Request not found', 'error');
 }
 
-// Can only edit pending requests
-if ($request['status'] !== 'pending') {
+// Can only edit pending or new requests
+if ($request['status'] !== 'pending' && $request['status'] !== 'new') {
     $viewOnly = true;
+}
+
+if ($request['status'] === 'new' && !$viewOnly) {
+    include __DIR__ . '/edit_new_request.php';
+    exit;
 }
 
 $pageTitle = $viewOnly ? 'View Request' : 'Edit Request';
