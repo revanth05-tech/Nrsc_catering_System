@@ -98,7 +98,7 @@ CREATE TABLE `catering_requests` (
     `total_amount` DECIMAL(12,2) DEFAULT 0.00,
 
     `status` ENUM(
-        'draft',
+        'new',
         'pending',
         'approved',
         'rejected',
