@@ -284,5 +284,26 @@ CREATE TABLE `TBAD_EMPVSREPEMPPLOYEE` (
     FOREIGN KEY (`REPEMPLOYEECODE`) REFERENCES `VIMIS_EMPLOYEE`(`EMPLOYEECODE`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- --------------------------------------------------------
+-- SAMPLE VIMIS EMPLOYEES
+-- --------------------------------------------------------
+
+INSERT INTO `VIMIS_EMPLOYEE` 
+(`EMPLOYEECODE`, `EMPLOYEENAME`, `SALUTATIONCODE`, `SERVICESTATCODE`, `WORKINGCITYNAME`, `WORKSITE`, `SEX`, `SUPERANNUATNDT`, `JOINGOVTDATE`, `DESGCODE`, `DESGFULLNAME`, `OFFICERTYPE`, `DIVNCODE`, `DIVNFULLNAME`, `GROUPCODE`, `GROUPSHORTNAME`, `ENTITYCODE`, `ENTITYSHORTNAME`) 
+VALUES 
+('NR01234', 'Dr. Anil Kumar', 'Dr.', 'SERV', 'Hyderabad', 'Jeedimetla', 'Male', '2040-05-31', '2010-06-15', 'SCI-E', 'Scientist/Engineer-E', 'Gazetted', 'RSAM', 'Remote Sensing Applications', 'ER-C', 'Earth Resources', 'NRSC', 'National Remote Sensing Centre'),
+('NR04567', 'Ms. Sunita Sharma', 'Ms.', 'PROB', 'Hyderabad', 'Balanagar', 'Female', '2045-12-31', '2023-01-10', 'TA-B', 'Technical Assistant-B', 'Non-Gazetted', 'GSG', 'Ground Station Group', 'DP', 'Data Processing', 'NRSC', 'National Remote Sensing Centre'),
+('NR07890', 'Mr. Rajesh Varma', 'Mr.', 'SERV', 'Hyderabad', 'Shadnagar', 'Male', '2038-08-31', '2005-09-01', 'AO', 'Administrative Officer', 'Gazetted', 'ADM', 'Administration', 'PERS', 'Personnel & Administration', 'NRSC', 'National Remote Sensing Centre');
+
+
+-- --------------------------------------------------------
+-- SAMPLE REPORTING HIERARCHY
+-- --------------------------------------------------------
+
+INSERT INTO `TBAD_EMPVSREPEMPPLOYEE` (`EMPLOYEECODE`, `REPEMPLOYEECODE`) VALUES ('NR01234', 'NR04567');
+
 COMMIT;
+
+
 
