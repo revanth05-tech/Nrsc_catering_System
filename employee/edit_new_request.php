@@ -16,12 +16,18 @@ require_once __DIR__ . '/../config/db.php';
 // 1. INITIAL DATA FETCHING (PRE-FILLS)
 // ---------------------------------------------------------
 $userId = getCurrentUserId();
-$user   = fetchOne("SELECT * FROM users WHERE id = ?", [$userId], "i") ?? [];
 
-// Default suggestions from users table & request
-$defName  = $request['requesting_person'] ?? $user['name'] ?? '';
-$defDept  = $request['requesting_department'] ?? $user['department'] ?? '';
-$defDesig = $request['requesting_designation'] ?? $user['designation'] ?? '';
+// Fetch user data linked with VIMIS_EMPLOYEE for master employee info
+$sql = "SELECT u.*, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME 
+        FROM users u 
+        LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+        WHERE u.id = ?";
+$user = fetchOne($sql, [$userId], "i") ?? [];
+
+// Default suggestions: Prioritize VIMIS master data, fallback to saved request or users table
+$defName  = !empty($user['EMPLOYEENAME']) ? $user['EMPLOYEENAME'] : ($request['requesting_person'] ?? $user['name'] ?? '');
+$defDept  = !empty($user['DIVNFULLNAME']) ? $user['DIVNFULLNAME'] : ($request['requesting_department'] ?? $user['department'] ?? '');
+$defDesig = !empty($user['DESGFULLNAME']) ? $user['DESGFULLNAME'] : ($request['requesting_designation'] ?? $user['designation'] ?? '');
 $defPhone = $request['phone_number'] ?? $user['phone'] ?? '';
 
 // Active approving officer (auto-assignment)
@@ -232,11 +238,11 @@ include __DIR__ . '/../includes/header.php';
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
-                                            <input type="text" name="requesting_person" class="form-control" value="<?= htmlspecialchars($defName ?? '') ?>" placeholder="Search name...">
+                                            <input type="text" name="requesting_person" class="form-control bg-light" value="<?= htmlspecialchars($defName ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Designation</label>
-                                            <input type="text" name="requesting_designation" class="form-control" value="<?= htmlspecialchars($defDesig ?? '') ?>">
+                                            <input type="text" name="requesting_designation" class="form-control bg-light" value="<?= htmlspecialchars($defDesig ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Phone Number</label>
@@ -244,7 +250,7 @@ include __DIR__ . '/../includes/header.php';
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Requesting Department</label>
-                                            <input type="text" name="requesting_department" class="form-control" value="<?= htmlspecialchars($defDept ?? '') ?>">
+                                            <input type="text" name="requesting_department" class="form-control bg-light" value="<?= htmlspecialchars($defDept ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Approving Officer</label>
