@@ -26,8 +26,8 @@ if (!$request) {
     redirect('my_reqs.php', 'Request not found', 'error');
 }
 
-// Can only edit pending or new requests
-if ($request['status'] !== 'pending' && $request['status'] !== 'new') {
+// Can only edit pending, new, or returned requests
+if ($request['status'] !== 'pending' && $request['status'] !== 'new' && $request['status'] !== 'returned') {
     $viewOnly = true;
 }
 
@@ -152,6 +152,12 @@ include __DIR__ . '/../includes/header.php';
             <?php if ($request['rejection_reason']): ?>
             <div class="alert alert-error">
                 <strong>Rejection Reason:</strong> <?php echo htmlspecialchars($request['rejection_reason']); ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($request['return_reason']): ?>
+            <div class="alert alert-warning">
+                <strong>Return Reason:</strong> <?php echo htmlspecialchars($request['return_reason']); ?>
             </div>
             <?php endif; ?>
             

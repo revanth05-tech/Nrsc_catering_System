@@ -79,6 +79,35 @@ switch ($action) {
         }
         break;
         
+    case 'return':
+        $id = (int)($_POST['id'] ?? 0);
+        $reason = sanitize($_POST['reason'] ?? '');
+        
+        if (empty($reason)) {
+            echo json_encode(['success' => false, 'message' => 'Return reason is required']);
+            exit();
+        }
+        
+        $request = fetchOne("SELECT * FROM catering_requests WHERE id = ? AND status = 'pending'", [$id], "i");
+        
+        if ($request) {
+            executeAndGetAffected(
+                "UPDATE catering_requests SET status = 'returned', return_reason = ? WHERE id = ?",
+                [$reason, $id], "si"
+            );
+
+            // Notify Employee
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your request #{$request['request_number']} has been returned for clarification. Reason: $reason", "/catering_system/employee/edit_request.php?id=$id"],
+                "iss"
+            );
+            echo json_encode(['success' => true, 'message' => 'Request returned for clarification']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Request not found or already processed']);
+        }
+        break;
+        
     case 'get_pending_count':
         $count = fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending'")['count'] ?? 0;
         echo json_encode(['success' => true, 'count' => $count]);

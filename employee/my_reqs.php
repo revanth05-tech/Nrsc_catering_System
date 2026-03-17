@@ -17,7 +17,7 @@ $whereClause = "employee_id = ?";
 $params = [$userId];
 $types = "i";
 
-if ($statusFilter && in_array($statusFilter, ['new', 'pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled'])) {
+if ($statusFilter && in_array($statusFilter, ['new', 'pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled', 'returned'])) {
     $whereClause .= " AND status = ?";
     $params[] = $statusFilter;
     $types .= "s";
@@ -57,6 +57,7 @@ include __DIR__ . '/../includes/header.php';
         <a href="?status=" class="btn btn-sm <?php echo !$statusFilter ? 'btn-primary' : 'btn-secondary'; ?>">All</a>
         <a href="?status=new" class="btn btn-sm <?php echo $statusFilter === 'new' ? 'btn-primary' : 'btn-secondary'; ?>">Saved</a>
         <a href="?status=pending" class="btn btn-sm <?php echo $statusFilter === 'pending' ? 'btn-primary' : 'btn-secondary'; ?>">Pending</a>
+        <a href="?status=returned" class="btn btn-sm <?php echo $statusFilter === 'returned' ? 'btn-primary' : 'btn-secondary'; ?>">Returned</a>
         <a href="?status=approved" class="btn btn-sm <?php echo $statusFilter === 'approved' ? 'btn-primary' : 'btn-secondary'; ?>">Approved</a>
         <a href="?status=completed" class="btn btn-sm <?php echo $statusFilter === 'completed' ? 'btn-primary' : 'btn-secondary'; ?>">Completed</a>
     </div>
@@ -100,7 +101,7 @@ include __DIR__ . '/../includes/header.php';
                                 </span>
                             </td>
                             <td>
-                                <?php if ($req['status'] === 'pending' || $req['status'] === 'new'): ?>
+                                <?php if ($req['status'] === 'pending' || $req['status'] === 'new' || $req['status'] === 'returned'): ?>
                                     <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-xs btn-secondary">Edit</a>
                                 <?php else: ?>
                                     <a href="edit_request.php?id=<?php echo $req['id']; ?>&view=1" class="btn btn-xs btn-secondary">View</a>

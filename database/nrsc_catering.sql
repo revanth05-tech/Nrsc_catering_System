@@ -94,6 +94,7 @@ CREATE TABLE `catering_requests` (
 
     `approved_at` TIMESTAMP NULL DEFAULT NULL,
     `rejection_reason` TEXT,
+    `return_reason` TEXT,
 
     `total_amount` DECIMAL(12,2) DEFAULT 0.00,
 
@@ -104,7 +105,8 @@ CREATE TABLE `catering_requests` (
         'rejected',
         'in_progress',
         'completed',
-        'cancelled'
+        'cancelled',
+        'returned'
     ) DEFAULT 'pending',
 
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

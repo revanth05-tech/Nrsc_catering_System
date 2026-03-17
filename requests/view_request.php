@@ -176,6 +176,12 @@ include __DIR__ . '/../includes/header.php';
                 <strong>Rejection Reason:</strong> <?php echo htmlspecialchars($request['rejection_reason']); ?>
             </div>
             <?php endif; ?>
+
+            <?php if ($request['status'] === 'returned' && !empty($request['return_reason'])): ?>
+            <div class="alert alert-warning mt-4">
+                <strong>Return Reason:</strong> <?php echo htmlspecialchars($request['return_reason']); ?>
+            </div>
+            <?php endif; ?>
             
             <div class="flex-between mt-6">
                 <!-- Javascript history.back to easily return to whoever requested it -->

@@ -30,7 +30,8 @@ define('STATUS_LABELS', [
     'rejected' => ['label' => 'Rejected', 'class' => 'status-rejected', 'color' => '#e74c3c'],
     'in_progress' => ['label' => 'In Progress', 'class' => 'status-progress', 'color' => '#3498db'],
     'completed' => ['label' => 'Completed', 'class' => 'status-completed', 'color' => '#2ecc71'],
-    'cancelled' => ['label' => 'Cancelled', 'class' => 'status-cancelled', 'color' => '#95a5a6']
+    'cancelled' => ['label' => 'Cancelled', 'class' => 'status-cancelled', 'color' => '#95a5a6'],
+    'returned' => ['label' => 'Returned', 'class' => 'status-returned', 'color' => '#6c757d']
 ]);
 
 // Role labels
