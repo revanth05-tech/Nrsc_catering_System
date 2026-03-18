@@ -31,7 +31,7 @@ if ($request['status'] !== 'pending' && $request['status'] !== 'new' && $request
     $viewOnly = true;
 }
 
-if ($request['status'] === 'new' && !$viewOnly) {
+if (($request['status'] === 'new' || $request['status'] === 'returned') && !$viewOnly) {
     include __DIR__ . '/edit_new_request.php';
     exit;
 }

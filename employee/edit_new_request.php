@@ -119,7 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      requesting_designation=?, phone_number=?, meeting_name=?, meeting_date=?, 
                      meeting_time=?, area=?, lic=?, guest_count=?, special_instructions=?, service_date=?, service_time=?, 
                      service_location=?, hall_code=?, approving_officer_id=?, approving_by=?, 
-                     approving_department=?, total_amount=?, status=? 
+                     approving_department=?, total_amount=?, status=?,
+                     return_reason = CASE WHEN ? = 'pending' THEN NULL ELSE return_reason END,
+                     updated_at = NOW()
                      WHERE id=? AND employee_id=?";
             
             $params = [
@@ -127,10 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $reqDesig, $reqPhone, $meetingName, $meetingDate,
                 $meetingTime, $area, $lic, $guestCount, $specialInstr, $serviceDate, $serviceTime,
                 $serviceLocation, $hallCode, $targetOfficerId, $apprBy,
-                $apprDept, $totalAmount, $status, $requestId, $userId
+                $apprDept, $totalAmount, $status, $status, $requestId, $userId
             ];
             
-            executeQuery($sql, $params, "ssssssssssisssssissdsii");
+            executeQuery($sql, $params, "sssssssssisssssissdssii");
 
             // Delete old items and insert new ones
             executeQuery("DELETE FROM request_items WHERE request_id=?", [$requestId], "i");
@@ -164,7 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($status === 'new') {
                 redirect('saved_requests.php', "Request #$requestNumber saved successfully!", 'success');
             } else {
-                redirect('my_reqs.php', "Request #$requestNumber submitted successfully!", 'success');
+                $msg = ($request['status'] === 'returned') ? "Request resubmitted successfully" : "Request #$requestNumber submitted successfully!";
+                redirect('my_reqs.php', $msg, 'success');
             }
 
         } catch (Exception $e) {
