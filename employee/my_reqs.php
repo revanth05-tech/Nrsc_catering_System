@@ -38,6 +38,43 @@ include __DIR__ . '/../includes/header.php';
     align-items: center;
     margin-bottom: 20px;
 }
+
+/* Status Badge for Returned */
+.badge-returned {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Return Reason Box Styling */
+.return-reason-box {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border-left: 4px solid #dc2626;
+    margin-top: 8px;
+    max-width: 300px;
+}
+
+.return-reason-box strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Warning button for Resubmit */
+.btn-resubmit {
+    background: #f59e0b;
+    color: white !important;
+}
+
+.btn-resubmit:hover {
+    background: #d97706;
+}
 </style>
 
 <div class="flex-between mb-6">
@@ -88,7 +125,15 @@ include __DIR__ . '/../includes/header.php';
                         <?php foreach ($requests as $req): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($req['request_number']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($req['meeting_name']); ?></td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($req['meeting_name']); ?></strong>
+                                <?php if ($req['status'] === 'returned' && !empty($req['return_reason'])): ?>
+                                    <div class="return-reason-box">
+                                        <strong>Return Reason:</strong>
+                                        <?php echo nl2br(htmlspecialchars($req['return_reason'])); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <?php echo formatDate($req['meeting_date']); ?><br>
                                 <small class="text-muted"><?php echo date('h:i A', strtotime($req['meeting_time'])); ?></small>
@@ -101,8 +146,8 @@ include __DIR__ . '/../includes/header.php';
                                 </span>
                             </td>
                             <td>
-                                <?php if ($req['status'] === 'pending' || $req['status'] === 'new' || $req['status'] === 'returned'): ?>
-                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-xs btn-secondary">Edit</a>
+                                <?php if ($req['status'] === 'returned'): ?>
+                                    <a href="edit_request.php?id=<?php echo $req['id']; ?>" class="btn btn-xs btn-resubmit">Edit & Resubmit</a>
                                 <?php else: ?>
                                     <a href="edit_request.php?id=<?php echo $req['id']; ?>&view=1" class="btn btn-xs btn-secondary">View</a>
                                 <?php endif; ?>
