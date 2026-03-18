@@ -331,8 +331,12 @@ select {
 }
 
 .btn-warning {
-    background: linear-gradient(135deg, var(--warning-500) 0%, #d97706 100%);
+    background: #f59e0b;
     color: white;
+}
+
+.btn-warning:hover {
+    background: #d97706;
 }
 
 .btn-sm {

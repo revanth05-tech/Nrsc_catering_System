@@ -40,7 +40,7 @@ $requestItems = fetchAll(
 // Handle approval/rejection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    $reason = sanitize($_POST['rejection_reason'] ?? '');
+    $reason = sanitize($_POST['return_reason'] ?? $_POST['rejection_reason'] ?? '');
     
     if ($action === 'approve') {
         executeAndGetAffected(
@@ -81,6 +81,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         redirect('dashboard.php', 'Request rejected.', 'success');
+    } elseif ($action === 'return' && $reason) {
+        $affected = executeAndGetAffected(
+            "UPDATE catering_requests SET status = 'returned', return_reason = ?, updated_at = NOW() WHERE id = ? AND status = 'pending'",
+            [$reason, $requestId], "si"
+        );
+
+        if ($affected > 0) {
+            // Notify Employee
+            insertAndGetId(
+                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_id'], "Your request #{$request['request_number']} has been returned for correction. Reason: $reason", "/catering_system/employee/my_reqs.php"],
+                "iss"
+            );
+
+            redirect('dashboard.php', 'Request returned to employee', 'success');
+        } else {
+            redirect('dashboard.php', 'Failed to return request or request already processed.', 'error');
+        }
     }
 }
 
@@ -203,13 +221,29 @@ include __DIR__ . '/../includes/header.php';
                         <textarea id="rejection_reason" name="rejection_reason" rows="3" 
                                   placeholder="Please provide a reason for rejecting this request..."></textarea>
                     </div>
+
+                    <div class="form-group" id="return-reason-group" style="display:none;">
+                        <label for="return_reason">Reason for Return *</label>
+                        <textarea id="return_reason" name="return_reason" rows="3" 
+                                  placeholder="Please provide a reason for returning this request for correction..."></textarea>
+                    </div>
                     
                     <div class="d-flex gap-4">
-                        <button type="submit" name="action" value="approve" class="btn btn-success btn-lg">
+                        <button type="submit" name="action" value="approve" id="approve-btn" class="btn btn-success btn-lg">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             Approve Request
+                        </button>
+                        <button type="button" id="show-return" class="btn btn-warning btn-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 17 4 12 9 7"></polyline>
+                                <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+                            </svg>
+                            Return for Correction
+                        </button>
+                        <button type="submit" name="action" value="return" id="confirm-return" class="btn btn-warning btn-lg" style="display:none;">
+                            Confirm Return
                         </button>
                         <button type="button" id="show-reject" class="btn btn-danger btn-lg">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -228,9 +262,26 @@ include __DIR__ . '/../includes/header.php';
             <script>
             document.getElementById('show-reject').addEventListener('click', function() {
                 document.getElementById('rejection-reason-group').style.display = 'block';
+                document.getElementById('return-reason-group').style.display = 'none';
                 document.getElementById('confirm-reject').style.display = 'inline-flex';
+                document.getElementById('confirm-return').style.display = 'none';
+                document.getElementById('show-return').style.display = 'inline-flex';
+                document.getElementById('approve-btn').style.display = 'none';
                 this.style.display = 'none';
                 document.getElementById('rejection_reason').required = true;
+                document.getElementById('return_reason').required = false;
+            });
+
+            document.getElementById('show-return').addEventListener('click', function() {
+                document.getElementById('return-reason-group').style.display = 'block';
+                document.getElementById('rejection-reason-group').style.display = 'none';
+                document.getElementById('confirm-return').style.display = 'inline-flex';
+                document.getElementById('confirm-reject').style.display = 'none';
+                document.getElementById('show-reject').style.display = 'inline-flex';
+                document.getElementById('approve-btn').style.display = 'none';
+                this.style.display = 'none';
+                document.getElementById('return_reason').required = true;
+                document.getElementById('rejection_reason').required = false;
             });
             </script>
             <?php endif; ?>
