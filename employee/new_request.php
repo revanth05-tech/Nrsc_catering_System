@@ -316,9 +316,17 @@ include __DIR__ . '/../includes/header.php';
                                                             $currentCat = $item['category'];
                                                             echo '<optgroup label="' . ucfirst($currentCat) . '">';
                                                         endif;
+                                                        $isDisabled = ($item['is_available'] == 0);
                                                     ?>
-                                                        <option value="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['item_name']) ?>" data-price="<?= $item['price'] ?>">
-                                                            <?= htmlspecialchars($item['item_name']) ?> (₹<?= $item['price'] ?>)
+                                                        <option value="<?= $item['id'] ?>" 
+                                                                data-name="<?= htmlspecialchars($item['item_name']) ?>" 
+                                                                data-price="<?= $item['price'] ?>"
+                                                                <?= $isDisabled ? 'disabled style="color: #6c757d;"' : '' ?>>
+                                                            <?php if ($isDisabled): ?>
+                                                                <?= htmlspecialchars($item['item_name']) ?> (Unavailable)
+                                                            <?php else: ?>
+                                                                <?= htmlspecialchars($item['item_name']) ?> (₹<?= $item['price'] ?>)
+                                                            <?php endif; ?>
                                                         </option>
                                                     <?php endforeach; if ($currentCat !== '') echo '</optgroup>'; ?>
                                                 </select>
@@ -382,6 +390,27 @@ include __DIR__ . '/../includes/header.php';
                                         <button type="button" class="btn btn-secondary px-4" onclick="window.location.href='dashboard.php'">
                                             Cancel
                                         </button>
+                                    </div>
+                                </div>
+
+                                <!-- SECTION 5: FOOD STATUS DISPLAY -->
+                                <div class="food-status-box p-4 border rounded-4 bg-white shadow-sm">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-utensils me-2 text-primary"></i>Food Availability
+                                    </h6>
+                                    <div class="food-scroll pe-2">
+                                        <ul class="list-group list-group-flush">
+                                            <?php foreach ($menuItems as $item): ?>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom border-light">
+                                                    <span class="text-secondary small fw-medium"><?= htmlspecialchars($item['item_name']) ?></span>
+                                                    <?php if ($item['is_available']): ?>
+                                                        <span class="badge bg-success rounded-pill bg-opacity-75" style="font-size: 0.7rem;">Active</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger rounded-pill bg-opacity-75" style="font-size: 0.7rem;">Inactive</span>
+                                                    <?php endif; ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -544,6 +573,14 @@ include __DIR__ . '/../includes/header.php';
         color: var(--nrc-primary-dark);
         background: #fdfdfd;
     }
+
+    /* Food Status Scroll */
+    .food-scroll {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .food-scroll::-webkit-scrollbar { width: 5px; }
+    .food-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 </style>
 
 <script>
