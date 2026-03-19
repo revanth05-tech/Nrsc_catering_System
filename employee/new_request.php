@@ -348,36 +348,36 @@ include __DIR__ . '/../includes/header.php';
                                             <i class="fas fa-cart-shopping me-2"></i>4. Order Summary
                                         </h6>
                                     </div>
-                                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                                        <table class="table table-bordered table-hover align-middle mb-0" id="items-table">
-                                            <thead class="table-info">
+                                    <div class="table-responsive">
+                                        <table class="table custom-table" id="items-table">
+                                            <thead>
                                                 <tr>
-                                                    <th width="40">#</th>
+                                                    <th>#</th>
                                                     <th>Item</th>
-                                                    <th width="60">Qty</th>
-                                                    <th width="80">Subtotal</th>
-                                                    <th width="40"></th>
+                                                    <th>Qty</th>
+                                                    <th>Subtotal</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr id="empty-row">
-                                                    <td colspan="5" class="text-center text-muted py-4">No items yet.</td>
+                                                    <td colspan="5" class="text-center text-muted">No items added yet.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                                        <span class="fw-bold">Total:</span>
-                                        <span id="grand-total" class="text-primary fw-bold">₹0.00</span>
-                                    </div>
-                                    <div class="d-grid gap-2 mt-3">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <button type="submit" name="action" value="save" class="btn btn-primary w-100">Save</button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="submit" name="action" value="submit" class="btn btn-success w-100">Submit</button>
-                                            </div>
+                                    <div class="order-actions">
+                                        <div class="total-box">
+                                            Total: <span id="grand-total">₹0.00</span>
+                                        </div>
+
+                                        <div class="btn-group">
+                                            <button type="submit" name="action" value="save" class="btn btn-primary">
+                                                Save
+                                            </button>
+                                            <button type="submit" name="action" value="submit" class="btn btn-success">
+                                                Submit
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -512,6 +512,62 @@ include __DIR__ . '/../includes/header.php';
     border-radius: 8px;
     font-size: 0.8rem;
 }
+
+/* ========================= */
+/* 🔥 ORDER SUMMARY FIX */
+/* ========================= */
+
+.custom-table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+.custom-table th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.custom-table td {
+    vertical-align: middle;
+}
+
+/* Prevent overflow */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* TOTAL + BUTTON ALIGN */
+.order-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Total styling */
+.total-box {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+#grand-total {
+    color: #1a56db;
+    font-weight: bold;
+}
+
+/* Buttons inline */
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Prevent button shrink */
+.btn-group .btn {
+    white-space: nowrap;
+}
 </style>
 
 <script>
@@ -543,15 +599,14 @@ function addItem() {
             ${name}
             <input type="hidden" name="items[]" value="${option.value}">
         </td>
-        <td>₹${price.toFixed(2)}</td>
         <td>
             <input type="hidden" name="quantities[]" value="${qty}">
             ${qty}
         </td>
         <td class="fw-bold">₹${subtotal.toFixed(2)}</td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this, ${subtotal})">
-                <i class="fas fa-trash-can me-1"></i> Delete
+            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1" onclick="removeRow(this, ${subtotal})">
+                <i class="fas fa-trash-can"></i>
             </button>
         </td>
     `;
@@ -569,7 +624,7 @@ function removeRow(btn, sub) {
     if (tbody.rows.length === 0) {
         tbody.innerHTML = `
             <tr id="empty-row">
-                <td colspan="6" class="text-center text-muted py-4">No items added yet. Search or select above to add.</td>
+                <td colspan="5" class="text-center text-muted">No items added yet.</td>
             </tr>
         `;
     }
