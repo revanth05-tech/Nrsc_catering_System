@@ -195,13 +195,11 @@ include __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
 
                     <form method="POST" id="cateringRequestForm" class="needs-validation">
-                        <div class="row g-4 align-items-start">
-                            
-                            <!-- LEFT COLUMN -->
-                            <div class="col-lg-6 d-flex flex-column gap-4">
-                                
+                        <div class="main-grid">
+                            <!-- TOP ROW: MEETING & SERVICE DETAILS (2 COLUMNS) -->
+                            <div class="grid-row-2">
                                 <!-- SECTION 1: MEETING & REQUESTER -->
-                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                <div class="grid-box">
                                     <div class="section-title mt-0 mb-4">
                                         <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
                                             <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
@@ -261,7 +259,7 @@ include __DIR__ . '/../includes/header.php';
                                 </div>
 
                                 <!-- SECTION 2: SERVICE DETAILS -->
-                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                <div class="grid-box">
                                     <div class="section-title mt-0 mb-4">
                                         <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
                                             <i class="fas fa-utensils me-2"></i>2. Primary Service Details
@@ -286,17 +284,16 @@ include __DIR__ . '/../includes/header.php';
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-semibold text-danger">Special Instructions (e.g. less oil, spicy, boiled, VIP)</label>
-                                            <textarea name="special_instructions" class="form-control" rows="2" placeholder="Enter preparation notes or special requirements..."></textarea>
+                                            <textarea name="special_instructions" class="form-control" rows="4" placeholder="Enter preparation notes or special requirements..."></textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- RIGHT COLUMN -->
-                            <div class="col-lg-6 d-flex flex-column gap-4">
-                                
+                            <!-- BOTTOM ROW: ITEMS, SUMMARY, FOOD STATUS (3 COLUMNS) -->
+                            <div class="grid-row-3">
                                 <!-- SECTION 3: ITEM SELECTION -->
-                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                <div class="grid-box">
                                     <div class="section-title mt-0 mb-4">
                                         <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
                                             <i class="fas fa-list-check me-2"></i>3. Catering Item Selection
@@ -304,7 +301,7 @@ include __DIR__ . '/../includes/header.php';
                                     </div>
                                     <div class="bg-light p-3 rounded mb-0">
                                         <div class="row align-items-end g-3">
-                                            <div class="col-md-7">
+                                            <div class="col-12">
                                                 <label class="form-label fw-semibold">Select Menu Item</label>
                                                 <select id="menu-selector" class="form-select">
                                                     <option value="">-- Choose Item --</option>
@@ -331,11 +328,11 @@ include __DIR__ . '/../includes/header.php';
                                                     <?php endforeach; if ($currentCat !== '') echo '</optgroup>'; ?>
                                                 </select>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-6">
                                                 <label class="form-label fw-semibold">Qty</label>
                                                 <input type="number" id="qty" value="1" min="1" class="form-control">
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-6">
                                                 <button type="button" onclick="addItem()" class="btn btn-success w-100">
                                                     <i class="fas fa-plus"></i> Add
                                                 </button>
@@ -345,68 +342,62 @@ include __DIR__ . '/../includes/header.php';
                                 </div>
 
                                 <!-- SECTION 4: ORDER SUMMARY & ACTIONS -->
-                                <div class="p-4 border rounded-4 bg-white shadow-sm">
+                                <div class="grid-box">
                                     <div class="section-title mt-0 mb-4">
                                         <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
                                             <i class="fas fa-cart-shopping me-2"></i>4. Order Summary
                                         </h6>
                                     </div>
-                                    <div class="table-responsive">
+                                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
                                         <table class="table table-bordered table-hover align-middle mb-0" id="items-table">
                                             <thead class="table-info">
                                                 <tr>
                                                     <th width="40">#</th>
-                                                    <th>Description</th>
-                                                    <th width="100">Price</th>
-                                                    <th width="80">Qty</th>
-                                                    <th width="100">Subtotal</th>
-                                                    <th width="50"></th>
+                                                    <th>Item</th>
+                                                    <th width="60">Qty</th>
+                                                    <th width="80">Subtotal</th>
+                                                    <th width="40"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr id="empty-row">
-                                                    <td colspan="6" class="text-center text-muted py-4">No items added yet.</td>
+                                                    <td colspan="5" class="text-center text-muted py-4">No items yet.</td>
                                                 </tr>
                                             </tbody>
-                                            <tfoot class="table-light">
-                                                <tr>
-                                                    <th colspan="4" class="text-end">Total:</th>
-                                                    <th id="grand-total" class="text-primary">₹0.00</th>
-                                                    <th></th>
-                                                </tr>
-                                            </tfoot>
                                         </table>
                                     </div>
-                                    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 pt-4 border-top">
-                                        <button type="submit" name="action" value="save" class="btn btn-primary btn-lg px-4">
-                                            <i class="fas fa-save me-2"></i>Save Request
-                                        </button>
-                                        <button type="submit" name="action" value="submit" class="btn btn-success btn-lg px-4">
-                                            <i class="fas fa-paper-plane me-2"></i>Submit Request
-                                        </button>
-                                        <button type="reset" class="btn btn-outline-secondary px-4" onclick="return confirm('Clear data?')">
-                                            Clear
-                                        </button>
-                                        <button type="button" class="btn btn-secondary px-4" onclick="window.location.href='dashboard.php'">
-                                            Cancel
-                                        </button>
+                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                        <span class="fw-bold">Total:</span>
+                                        <span id="grand-total" class="text-primary fw-bold">₹0.00</span>
+                                    </div>
+                                    <div class="d-grid gap-2 mt-3">
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <button type="submit" name="action" value="save" class="btn btn-primary w-100">Save</button>
+                                            </div>
+                                            <div class="col-6">
+                                                <button type="submit" name="action" value="submit" class="btn btn-success w-100">Submit</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- SECTION 5: FOOD STATUS DISPLAY -->
-                                <div class="food-status-box p-4 border rounded-4 bg-white shadow-sm">
-                                    <h6 class="fw-bold mb-3">
-                                        <i class="fas fa-utensils me-2 text-primary"></i>Food Availability
-                                    </h6>
-                                    <div class="food-scroll pe-2">
-                                        <ul class="list-group list-group-flush">
+                                <!-- SECTION 5: FOOD AVAILABILITY -->
+                                <div class="grid-box food-box">
+                                    <div class="section-title mt-0 mb-4">
+                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                            <i class="fas fa-utensils me-2"></i>5. Food Availability
+                                        </h6>
+                                    </div>
+                                    <div class="food-scroll">
+                                        <ul class="list-unstyled mb-0">
                                             <?php foreach ($menuItems as $item): ?>
-                                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom border-light">
-                                                    <span class="text-secondary small fw-medium"><?= htmlspecialchars($item['item_name']) ?></span>
+                                                <li class="food-item">
+                                                    <span class="food-item-name"><?= htmlspecialchars($item['item_name']) ?></span>
                                                     <?php if ($item['is_available']): ?>
-                                                        <span class="badge bg-success rounded-pill bg-opacity-75" style="font-size: 0.7rem;">Active</span>
+                                                        <span class="badge bg-success rounded-pill bg-opacity-75">Active</span>
                                                     <?php else: ?>
-                                                        <span class="badge bg-danger rounded-pill bg-opacity-75" style="font-size: 0.7rem;">Inactive</span>
+                                                        <span class="badge bg-danger rounded-pill bg-opacity-75">Inactive</span>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endforeach; ?>
@@ -423,164 +414,104 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <style>
-    :root {
-        --nrc-primary: #1a56db;
-        --nrc-primary-dark: #1e429f;
-        --nrc-secondary: #4b5563;
-        --nrc-accent: #0694a2;
-        --nrc-success: #057a55;
-        --nrc-danger: #e02424;
-        --nrc-bg-blue: #f0f7ff;
-    }
+/* ========================= */
+/* 🔥 MASTER GRID */
+/* ========================= */
+.main-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-    /* Section Enhancements */
-    .section-title {
-        border-left: 4px solid var(--nrc-primary);
-        padding-left: 15px;
-        margin-top: 2rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .section-title h6 {
-        letter-spacing: 0.8px;
-        color: var(--nrc-primary-dark) !important;
-        text-transform: uppercase;
-        margin-bottom: 0;
-    }
+/* ========================= */
+/* TOP ROW (2 COLUMNS) */
+/* ========================= */
+.grid-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
 
-    .bg-light-blue { 
-        background-color: var(--nrc-bg-blue) !important; 
-        border-color: #d1e5ff !important;
-    }
+/* ========================= */
+/* BOTTOM ROW (3 COLUMNS) */
+/* ========================= */
+.grid-row-3 {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr;
+    gap: 20px;
+}
 
-    /* Form Control Padding & Transitions */
-    .form-control, .form-select {
-        padding: 0.7rem 1rem;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        transition: all 0.2s ease-in-out;
-    }
+/* ========================= */
+/* COMMON BOX */
+/* ========================= */
+.grid-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
 
-    .form-control:focus, .form-select:focus {
-        border-color: var(--nrc-primary);
-        box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.1);
-        background-color: #fff;
-    }
+/* ========================= */
+/* FOOD PANEL SMALL */
+/* ========================= */
+.food-box {
+    max-height: 400px; /* Increased to accommodate content naturally */
+    overflow: hidden;
+}
 
-    /* Premium Button Styles */
-    .btn {
-        padding: 0.6rem 1.5rem;
-        font-weight: 500;
-        border-radius: 8px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
+/* Scroll inside */
+.food-scroll {
+    max-height: 220px;
+    overflow-y: auto;
+}
 
-    .btn-primary {
-        background: linear-gradient(135deg, var(--nrc-primary) 0%, var(--nrc-primary-dark) 100%);
-        border: none;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
+/* ========================= */
+/* SECTION TITLE */
+/* ========================= */
+.section-title {
+    border-left: 4px solid #1a56db;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
 
-    .btn-primary:hover {
-        background: linear-gradient(135deg, var(--nrc-primary-dark) 0%, #173677 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
+.section-title h6 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #1e429f;
+    margin-bottom: 0;
+}
 
-    .btn-success {
-        background: linear-gradient(135deg, var(--nrc-success) 0%, #046c4e 100%);
-        border: none;
-    }
+/* ========================= */
+/* FOOD ITEMS */
+/* ========================= */
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
 
-    .btn-success:hover {
-        background: linear-gradient(135deg, #046c4e 0%, #03543f 100%);
-        transform: translateY(-1px);
-    }
+.food-item-name {
+    font-size: 0.85rem;
+    color: #4b5563;
+}
 
-    .btn-outline-secondary:hover {
-        background-color: #f3f4f6;
-        color: #111827;
-        border-color: #9ca3af;
-    }
+.food-item .badge {
+    font-size: 0.7rem;
+}
 
-    .btn-outline-danger:hover {
-        background-color: var(--nrc-danger);
-        color: #fff;
-        border-color: var(--nrc-danger);
-    }
+/* Form refinement */
+.form-control, .form-select {
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.85rem;
+}
 
-    /* Table Improvements */
-    .table-bordered {
-        border-radius: 12px;
-        overflow: hidden;
-        border-collapse: separate;
-        border-spacing: 0;
-        border: 1px solid #e5e7eb;
-    }
-
-    .table thead th {
-        background-color: #f9fafb;
-        color: #374151;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        padding: 1rem;
-        border-bottom: 2px solid #e5e7eb;
-    }
-
-    .table tbody td {
-        padding: 1rem;
-        color: #4b5563;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-        transition: background-color 0.2s ease;
-    }
-
-    #grand-total {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--nrc-primary);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-
-    /* Card Padding & Shadow */
-    .card {
-        border-radius: 16px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-    }
-
-    .card-header {
-        border-top-left-radius: 16px !important;
-        border-top-right-radius: 16px !important;
-        background: linear-gradient(to right, var(--nrc-primary-dark), var(--nrc-primary));
-    }
-
-    .card-body {
-        padding: 2.5rem !important;
-    }
-
-    /* Select Group Styling */
-    optgroup {
-        font-weight: 700;
-        color: var(--nrc-primary-dark);
-        background: #fdfdfd;
-    }
-
-    /* Food Status Scroll */
-    .food-scroll {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    .food-scroll::-webkit-scrollbar { width: 5px; }
-    .food-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+.btn {
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
 </style>
 
 <script>
