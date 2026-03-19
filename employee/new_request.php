@@ -37,7 +37,7 @@ $defOfficerName = $officer['name'] ?? '';
 $defOfficerDept = $officer['department'] ?? '';
 
 // Available menu items
-$menuItems = fetchAll("SELECT * FROM menu_items WHERE is_available=1 ORDER BY category, item_name") ?? [];
+$menuItems = fetchAll("SELECT * FROM menu_items ORDER BY category, item_name") ?? [];
 
 $errors = [];
 $success = '';
