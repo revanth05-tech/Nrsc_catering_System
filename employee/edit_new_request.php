@@ -226,9 +226,6 @@ include __DIR__ . '/../includes/header.php';
                                         <h6 class="text-primary text-uppercase fw-bold mb-1">
                                             <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
                                         </h6>
-                                        <div class="text-muted" style="font-size: 0.75rem;">
-                                            <i class="fas fa-database me-1"></i>Data fetched from NRSC Employee System (VIMIS)
-                                        </div>
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-12">
