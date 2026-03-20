@@ -18,7 +18,7 @@ require_once __DIR__ . '/../config/db.php';
 $userId = getCurrentUserId();
 
 // Fetch user data linked with VIMIS_EMPLOYEE for master employee info
-$sql = "SELECT u.*, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME 
+$sql = "SELECT u.*, v.EMPLOYEECODE, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME, v.SERVICESTATCODE 
         FROM users u 
         LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
         WHERE u.id = ?";
@@ -30,11 +30,18 @@ $defDept  = !empty($user['DIVNFULLNAME']) ? $user['DIVNFULLNAME'] : ($user['depa
 $defDesig = !empty($user['DESGFULLNAME']) ? $user['DESGFULLNAME'] : ($user['designation'] ?? '');
 $defPhone = $user['phone'] ?? '';
 
-// Active approving officer (auto-assignment)
-$officer = fetchOne("SELECT * FROM users WHERE role='officer' AND status='active' LIMIT 1") ?? [];
+// Approving officer (Auto-assigned based on reporting hierarchy)
+$empCodeForHierarchy = $user['EMPLOYEECODE'] ?? $user['userid'] ?? '';
+$offQuery = "SELECT u.id, v.EMPLOYEENAME, v.DIVNFULLNAME 
+             FROM users u 
+             JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+             WHERE u.userid = (SELECT REPEMPLOYEECODE FROM TBAD_EMPVSREPEMPPLOYEE WHERE EMPLOYEECODE = ?) 
+             AND u.status = 'active'";
+$officer = fetchOne($offQuery, [$empCodeForHierarchy], "s") ?? [];
+
 $defOfficerId   = $officer['id'] ?? null;
-$defOfficerName = $officer['name'] ?? '';
-$defOfficerDept = $officer['department'] ?? '';
+$defOfficerName = !empty($officer['EMPLOYEENAME']) ? $officer['EMPLOYEENAME'] : '';
+$defOfficerDept = !empty($officer['DIVNFULLNAME']) ? $officer['DIVNFULLNAME'] : '';
 
 // Available menu items
 $menuItems = fetchAll("SELECT * FROM menu_items ORDER BY category, item_name") ?? [];
@@ -49,6 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? 'submit';
 
+    // Backend enforcement for service status
+    if ($action === 'submit' && ($user['SERVICESTATCODE'] ?? '') !== 'SERV') {
+        $errors[] = "Operation Error: Only active employees can raise requests.";
+        $action = 'save'; // Force save instead of submit if somehow bypassed
+    }
+
     // Sanitize and capture inputs
     // Meeting Details
     $meetingName     = sanitize($_POST['meeting_name'] ?? '');
@@ -58,15 +71,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lic             = sanitize($_POST['lic'] ?? '');
 
     // Requestor Details (Now Editable Suggestions)
-    $reqPerson       = sanitize($_POST['requesting_person'] ?? $defName);
+    $reqPerson       = $defName; // Always use master name, remove user editing capability
     $reqDept         = sanitize($_POST['requesting_department'] ?? $defDept);
     $reqDesig        = sanitize($_POST['requesting_designation'] ?? $defDesig);
     $reqPhone        = sanitize($_POST['phone_number'] ?? $defPhone);
 
-    // Approval Details (Now Editable Suggestions)
-    $apprBy          = sanitize($_POST['approving_by'] ?? $defOfficerName);
-    $apprDept        = sanitize($_POST['approving_department'] ?? $defOfficerDept);
-    $targetOfficerId = !empty($_POST['officer_id']) ? (int)$_POST['officer_id'] : $defOfficerId;
+    // Approval Details (Auto-assigned)
+    $apprBy          = $defOfficerName;
+    $apprDept        = $defOfficerDept;
+    $targetOfficerId = $defOfficerId;
 
     // Service Defaults
     $serviceDate     = sanitize($_POST['service_date'] ?? '');
@@ -87,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($meetingDate)) $errors[] = "Meeting date is required.";
     if (empty($area))        $errors[] = "Meeting area/location is required.";
     if (empty($reqPerson))   $errors[] = "Requesting person name is required.";
+    if (empty($targetOfficerId)) $errors[] = "No approving officer found in hierarchy. Please contact admin.";
     if (empty($items))       $errors[] = "Please select at least one catering item.";
 
     if (empty($errors)) {
@@ -201,9 +215,12 @@ include __DIR__ . '/../includes/header.php';
                                 <!-- SECTION 1: MEETING & REQUESTER -->
                                 <div class="grid-box">
                                     <div class="section-title mt-0 mb-4">
-                                        <h6 class="text-primary text-uppercase fw-bold border-bottom pb-2">
+                                        <h6 class="text-primary text-uppercase fw-bold mb-1">
                                             <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
                                         </h6>
+                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="fas fa-database me-1"></i>Data fetched from NRSC Employee System (VIMIS)
+                                        </div>
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-12">
@@ -230,8 +247,19 @@ include __DIR__ . '/../includes/header.php';
                                             <label class="form-label fw-semibold">Guest Count</label>
                                             <input type="number" name="guest_count" class="form-control" value="0" min="0">
                                         </div>
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Requesting Person <span class="text-danger">*</span></label>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Employee Code</label>
+                                            <input type="text" name="employee_code" class="form-control bg-light" value="<?= htmlspecialchars($user['EMPLOYEECODE'] ?? $user['userid'] ?? '') ?>" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                Employee Name <span class="text-danger">*</span>
+                                                <?php if (($user['SERVICESTATCODE'] ?? '') === 'SERV'): ?>
+                                                    <span class="badge bg-success ms-1" style="font-size: 0.65rem;">Active</span>
+                                                <?php elseif (($user['SERVICESTATCODE'] ?? '') === 'PROB'): ?>
+                                                    <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65rem;">Probation</span>
+                                                <?php endif; ?>
+                                            </label>
                                             <input type="text" name="requesting_person" class="form-control bg-light" value="<?= htmlspecialchars($defName ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
@@ -239,21 +267,22 @@ include __DIR__ . '/../includes/header.php';
                                             <input type="text" name="requesting_designation" class="form-control bg-light" value="<?= htmlspecialchars($defDesig ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Phone Number</label>
-                                            <input type="text" name="phone_number" class="form-control" value="<?= htmlspecialchars($defPhone ?? '') ?>">
-                                        </div>
-                                        <div class="col-12">
                                             <label class="form-label fw-semibold">Requesting Department</label>
                                             <input type="text" name="requesting_department" class="form-control bg-light" value="<?= htmlspecialchars($defDept ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Approving Officer</label>
-                                            <input type="text" name="approving_by" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerName ?? '') ?>">
+                                            <label class="form-label fw-semibold">Reporting Officer</label>
+                                            <input type="text" name="approving_by" class="form-control bg-light" value="<?= htmlspecialchars($defOfficerName ?? '') ?>" readonly>
                                             <input type="hidden" name="officer_id" value="<?= htmlspecialchars($defOfficerId ?? '') ?>">
+                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Auto-assigned by hierarchy</small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Approving Department</label>
-                                            <input type="text" name="approving_department" class="form-control bg-light-blue" value="<?= htmlspecialchars($defOfficerDept ?? '') ?>">
+                                            <label class="form-label fw-semibold">Reporting Department</label>
+                                            <input type="text" name="approving_department" class="form-control bg-light" value="<?= htmlspecialchars($defOfficerDept ?? '') ?>" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Contact Phone Number</label>
+                                            <input type="text" name="phone_number" class="form-control" value="<?= htmlspecialchars($defPhone ?? '') ?>" placeholder="Enter current contact extension">
                                         </div>
                                     </div>
                                 </div>
@@ -375,11 +404,18 @@ include __DIR__ . '/../includes/header.php';
                                             <button type="submit" name="action" value="save" class="btn btn-primary">
                                                 Save
                                             </button>
-                                            <button type="submit" name="action" value="submit" class="btn btn-success">
+                                            <?php $isServ = (($user['SERVICESTATCODE'] ?? '') === 'SERV'); ?>
+                                            <button type="submit" name="action" value="submit" class="btn btn-success" <?= !$isServ ? 'disabled' : '' ?>>
                                                 Submit
                                             </button>
                                         </div>
                                     </div>
+                                    <?php if (!$isServ): ?>
+                                        <div class="text-danger small fw-bold mt-2 text-end">
+                                            <i class="fas fa-triangle-exclamation me-1"></i>
+                                            Only active employees can raise requests
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- SECTION 5: FOOD AVAILABILITY -->
