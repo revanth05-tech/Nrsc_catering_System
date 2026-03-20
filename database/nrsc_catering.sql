@@ -64,40 +64,31 @@ CREATE TABLE `menu_items` (
 -- --------------------------------------------------------
 
 CREATE TABLE `catering_requests` (
-
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-
     `request_number` VARCHAR(50) NOT NULL UNIQUE,
-
     `employee_id` INT NOT NULL,
-
+    `employee_code` VARCHAR(50) NOT NULL,
     `requesting_person` VARCHAR(100) NOT NULL,
     `requesting_department` VARCHAR(100),
     `requesting_designation` VARCHAR(100),
     `phone_number` VARCHAR(20),
-
     `meeting_name` VARCHAR(200) NOT NULL,
     `meeting_date` DATE NOT NULL,
     `meeting_time` TIME NOT NULL,
-
     `area` VARCHAR(150) NOT NULL,
     `lic` VARCHAR(100),
-
     `service_date` DATE NOT NULL,
     `service_time` TIME NOT NULL,
     `service_location` VARCHAR(200),
     `hall_code` VARCHAR(50),
-
     `approving_officer_id` INT DEFAULT NULL,
+    `approving_officer_code` VARCHAR(50) DEFAULT NULL,
     `approving_by` VARCHAR(100),
     `approving_department` VARCHAR(100),
-
     `approved_at` TIMESTAMP NULL DEFAULT NULL,
     `rejection_reason` TEXT,
     `return_reason` TEXT,
-
     `total_amount` DECIMAL(12,2) DEFAULT 0.00,
-
     `status` ENUM(
         'new',
         'pending',
@@ -108,7 +99,6 @@ CREATE TABLE `catering_requests` (
         'cancelled',
         'returned'
     ) DEFAULT 'pending',
-
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -119,7 +109,6 @@ CREATE TABLE `catering_requests` (
     FOREIGN KEY (`approving_officer_id`)
     REFERENCES `users`(`id`)
     ON DELETE SET NULL
-
 ) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
@@ -155,26 +144,35 @@ CREATE TABLE `request_items` (
     ON DELETE RESTRICT
 
 ) ENGINE=InnoDB;
+CREATE TABLE `notifications` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_code` VARCHAR(50) DEFAULT NULL,
+    `role` ENUM('employee','officer','canteen','admin') DEFAULT NULL,
+    `message` TEXT NOT NULL,
+    `link` VARCHAR(255) DEFAULT NULL,
+    `is_read` TINYINT(1) DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (`user_code`)
+    REFERENCES `users`(`userid`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- 5. ACTIVITY LOG
+-- 4. B. ACTIVITY LOG
 -- --------------------------------------------------------
 
 CREATE TABLE `activity_log` (
-
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-
     `user_id` INT DEFAULT NULL,
     `action` VARCHAR(100) NOT NULL,
     `details` TEXT,
     `ip_address` VARCHAR(45),
-
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (`user_id`)
     REFERENCES `users`(`id`)
     ON DELETE SET NULL
-
 ) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
@@ -225,6 +223,28 @@ VALUES
 'Technical Assistant',
 'Ground Station',
 'employee',
+'active'
+),
+
+(
+'NR01234',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'Dr. Anil Kumar',
+'anil@nrsc.gov.in',
+'Scientist-E',
+'RSAM',
+'employee',
+'active'
+),
+
+(
+'NR04567',
+'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+'Ms. Sunita Sharma',
+'sunita@nrsc.gov.in',
+'Manager-GSG',
+'GSG',
+'officer',
 'active'
 );
 

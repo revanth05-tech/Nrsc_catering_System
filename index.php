@@ -32,24 +32,18 @@
             
             <form class="login-form" method="post" action="/catering_system/auth/login.php">
                 <div class="form-group">
-                    <label for="userid">User ID</label>
-                    <input type="text" id="userid" name="userid" placeholder="Enter your User ID" required>
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="employee_code">Employee Code</label>
+                    <input type="text" id="employee_code" name="employee_code" placeholder="Enter NRSC Employee Code (e.g. NR01234)" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="role">Login As</label>
-                    <select id="role" name="role" required>
-                        <option value="">-- Select Role --</option>
-                        <option value="employee">Employee</option>
-                        <option value="officer">Approving Officer</option>
-                        <option value="canteen">Canteen Staff</option>
-                        <option value="admin">Administrator</option>
-                    </select>
+                    <input type="password" id="password" name="password" placeholder="Enter your password">
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
@@ -58,9 +52,6 @@
             <div class="login-footer">
                 <p>Don't have an account? <a href="/catering_system/auth/signup.php" style="color: var(--primary-600); font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Register here</a></p>
                 <p style="margin-top: 15px;">National Remote Sensing Centre &copy; <?php echo date('Y'); ?></p>
-                                <p style="margin-top:10px;font-size:11px;color:#999;">
-                    Demo: admin/password, officer/password, emp01/password
-                </p>
             </div>
         </div>
     </div>

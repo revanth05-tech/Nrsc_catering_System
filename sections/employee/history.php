@@ -1,22 +1,22 @@
 <?php
 // sections/employee/history.php - Request History Fragment
 
-$userId = $_SESSION['user_id'] ?? 0;
+$userCode = $_SESSION['user_code'] ?? '';
 
 // Get filter
 $statusFilter = $_GET['status'] ?? '';
-$whereClause = "employee_id = ?";
-$params = [$userId];
-$types = "i";
+$whereClause = "u.userid = ?";
+$params = [$userCode];
+$types = "s";
 
 if ($statusFilter && in_array($statusFilter, ['pending', 'approved', 'rejected', 'in_progress', 'completed', 'cancelled'])) {
-    $whereClause .= " AND status = ?";
+    $whereClause .= " AND r.status = ?";
     $params[] = $statusFilter;
     $types .= "s";
 }
 
 $requests = fetchAll(
-    "SELECT * FROM catering_requests WHERE $whereClause ORDER BY created_at DESC",
+    "SELECT r.* FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE $whereClause ORDER BY r.created_at DESC",
     $params, $types
 );
 

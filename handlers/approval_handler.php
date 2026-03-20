@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/db.php';
 header('Content-Type: application/json');
 
 // Check authentication and role
-if (!isset($_SESSION['userid']) || $_SESSION['role'] !== 'officer') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'officer') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit();
 }
@@ -31,7 +31,7 @@ switch ($action) {
             insertAndGetId(
                 "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
                 [$request['employee_id'], "Your request #{$request['request_number']} has been approved.", "/catering_system/employee/my_reqs.php"],
-                "iss"
+                "isss"
             );
 
             // Notify Canteen Staff
@@ -41,7 +41,7 @@ switch ($action) {
                 insertAndGetId(
                     "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'canteen', ?, ?)",
                     [$staff['id'], "New approved request #{$request['request_number']} for preparation.$specialNotes", "/catering_system/canteen/dashboard.php"],
-                    "iss"
+                    "isss"
                 );
             }
             echo json_encode(['success' => true, 'message' => 'Request approved']);
@@ -71,7 +71,7 @@ switch ($action) {
             insertAndGetId(
                 "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
                 [$request['employee_id'], "Your request #{$request['request_number']} has been rejected. Reason: $reason", "/catering_system/employee/my_reqs.php"],
-                "iss"
+                "isss"
             );
             echo json_encode(['success' => true, 'message' => 'Request rejected']);
         } else {
@@ -100,7 +100,7 @@ switch ($action) {
             insertAndGetId(
                 "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
                 [$request['employee_id'], "Your request #{$request['request_number']} has been returned for clarification. Reason: $reason", "/catering_system/employee/edit_request.php?id=$id"],
-                "iss"
+                "isss"
             );
             echo json_encode(['success' => true, 'message' => 'Request returned for clarification']);
         } else {

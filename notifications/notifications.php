@@ -7,26 +7,26 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
 $pageTitle = 'Notifications';
-$userId = $_SESSION['user_id'] ?? 0;
+$userCode = $_SESSION['user_code'] ?? '';
 $userRole = $_SESSION['role'] ?? '';
 
 // Mark all as read when opening the page
-if ($userId > 0) {
-    executeAndGetAffected("UPDATE notifications SET is_read = 1 WHERE user_id = ?", [$userId], "i");
+if ($userCode) {
+    executeAndGetAffected("UPDATE notifications SET is_read = 1 WHERE user_code = ?", [$userCode], "s");
 }
 
 // Handle clearing notifications
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_notifications'])) {
-    if ($userId > 0) {
-        executeAndGetAffected("DELETE FROM notifications WHERE user_id = ?", [$userId], "i");
+    if ($userCode) {
+        executeAndGetAffected("DELETE FROM notifications WHERE user_code = ?", [$userCode], "s");
         redirect('notifications.php', 'All notifications cleared.', 'success');
     }
 }
 
 // Fetch notifications
 $notifications = fetchAll(
-    "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
-    [$userId], "i"
+    "SELECT * FROM notifications WHERE user_code = ? ORDER BY created_at DESC LIMIT 50",
+    [$userCode], "s"
 );
 
 // Admin specific: Fetch pending user approvals to show as priority

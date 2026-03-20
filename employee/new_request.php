@@ -15,12 +15,12 @@ require_once __DIR__ . '/../config/db.php';
 // ---------------------------------------------------------
 // 1. INITIAL DATA FETCHING (PRE-FILLS)
 // ---------------------------------------------------------
-$userId = getCurrentUserId();
+$userId = $_SESSION['user_id'] ?? 0;
 
 // Fetch user data linked with VIMIS_EMPLOYEE for master employee info
 $sql = "SELECT u.*, v.EMPLOYEECODE, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME, v.SERVICESTATCODE 
         FROM users u 
-        LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+        JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
         WHERE u.id = ?";
 $user = fetchOne($sql, [$userId], "i") ?? [];
 
@@ -31,17 +31,17 @@ $defDesig = !empty($user['DESGFULLNAME']) ? $user['DESGFULLNAME'] : ($user['desi
 $defPhone = $user['phone'] ?? '';
 
 // Approving officer (Auto-assigned based on reporting hierarchy)
-$empCodeForHierarchy = $user['EMPLOYEECODE'] ?? $user['userid'] ?? '';
-$offQuery = "SELECT u.id, v.EMPLOYEENAME, v.DIVNFULLNAME 
+$empCodeForHierarchy = $user['EMPLOYEECODE'] ?? $userCode;
+$offQuery = "SELECT u.id, u.userid as officer_code, v.EMPLOYEENAME, v.DIVNFULLNAME 
              FROM users u 
              JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
              WHERE u.userid = (SELECT REPEMPLOYEECODE FROM TBAD_EMPVSREPEMPPLOYEE WHERE EMPLOYEECODE = ?) 
              AND u.status = 'active'";
 $officer = fetchOne($offQuery, [$empCodeForHierarchy], "s") ?? [];
-
-$defOfficerId   = $officer['id'] ?? null;
-$defOfficerName = !empty($officer['EMPLOYEENAME']) ? $officer['EMPLOYEENAME'] : '';
-$defOfficerDept = !empty($officer['DIVNFULLNAME']) ? $officer['DIVNFULLNAME'] : '';
+$defOfficerId       = $officer['id'] ?? null;
+$defOfficerCode     = $officer['officer_code'] ?? null;
+$defOfficerName     = !empty($officer['EMPLOYEENAME']) ? $officer['EMPLOYEENAME'] : 'No reporting officer found';
+$defOfficerDept     = !empty($officer['DIVNFULLNAME']) ? $officer['DIVNFULLNAME'] : 'N/A';
 
 // Available menu items
 $menuItems = fetchAll("SELECT * FROM menu_items ORDER BY category, item_name") ?? [];
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Approval Details (Auto-assigned)
     $apprBy          = $defOfficerName;
     $apprDept        = $defOfficerDept;
-    $targetOfficerId = $defOfficerId;
+    $targetOfficerCode = $defOfficerCode;
 
     // Service Defaults
     $serviceDate     = sanitize($_POST['service_date'] ?? '');
@@ -100,7 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($meetingDate)) $errors[] = "Meeting date is required.";
     if (empty($area))        $errors[] = "Meeting area/location is required.";
     if (empty($reqPerson))   $errors[] = "Requesting person name is required.";
-    if (empty($targetOfficerId)) $errors[] = "No approving officer found in hierarchy. Please contact admin.";
+    
+    // Only block SUBMIT if officer is missing, allow SAVE (draft)
+    if ($action === 'submit' && empty($defOfficerId)) {
+        $errors[] = "Submission Blocked: No reporting officer found in hierarchy. Please contact admin.";
+    }
+    
     if (empty($items))       $errors[] = "Please select at least one catering item.";
 
     if (empty($errors)) {
@@ -124,22 +129,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Insert Main Request
             $sql = "INSERT INTO catering_requests 
-                    (request_number, employee_id, requesting_person, requesting_department, 
+                    (request_number, employee_id, employee_code, requesting_person, requesting_department, 
                      requesting_designation, phone_number, meeting_name, meeting_date, 
                      meeting_time, area, lic, guest_count, special_instructions, service_date, service_time, 
-                     service_location, hall_code, approving_officer_id, approving_by, 
+                     service_location, hall_code, approving_officer_id, approving_officer_code, approving_by, 
                      approving_department, total_amount, status)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             $params = [
-                $requestNumber, $userId, $reqPerson, $reqDept,
+                $requestNumber, $userId, $user['EMPLOYEECODE'], $reqPerson, $reqDept,
                 $reqDesig, $reqPhone, $meetingName, $meetingDate,
                 $meetingTime, $area, $lic, $guestCount, $specialInstr, $serviceDate, $serviceTime,
-                $serviceLocation, $hallCode, $targetOfficerId, $apprBy,
+                $serviceLocation, $hallCode, $defOfficerId, $defOfficerCode, $apprBy,
                 $apprDept, $totalAmount, $status
             ];
             
-            $requestId = insertAndGetId($sql, $params, "sisssssssssisssssissds");
+            $requestId = insertAndGetId($sql, $params, "sissssssssssisssssisssds");
 
             if (!$requestId) {
                 throw new Exception("Failed to create request header.");
@@ -162,11 +167,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Notify Officer
-            if ($status === 'pending' && $targetOfficerId) {
+            if ($status === 'pending' && $defOfficerCode) {
                 insertAndGetId(
-                    "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'officer', ?, ?)",
-                    [$targetOfficerId, "New catering request #$requestNumber submitted by $reqPerson.", "/catering_system/officer/dashboard.php"],
-                    "iss"
+                    "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'officer', ?, ?)",
+                    [$defOfficerCode, "New catering request #$requestNumber submitted by $reqPerson.", "/catering_system/officer/dashboard.php"],
+                    "sss"
                 );
             }
 
@@ -218,6 +223,9 @@ include __DIR__ . '/../includes/header.php';
                                         <h6 class="text-primary text-uppercase fw-bold mb-1">
                                             <i class="fas fa-handshake me-2"></i>1. Meeting & Requester Details
                                         </h6>
+                                        <small class="text-muted d-block opacity-75" style="letter-spacing: 0.5px; font-size: 0.65rem;">
+                                            <i class="fas fa-database me-1"></i>DATA FETCHED FROM VIMIS SYSTEM
+                                        </small>
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-12">
@@ -250,7 +258,7 @@ include __DIR__ . '/../includes/header.php';
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">
-                                                Employee Name <span class="text-danger">*</span>
+                                                Employee Name (from VIMIS) <span class="text-danger">*</span>
                                                 <?php if (($user['SERVICESTATCODE'] ?? '') === 'SERV'): ?>
                                                     <span class="badge bg-success ms-1" style="font-size: 0.65rem;">Active</span>
                                                 <?php elseif (($user['SERVICESTATCODE'] ?? '') === 'PROB'): ?>
@@ -268,7 +276,7 @@ include __DIR__ . '/../includes/header.php';
                                             <input type="text" name="requesting_department" class="form-control bg-light" value="<?= htmlspecialchars($defDept ?? '') ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Reporting Officer</label>
+                                            <label class="form-label fw-semibold">Reporting Officer (auto)</label>
                                             <input type="text" name="approving_by" class="form-control bg-light" value="<?= htmlspecialchars($defOfficerName ?? '') ?>" readonly>
                                             <input type="hidden" name="officer_id" value="<?= htmlspecialchars($defOfficerId ?? '') ?>">
                                             <small class="text-muted d-block" style="font-size: 0.7rem;">Auto-assigned by hierarchy</small>

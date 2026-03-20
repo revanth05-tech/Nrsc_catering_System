@@ -33,10 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Invalid email format.";
     }
 
-    // Check if userid already exists
+    // Check if employee code already exists
     $existingUser = fetchOne("SELECT id FROM users WHERE userid = ?", [$userid], "s");
     if ($existingUser) {
-        $errors[] = "User ID already exists. Please choose another.";
+        $errors[] = "Employee Code already exists. Please check again.";
     }
 
     // Check if email already exists
@@ -67,12 +67,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             );
 
             // Notify Admins
-            $admins = fetchAll("SELECT id FROM users WHERE role = 'admin'");
+            $admins = fetchAll("SELECT userid FROM users WHERE role = 'admin'");
             foreach ($admins as $admin) {
                 insertAndGetId(
-                    "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'admin', ?, ?)",
-                    [$admin['id'], "New user registration: $name requires approval.", "/catering_system/notifications/notifications.php"],
-                    "iss"
+                    "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'admin', ?, ?)",
+                    [$admin['userid'], "New user registration: $name requires approval.", "/catering_system/notifications/notifications.php"],
+                    "sss"
                 );
             }
             
@@ -139,8 +139,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" id="name" name="name" placeholder="Enter full name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
                     </div>
                     <div class="form-group">
-                        <label for="userid">User ID * (Unique)</label>
-                        <input type="text" id="userid" name="userid" placeholder="Enter user ID" value="<?php echo htmlspecialchars($_POST['userid'] ?? ''); ?>" required>
+                        <label for="userid">NRSC Employee Code *</label>
+                        <input type="text" id="userid" name="userid" placeholder="e.g. NR01234" value="<?php echo htmlspecialchars($_POST['userid'] ?? ''); ?>" required>
                     </div>
                 </div>
 

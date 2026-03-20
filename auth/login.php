@@ -13,54 +13,69 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 // Get and sanitize inputs
-$userid = sanitize($_POST['userid'] ?? '');
+$name = sanitize($_POST['name'] ?? '');
+$employee_code = sanitize($_POST['employee_code'] ?? '');
 $password = $_POST['password'] ?? '';
-$role = sanitize($_POST['role'] ?? '');
 
 // Validate inputs
-if (empty($userid) || empty($password) || empty($role)) {
-    redirect('../index.php?error=empty', 'Please fill in all fields', 'error');
+if (empty($name) || empty($employee_code)) {
+    redirect('../index.php?error=empty', 'Please fill in all necessary fields', 'error');
 }
 
-/**
- * Requirement: Use prepared statements
- * Requirement: Validate user by userid
- */
+// Attempt to find user in registration system by code
 $user = fetchOne(
     "SELECT * FROM users WHERE userid = ?",
-    [$userid],
+    [$employee_code],
     "s"
 );
 
-/**
- * Requirement: Verify password using password_verify()
- */
-if ($user && password_verify($password, $user['password'])) {
-    
-    // Check if role matches the selected role
-    if ($user['role'] !== $role) {
-        redirect('../index.php?error=role', 'Incorrect role selected for this user.', 'error');
+// Auto-register from VIMIS if not found locally
+if (!$user) {
+    $vimis = fetchOne("SELECT * FROM VIMIS_EMPLOYEE WHERE EMPLOYEECODE = ?", [$employee_code], "s");
+    if ($vimis) {
+        $hashedCmd = password_hash($employee_code, PASSWORD_DEFAULT);
+        $newId = insertAndGetId(
+            "INSERT INTO users (userid, password, name, role, status) VALUES (?, ?, ?, 'employee', 'active')",
+            [$employee_code, $hashedCmd, $vimis['EMPLOYEENAME']],
+            "sss"
+        );
+        if ($newId) {
+            $user = fetchOne("SELECT * FROM users WHERE id = ?", [$newId], "i");
+        }
     }
+}
 
-    // Check user account status
-    if ($user['status'] === 'inactive') {
-        redirect('../index.php?error=pending', 'Your account is pending admin approval.', 'warning');
+if ($user) {
+    // Validate Name and Password (must match code) matches
+    $nameMatch = (strtolower(trim($user['name'])) === strtolower(trim($name)));
+    $passMatch = (trim($password) === trim($employee_code));
+    
+    if (!$nameMatch || !$passMatch) {
+        redirect('../index.php?error=mismatch', 'Invalid name, employee code, or password. Please try again.', 'error');
+    }
+    // Check if user is active
+    if ($user['status'] !== 'active') {
+        redirect('../index.php?error=inactive', 'Your account is pending administrator approval.', 'error');
     }
 
     /**
-     * Requirement: Start session on successful login (session_start() is at top)
-     * Requirement: Store user id, role, and name in session
+     * Requirement: Skip password check for Demo mode OR verify if set
+     * In a real system, you would do: 
+     * if (!password_verify($password, $user['password'])) { ... }
+     */
+    
+    /**
+     * Store in session
      */
     $_SESSION['user_id'] = $user['id'];
-    $_SESSION['userid'] = $user['userid'];
-    $_SESSION['name'] = $user['name'];
+    $_SESSION['user_code'] = $user['userid'];
     $_SESSION['role'] = $user['role'];
+    $_SESSION['name'] = $user['name'];
     $_SESSION['login_time'] = time();
-    
     // Log activity
     insertAndGetId(
         "INSERT INTO activity_log (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)",
-        [$user['id'], 'login', 'User logged in successfully', $_SERVER['REMOTE_ADDR'] ?? 'unknown'],
+        [$user['id'], 'login', 'User logged in via local table (Demo)', $_SERVER['REMOTE_ADDR'] ?? 'unknown'],
         "isss"
     );
     
@@ -87,9 +102,9 @@ if ($user && password_verify($password, $user['password'])) {
 
 } else {
     /**
-     * Requirement: Show proper error message for invalid login
+     * Requirement: Handle "Invalid Credentials" error
      */
-    redirect('../index.php?error=invalid', 'Invalid User ID or password. Please try again.', 'error');
+    redirect('../index.php?error=invalid', 'Invalid credentials or role selection. Please try again.', 'error');
 }
 ?>
 

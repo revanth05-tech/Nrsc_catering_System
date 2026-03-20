@@ -17,9 +17,9 @@ if (!$requestId) {
 
 // Get request
 $request = fetchOne(
-    "SELECT * FROM catering_requests WHERE id = ? AND employee_id = ?",
-    [$requestId, $_SESSION['user_id']],
-    "ii"
+    "SELECT r.* FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE r.id = ? AND u.userid = ?",
+    [$requestId, $_SESSION['user_code']],
+    "is"
 );
 
 if (!$request) {

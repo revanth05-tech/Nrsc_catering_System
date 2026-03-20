@@ -9,11 +9,13 @@ $pageTitle = 'Approving Officer Dashboard';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
-// Get stats
+$officerCode = $_SESSION['user_code'] ?? '';
+
+// Get stats for this specific officer
 $stats = [
-    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending'")['count'] ?? 0,
-    'approved_today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'approved' AND DATE(approved_at) = CURDATE()")['count'] ?? 0,
-    'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed')")['count'] ?? 0,
+    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending' AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
+    'approved_today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'approved' AND DATE(approved_at) = CURDATE() AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
+    'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed') AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
 ];
 
 // ✅ FIXED HERE (name → name)
@@ -21,8 +23,9 @@ $pendingRequests = fetchAll(
     "SELECT cr.*, u.name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
-     WHERE cr.status = 'pending' 
-     ORDER BY cr.created_at ASC"
+     WHERE cr.status = 'pending' AND cr.approving_officer_code = ?
+     ORDER BY cr.created_at ASC",
+    [$officerCode], "s"
 );
 
 include __DIR__ . '/../includes/header.php';

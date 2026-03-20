@@ -15,10 +15,20 @@ $currentUser = null;
 
 if (isset($_SESSION['user_id'])) {
     $currentUser = fetchOne(
-        "SELECT * FROM users WHERE id = ?",
+        "SELECT u.*, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME 
+         FROM users u 
+         LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+         WHERE u.id = ?",
         [$_SESSION['user_id']],
         "i"
     );
+
+    // Apply VIMIS-enhanced labels with fallbacks
+    if ($currentUser) {
+        $currentUser['display_name'] = !empty($currentUser['EMPLOYEENAME']) ? $currentUser['EMPLOYEENAME'] : $currentUser['name'];
+        $currentUser['display_designation'] = !empty($currentUser['DESGFULLNAME']) ? $currentUser['DESGFULLNAME'] : ($currentUser['designation'] ?? 'Staff');
+        $currentUser['display_department'] = !empty($currentUser['DIVNFULLNAME']) ? $currentUser['DIVNFULLNAME'] : ($currentUser['department'] ?? 'General');
+    }
 }
 
 /*
@@ -28,8 +38,10 @@ if (isset($_SESSION['user_id'])) {
 */
 $pageTitle = $pageTitle ?? 'Dashboard';
 
-$userName = $currentUser['name'] ?? 'User';
+$userName = $currentUser['display_name'] ?? 'User';
 $userInitials = strtoupper(substr($userName, 0, 2));
+$userDesignation = $currentUser['display_designation'] ?? 'Staff';
+$userDepartment = $currentUser['display_department'] ?? 'General';
 
 $userRoleKey = $_SESSION['role'] ?? 'employee';
 $userRole = ROLE_LABELS[$userRoleKey] ?? 'User';
@@ -108,8 +120,9 @@ $userRole = ROLE_LABELS[$userRoleKey] ?? 'User';
 <?php
 // Fetch unread notifications for all users
 $notificationCount = 0;
-if (isset($_SESSION['user_id'])) {
-    $notif = fetchOne("SELECT COUNT(*) as active_count FROM notifications WHERE user_id = ? AND is_read = 0", [$_SESSION['user_id']], "i");
+if (isset($_SESSION['user_code'])) {
+    $ucode = $_SESSION['user_code'];
+    $notif = fetchOne("SELECT COUNT(*) as active_count FROM notifications WHERE user_code = ? AND is_read = 0", [$ucode], "s");
     $notificationCount = $notif['active_count'] ?? 0;
 }
 
@@ -195,7 +208,7 @@ $totalBadgeCount = $notificationCount + $inactiveCount;
                                             <div style="padding: 1.5rem;">
                                                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; text-align: left;">
                                                     <div>
-                                                        <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-400); margin-bottom: 0.25rem;">User ID</label>
+                                                        <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-400); margin-bottom: 0.25rem;">Employee Code</label>
                                                         <div style="font-weight: 600; font-size: 0.875rem;"><?php echo htmlspecialchars($user['userid']); ?></div>
                                                     </div>
                                                     <div>

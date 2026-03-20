@@ -32,7 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         try {
             $requestNumber = generateRequestNumber();
-            $userId = $_SESSION['user_id'];
+            $userCode = $_SESSION['user_code'];
+            $reqUser = fetchOne("SELECT id FROM users WHERE userid = ?", [$userCode], "s");
+            $userId = $reqUser['id'] ?? 0;
             
             // Calculate total
             $totalAmount = 0;

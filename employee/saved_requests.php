@@ -19,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($requestId > 0) {
         if ($action === 'delete') {
-            $conn = getConnection();
-            
             // Re-verify it belongs to user and is new
             $check = fetchOne("SELECT id FROM catering_requests WHERE id=? AND employee_id=? AND status='new'", [$requestId, $userId], "ii");
             if ($check) {
@@ -30,19 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Unauthorized or invalid request.";
             }
         } elseif ($action === 'submit_saved') {
-            $check = fetchOne("SELECT id, request_number, requesting_person, approving_officer_id FROM catering_requests WHERE id=? AND employee_id=? AND status='new'", [$requestId, $userId], "ii");
+            $check = fetchOne("SELECT id, request_number, requesting_person, approving_officer_code FROM catering_requests WHERE id=? AND employee_id=? AND status='new'", [$requestId, $userId], "ii");
             if ($check) {
                 executeQuery("UPDATE catering_requests SET status='pending' WHERE id=? AND employee_id=?", [$requestId, $userId], "ii");
                 
                 // Notify officer
-                $targetOfficerId = $check['approving_officer_id'];
-                if ($targetOfficerId) {
+                $targetOfficerCode = $check['approving_officer_code'];
+                if ($targetOfficerCode) {
                     $reqNumber = $check['request_number'];
                     $reqPerson = $check['requesting_person'];
                     insertAndGetId(
-                        "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'officer', ?, ?)",
-                        [$targetOfficerId, "New catering request #$reqNumber submitted by $reqPerson.", "/catering_system/officer/dashboard.php"],
-                        "iss"
+                        "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'officer', ?, ?)",
+                        [$targetOfficerCode, "New catering request #$reqNumber submitted by $reqPerson.", "/catering_system/officer/dashboard.php"],
+                        "sss"
                     );
                 }
                 

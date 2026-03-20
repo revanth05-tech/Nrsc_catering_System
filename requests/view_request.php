@@ -12,8 +12,12 @@ if (!$requestId) {
     die('Invalid request');
 }
 
-$userId = $_SESSION['user_id'];
+$userCode = $_SESSION['user_code'];
 $userRole = $_SESSION['role'];
+
+// Fetch user ID for DB mapping
+$currUser = fetchOne("SELECT id FROM users WHERE userid = ?", [$userCode], "s");
+$userId = $currUser['id'] ?? 0;
 
 $whereClause = "cr.id = ?";
 $params = [$requestId];

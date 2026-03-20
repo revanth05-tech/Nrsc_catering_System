@@ -8,7 +8,7 @@
 require_once __DIR__ . '/includes/auth.php';
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_code'])) {
     header("Location: index.php");
     exit();
 }
@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/db.php';
 
-$userId = (int)$_SESSION['user_id'];
+$userCode = $_SESSION['user_code'];
 $errors = [];
 $success = '';
 
@@ -44,8 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
             }
             
             // Fetch current image to remove later
-            $current = fetchOne("SELECT profile_image FROM users WHERE id = ?", [$userId], "i");
+            $current = fetchOne("SELECT profile_image FROM users WHERE userid = ?", [$userCode], "s");
             
+            // Get ID for filename
+            $userId = $current['id'] ?? 0;
             $extension = pathinfo((string)$file['name'], PATHINFO_EXTENSION);
             $fileName = $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
             $targetPath = $uploadDir . $fileName;
@@ -53,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 $relativePath = 'uploads/profile_images/' . $fileName;
                 
-                if (executeQuery("UPDATE users SET profile_image = ? WHERE id = ?", [$relativePath, $userId], "si")) {
+                if (executeQuery("UPDATE users SET profile_image = ? WHERE userid = ?", [$relativePath, $userCode], "ss")) {
                     // Remove old physical file if exists
                     if (!empty($current['profile_image']) && file_exists(__DIR__ . '/' . $current['profile_image'])) {
                         unlink(__DIR__ . '/' . $current['profile_image']);
@@ -86,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     if (empty($errors)) {
-        $sql = "UPDATE users SET name = ?, email = ?, phone = ?, department = ?, designation = ? WHERE id = ?";
-        if (executeQuery($sql, [$name, $email, $phone, $department, $designation, $userId], "sssssi")) {
+        $sql = "UPDATE users SET name = ?, email = ?, phone = ?, department = ?, designation = ? WHERE userid = ?";
+        if (executeQuery($sql, [$name, $email, $phone, $department, $designation, $userCode], "ssssss")) {
             $success = "Profile data synchronized successfully!";
         } else {
             $errors[] = "Update failed. Please check system logs.";
@@ -98,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // ---------------------------------------------------------
 // 3. DEFENSIVE DATA FETCHING (PHP 8.1+ HARDENED)
 // ---------------------------------------------------------
-$userDataRaw = fetchOne("SELECT * FROM users WHERE id = ?", [$userId], "i");
+$userDataRaw = fetchOne("SELECT * FROM users WHERE userid = ?", [$userCode], "s");
 
 if (!$userDataRaw) {
     include __DIR__ . '/includes/header.php';

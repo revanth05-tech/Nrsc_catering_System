@@ -9,7 +9,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Check if user is logged in
-if (!isset($_SESSION['userid']) || !isset($_SESSION['role'])) {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     header("Location: /catering_system/index.php");
     exit();
 }
@@ -34,6 +34,11 @@ function hasRole($role) {
 // Get current user ID
 function getCurrentUserId() {
     return $_SESSION['user_id'] ?? null;
+}
+
+// Get current user code
+function getCurrentUserCode() {
+    return $_SESSION['user_code'] ?? null;
 }
 
 // Get current user role

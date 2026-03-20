@@ -13,6 +13,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
+
+// Report identifiers
 $type = $_GET['type'] ?? '';
 $requestId = (int)($_GET['request_id'] ?? 0);
 

@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/db.php';
 header('Content-Type: application/json');
 
 // Check authentication
-if (!isset($_SESSION['userid'])) {
+if (!isset($_SESSION['user_code'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit();
 }
@@ -51,11 +51,11 @@ switch ($action) {
         
     case 'cancel_request':
         $id = (int)($_POST['id'] ?? 0);
-        $userId = $_SESSION['user_id'] ?? 0;
+        $userCode = $_SESSION['user_code'] ?? '';
         
         $request = fetchOne(
-            "SELECT * FROM catering_requests WHERE id = ? AND employee_id = ? AND status = 'pending'",
-            [$id, $userId], "ii"
+            "SELECT r.* FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE r.id = ? AND u.userid = ? AND r.status = 'pending'",
+            [$id, $userCode], "is"
         );
         
         if ($request) {

@@ -7,7 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'canteen') {
+if (!isset($_SESSION['user_code']) || $_SESSION['role'] !== 'canteen') {
     header("Location: ../auth/login.php");
     exit();
 }

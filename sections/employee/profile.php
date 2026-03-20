@@ -4,13 +4,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_code'])) {
     echo "<div class='alert alert-error'>User not logged in.</div>";
     return;
 }
 
-$userId = $_SESSION['user_id'];
-$userData = fetchOne("SELECT * FROM users WHERE id = ?", [$userId], "i");
+$userCode = $_SESSION['user_code'];
+$userData = fetchOne("SELECT * FROM users WHERE userid = ?", [$userCode], "s");
 
 if (!$userData) {
     echo "<div class='alert alert-error'>User data not found.</div>";

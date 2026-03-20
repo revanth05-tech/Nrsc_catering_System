@@ -10,18 +10,18 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
 // Get stats for current user
-$userId = $_SESSION['user_id'] ?? 0;
+$userCode = $_SESSION['user_code'] ?? '';
 $stats = [
-    'total' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE employee_id = ?", [$userId], "i")['count'] ?? 0,
-    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE employee_id = ? AND status = 'pending'", [$userId], "i")['count'] ?? 0,
-    'approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE employee_id = ? AND status = 'approved'", [$userId], "i")['count'] ?? 0,
-    'completed' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE employee_id = ? AND status = 'completed'", [$userId], "i")['count'] ?? 0,
+    'total' => fetchOne("SELECT COUNT(*) as count FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE u.userid = ?", [$userCode], "s")['count'] ?? 0,
+    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE u.userid = ? AND r.status = 'pending'", [$userCode], "s")['count'] ?? 0,
+    'approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE u.userid = ? AND r.status = 'approved'", [$userCode], "s")['count'] ?? 0,
+    'completed' => fetchOne("SELECT COUNT(*) as count FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE u.userid = ? AND r.status = 'completed'", [$userCode], "s")['count'] ?? 0,
 ];
 
 // Get recent requests
 $recentRequests = fetchAll(
-    "SELECT * FROM catering_requests WHERE employee_id = ? ORDER BY created_at DESC LIMIT 5",
-    [$userId], "i"
+    "SELECT r.* FROM catering_requests r JOIN users u ON r.employee_id = u.id WHERE u.userid = ? ORDER BY r.created_at DESC LIMIT 5",
+    [$userCode], "s"
 );
 
 include __DIR__ . '/../includes/header.php';

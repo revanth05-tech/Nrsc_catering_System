@@ -95,7 +95,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="form-row two-cols mt-4">
             <div>
                 <label class="text-muted">Requested By</label>
-                <p class="font-semibold"><?php echo htmlspecialchars($order['employee_name']); ?> (<?php echo htmlspecialchars($order['department']); ?>)</p>
+                <p class="font-semibold"><?php echo htmlspecialchars($order['employee_name'] ?? ''); ?> (<?php echo htmlspecialchars($order['department'] ?? ''); ?>)</p>
             </div>
         </div>
     </div>

@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/notification_handler.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_code'])) {
     $userId = (int)($_POST['target_user_id'] ?? 0);
     $role = $_POST['target_role'] ?? '';
     $message = $_POST['message'] ?? '';

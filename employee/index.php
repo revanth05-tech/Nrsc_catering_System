@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Access Control
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employee') {
+if (!isset($_SESSION['user_code']) || $_SESSION['role'] !== 'employee') {
     header("Location: ../auth/login.php");
     exit();
 }

@@ -16,7 +16,7 @@ if (!$requestId) {
 
 // Get request with employee info
 $request = fetchOne(
-    "SELECT cr.*, u.name as employee_name, u.department, u.email 
+    "SELECT cr.*, u.id as employee_id, u.userid as employee_code, u.name as employee_name, u.department, u.email 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
      WHERE cr.id = ?",
@@ -50,19 +50,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Notify Employee
         insertAndGetId(
-            "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
-            [$request['employee_id'], "Your request #{$request['request_number']} has been approved.", "/catering_system/employee/my_reqs.php"],
-            "iss"
+            "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'employee', ?, ?)",
+            [$request['employee_code'], "Your request #{$request['request_number']} has been approved.", "/catering_system/employee/my_reqs.php"],
+            "sss"
         );
 
         // Notify Canteen Staff
-        $canteenStaff = fetchAll("SELECT id FROM users WHERE role = 'canteen'");
+        $canteenStaff = fetchAll("SELECT userid FROM users WHERE role = 'canteen'");
         $specialNotes = !empty($request['special_instructions']) ? " Notes: " . $request['special_instructions'] : "";
         foreach ($canteenStaff as $staff) {
             insertAndGetId(
-                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'canteen', ?, ?)",
-                [$staff['id'], "New approved request #{$request['request_number']} for preparation.$specialNotes", "/catering_system/canteen/dashboard.php"],
-                "iss"
+                "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'canteen', ?, ?)",
+                [$staff['userid'], "New approved request #{$request['request_number']} for preparation.$specialNotes", "/catering_system/canteen/dashboard.php"],
+                "sss"
             );
         }
 
@@ -75,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Notify Employee
         insertAndGetId(
-            "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
-            [$request['employee_id'], "Your request #{$request['request_number']} has been rejected. Reason: $reason", "/catering_system/employee/my_reqs.php"],
-            "iss"
+            "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'employee', ?, ?)",
+            [$request['employee_code'], "Your request #{$request['request_number']} has been rejected. Reason: $reason", "/catering_system/employee/my_reqs.php"],
+            "sss"
         );
 
         redirect('dashboard.php', 'Request rejected.', 'success');
@@ -90,9 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($affected > 0) {
             // Notify Employee
             insertAndGetId(
-                "INSERT INTO notifications (user_id, role, message, link) VALUES (?, 'employee', ?, ?)",
-                [$request['employee_id'], "Your request #{$request['request_number']} has been returned for correction. Reason: $reason", "/catering_system/employee/my_reqs.php"],
-                "iss"
+                "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'employee', ?, ?)",
+                [$request['employee_code'], "Your request #{$request['request_number']} has been returned for correction. Reason: $reason", "/catering_system/employee/my_reqs.php"],
+                "sss"
             );
 
             redirect('dashboard.php', 'Request returned to employee', 'success');
