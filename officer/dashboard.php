@@ -9,13 +9,13 @@ $pageTitle = 'Approving Officer Dashboard';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 
-$officerCode = $_SESSION['user_code'] ?? '';
+$officerId = $_SESSION['user_id'] ?? 0;
 
 // Get stats for this specific officer
 $stats = [
-    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending' AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
-    'approved_today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'approved' AND DATE(approved_at) = CURDATE() AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
-    'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed') AND approving_officer_code = ?", [$officerCode], "s")['count'] ?? 0,
+    'pending' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'pending' AND approving_officer_id = ?", [$officerId], "i")['count'] ?? 0,
+    'approved_today' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status = 'approved' AND DATE(approved_at) = CURDATE() AND approving_officer_id = ?", [$officerId], "i")['count'] ?? 0,
+    'total_approved' => fetchOne("SELECT COUNT(*) as count FROM catering_requests WHERE status IN ('approved', 'in_progress', 'completed') AND approving_officer_id = ?", [$officerId], "i")['count'] ?? 0,
 ];
 
 // ✅ FIXED HERE (name → name)
@@ -23,9 +23,9 @@ $pendingRequests = fetchAll(
     "SELECT cr.*, u.name as employee_name, u.department 
      FROM catering_requests cr 
      JOIN users u ON cr.employee_id = u.id 
-     WHERE cr.status = 'pending' AND cr.approving_officer_code = ?
+     WHERE cr.status = 'pending' AND cr.approving_officer_id = ?
      ORDER BY cr.created_at ASC",
-    [$officerCode], "s"
+    [$officerId], "i"
 );
 
 include __DIR__ . '/../includes/header.php';

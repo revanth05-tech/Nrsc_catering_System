@@ -54,8 +54,8 @@ if ($user) {
         redirect('../index.php?error=mismatch', 'Invalid name, employee code, or password. Please try again.', 'error');
     }
     // Check if user is active
-    if ($user['status'] !== 'active') {
-        redirect('../index.php?error=inactive', 'Your account is pending administrator approval.', 'error');
+    if ($user['status'] != 'active') {
+        die("Account not approved by admin");
     }
 
     /**

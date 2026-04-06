@@ -20,7 +20,7 @@ $userId = $_SESSION['user_id'] ?? 0;
 // Fetch user data linked with VIMIS_EMPLOYEE for master employee info
 $sql = "SELECT u.*, v.EMPLOYEECODE, v.EMPLOYEENAME, v.DESGFULLNAME, v.DIVNFULLNAME, v.SERVICESTATCODE 
         FROM users u 
-        JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+        LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
         WHERE u.id = ?";
 $user = fetchOne($sql, [$userId], "i") ?? [];
 
@@ -34,10 +34,19 @@ $defPhone = $request['phone_number'] ?? $user['phone'] ?? '';
 $empCodeForHierarchy = $user['EMPLOYEECODE'] ?? $userCode;
 $offQuery = "SELECT u.id, u.userid as officer_code, v.EMPLOYEENAME, v.DIVNFULLNAME 
              FROM users u 
-             JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
+             LEFT JOIN VIMIS_EMPLOYEE v ON u.userid = v.EMPLOYEECODE 
              WHERE u.userid = (SELECT REPEMPLOYEECODE FROM TBAD_EMPVSREPEMPPLOYEE WHERE EMPLOYEECODE = ?) 
              AND u.status = 'active'";
 $officer = fetchOne($offQuery, [$empCodeForHierarchy], "s") ?? [];
+
+// Fallback to finding any active officer if hierarchy fails for new users
+if (empty($officer)) {
+    $offQuery = "SELECT u.id, u.userid AS officer_code, u.name AS EMPLOYEENAME, u.department AS DIVNFULLNAME 
+                 FROM users u 
+                 WHERE u.role = 'officer' AND u.status = 'active' 
+                 LIMIT 1";
+    $officer = fetchOne($offQuery) ?? [];
+}
 
 // Prioritize hierarchy, fallback to existing request record if hierarchy not found (for legacy consistency)
 $defOfficerId     = $officer['id'] ?? $request['approving_officer_id'] ?? null;
@@ -63,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'submit';
 
     // Backend enforcement for service status
-    if ($action === 'submit' && ($user['SERVICESTATCODE'] ?? '') !== 'SERV') {
+    $isActiveUser = (($user['SERVICESTATCODE'] ?? '') === 'SERV' || ($user['status'] ?? '') === 'active');
+    if ($action === 'submit' && !$isActiveUser) {
         $errors[] = "Operation Error: Only active employees can raise requests.";
         $action = 'save'; // Force save instead of submit if somehow bypassed
     }
@@ -153,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $apprDept, $totalAmount, $status, $status, $requestId, $userId
             ];
             
-            executeQuery($sql, $params, "sssssssssisssssissssdssii");
+            executeQuery($sql, $params, "sssssssssisssssisssdssii");
 
             // Delete old items and insert new ones
             executeQuery("DELETE FROM request_items WHERE request_id=?", [$requestId], "i");
@@ -268,7 +278,8 @@ include __DIR__ . '/../includes/header.php';
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">
                                                 Employee Name (from VIMIS) <span class="text-danger">*</span>
-                                                <?php if (($user['SERVICESTATCODE'] ?? '') === 'SERV'): ?>
+                                                <?php $isActiveUser = (($user['SERVICESTATCODE'] ?? '') === 'SERV' || ($user['status'] ?? '') === 'active'); ?>
+                                                <?php if ($isActiveUser): ?>
                                                     <span class="badge bg-success ms-1" style="font-size: 0.65rem;">Active</span>
                                                 <?php elseif (($user['SERVICESTATCODE'] ?? '') === 'PROB'): ?>
                                                     <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65rem;">Probation</span>
@@ -432,7 +443,7 @@ include __DIR__ . '/../includes/header.php';
                                             <button type="submit" name="action" value="save" class="btn btn-primary">
                                                 Save
                                             </button>
-                                            <?php $isServ = (($user['SERVICESTATCODE'] ?? '') === 'SERV'); ?>
+                                            <?php $isServ = (($user['SERVICESTATCODE'] ?? '') === 'SERV' || ($user['status'] ?? '') === 'active'); ?>
                                             <button type="submit" name="action" value="submit" class="btn btn-success" <?= !$isServ ? 'disabled' : '' ?>>
                                                 Submit
                                             </button>

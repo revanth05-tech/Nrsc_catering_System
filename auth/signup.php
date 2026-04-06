@@ -46,6 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($errors)) {
+        // VIMIS Validation before proceed
+        $vimisCheck = fetchOne("SELECT * FROM VIMIS_EMPLOYEE WHERE EMPLOYEECODE = ?", [$userid], "s");
+        if (!$vimisCheck) {
+            die("Invalid Employee Code");
+        }
+
         // Hash password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         
@@ -67,14 +73,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             );
 
             // Notify Admins
-            $admins = fetchAll("SELECT userid FROM users WHERE role = 'admin'");
-            foreach ($admins as $admin) {
-                insertAndGetId(
-                    "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'admin', ?, ?)",
-                    [$admin['userid'], "New user registration: $name requires approval.", "/catering_system/notifications/notifications.php"],
-                    "sss"
-                );
-            }
+            $message = "New user registration requires approval: $name";
+            insertAndGetId(
+                "INSERT INTO notifications (user_code, role, message, link) VALUES (?, 'admin', ?, ?)",
+                [$userid, $message, '/catering_system/notifications/notifications.php'],
+                "sss"
+            );
             
             $_SESSION['flash_message'] = "Registration submitted successfully. Your account will be activated after admin approval.";
             $_SESSION['flash_type'] = "success";

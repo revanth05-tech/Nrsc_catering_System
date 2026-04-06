@@ -45,8 +45,8 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 // Fetch Pending Users (status = 'inactive')
 $pendingUsers = fetchAll("SELECT * FROM users WHERE status = 'inactive' ORDER BY created_at DESC");
 
-// Fetch Active Users (status = 'active')
-$activeUsers = fetchAll("SELECT * FROM users WHERE status = 'active' AND role != 'admin' ORDER BY name ASC");
+// Fetch All Manageable Users
+$manageableUsers = fetchAll("SELECT * FROM users WHERE role != 'admin' ORDER BY name ASC");
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -61,7 +61,7 @@ include __DIR__ . '/../includes/header.php';
 <!-- Active Users Section -->
 <div class="section-container">
     <div class="flex-between mb-4">
-        <h2 class="section-title">Active Users</h2>
+        <h2 class="section-title">Manage Users</h2>
         <button onclick="document.getElementById('add-user-modal').style.display='block'" class="btn btn-primary btn-sm">
             + Add New User
         </button>
@@ -79,14 +79,15 @@ include __DIR__ . '/../includes/header.php';
                             <th>Department</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($activeUsers as $user): ?>
+                        <?php foreach ($manageableUsers as $user): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($user['userid']); ?></strong></td>
                             <td><?php echo htmlspecialchars($user['name']); ?></td>
-                            <td><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td><?php echo htmlspecialchars($user['email'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($user['department'] ?? '-'); ?></td>
                             <td>
                                 <span class="badge badge-approved">
@@ -94,7 +95,23 @@ include __DIR__ . '/../includes/header.php';
                                 </span>
                             </td>
                             <td>
-                                <span class="badge badge-completed">Active</span>
+                                <?php if ($user['status'] === 'active'): ?>
+                                    <span class="badge badge-completed" style="background:#10b981; color:white; padding: 4px 8px; border-radius: 4px;">Active</span>
+                                <?php elseif ($user['status'] === 'inactive'): ?>
+                                    <span class="badge badge-warning" style="background:#f59e0b; color:white; padding: 4px 8px; border-radius: 4px;">Pending</span>
+                                <?php else: ?>
+                                    <span class="badge badge-error" style="background:#ef4444; color:white; padding: 4px 8px; border-radius: 4px;">Deactivated</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <form action="approve_user.php" method="POST" style="margin:0;">
+                                    <input type="hidden" name="user_code" value="<?php echo htmlspecialchars($user['userid']); ?>">
+                                    <?php if ($user['status'] === 'active'): ?>
+                                        <button type="submit" name="action" value="reject" class="btn btn-sm" style="border:1px solid #ef4444; color:#ef4444; background:white; cursor:pointer;" onmouseover="this.style.background='#ef4444';this.style.color='white';" onmouseout="this.style.background='white';this.style.color='#ef4444';">Deactivate</button>
+                                    <?php else: ?>
+                                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="border:1px solid #10b981; color:#10b981; background:white; cursor:pointer;" onmouseover="this.style.background='#10b981';this.style.color='white';" onmouseout="this.style.background='white';this.style.color='#10b981';">Activate</button>
+                                    <?php endif; ?>
+                                </form>
                             </td>
                         </tr>
                         <?php endforeach; ?>

@@ -27,7 +27,7 @@ CREATE TABLE `users` (
     `role` ENUM('employee','officer','canteen','admin') 
     NOT NULL DEFAULT 'employee',
 
-    `status` ENUM('active','inactive') 
+    `status` ENUM('active','inactive','rejected') 
     NOT NULL DEFAULT 'active',
 
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -150,6 +150,7 @@ CREATE TABLE `notifications` (
     `role` ENUM('employee','officer','canteen','admin') DEFAULT NULL,
     `message` TEXT NOT NULL,
     `link` VARCHAR(255) DEFAULT NULL,
+    `reference_id` INT DEFAULT NULL,
     `is_read` TINYINT(1) DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

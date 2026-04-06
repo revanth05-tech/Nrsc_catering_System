@@ -27,6 +27,11 @@ if (!$request) {
     redirect('dashboard.php', 'Request not found', 'error');
 }
 
+// Ensure only the assigned officer can view/act on this request
+if ($request['approving_officer_id'] != $_SESSION['user_id']) {
+    die("Access Denied: You are not the assigned approving officer for this request.");
+}
+
 $pageTitle = 'Review Request';
 
 // Get request items

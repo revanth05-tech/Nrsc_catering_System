@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "user_code": "NR04567",
+        "role": "officer",
+        "message": "New catering request #REQ-20260403-5C352 submitted by Dr. Anil Kumar.",
+        "link": "\/catering_system\/officer\/dashboard.php",
+        "is_read": 1,
+        "created_at": "2026-04-03 12:54:55",
+        "reference_id": null
+    },
+    {
+        "id": 2,
+        "user_code": "NR01234",
+        "role": "employee",
+        "message": "Your request #REQ-20260403-5C352 has been returned for correction. Reason: missing items",
+        "link": "\/catering_system\/employee\/my_reqs.php",
+        "is_read": 1,
+        "created_at": "2026-04-03 12:55:41",
+        "reference_id": null
+    },
+    {
+        "id": 3,
+        "user_code": "NR04567",
+        "role": "officer",
+        "message": "New catering request #REQ-20260403-5C352 submitted by Dr. Anil Kumar.",
+        "link": "\/catering_system\/officer\/dashboard.php",
+        "is_read": 1,
+        "created_at": "2026-04-03 13:00:22",
+        "reference_id": null
+    },
+    {
+        "id": 4,
+        "user_code": "NR01234",
+        "role": "employee",
+        "message": "Your request #REQ-20260403-5C352 has been approved.",
+        "link": "\/catering_system\/employee\/my_reqs.php",
+        "is_read": 1,
+        "created_at": "2026-04-03 13:01:01",
+        "reference_id": null
+    },
+    {
+        "id": 5,
+        "user_code": "canteen",
+        "role": "canteen",
+        "message": "New approved request #REQ-20260403-5C352 for preparation.",
+        "link": "\/catering_system\/canteen\/dashboard.php",
+        "is_read": 0,
+        "created_at": "2026-04-03 13:01:01",
+        "reference_id": null
+    },
+    {
+        "id": 6,
+        "user_code": "NR04567",
+        "role": "officer",
+        "message": "New catering request #REQ-20260403-B0DCB submitted by Dr. Anil Kumar.",
+        "link": "\/catering_system\/officer\/dashboard.php",
+        "is_read": 0,
+        "created_at": "2026-04-03 13:02:52",
+        "reference_id": null
+    },
+    {
+        "id": 7,
+        "user_code": "admin",
+        "role": "admin",
+        "message": "New user registration: Revanth Yegireddi requires approval.",
+        "link": "\/catering_system\/notifications\/notifications.php",
+        "is_read": 1,
+        "created_at": "2026-04-06 08:34:38",
+        "reference_id": null
+    }
+]
